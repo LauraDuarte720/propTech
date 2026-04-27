@@ -30,6 +30,6 @@ public class Visit {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private VisitStatus status;
-    @Column
+    @Column (nullable = false)
     private String postVisitNotes;
 }
