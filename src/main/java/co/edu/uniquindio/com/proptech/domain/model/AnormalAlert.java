@@ -3,15 +3,15 @@ package co.edu.uniquindio.com.proptech.domain.model;
 import co.edu.uniquindio.com.proptech.domain.enums.AlertAnormalType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
-@Entity
-@Table(name = "anomalalert")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AnomalAlert extends Alert {
+@Builder
+@Entity
+@Table(name = "anormalalert")
+public class AnormalAlert extends Alert {
     private AlertAnormalType alertAnormalType;
 }

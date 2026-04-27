@@ -5,16 +5,17 @@ import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+
 import java.time.*;
 
-@Entity
-@Table(name = "alert")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "alert")
 public class Alert {
     @Id
     private int id;
