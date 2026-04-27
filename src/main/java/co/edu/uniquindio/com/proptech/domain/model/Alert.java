@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.domain.enums.AlertType;
 import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
+import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,4 +31,14 @@ public class Alert {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AttentionLevel attentionLevel;
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private Agent agent;
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private Client client;
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private Operation operation;
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private Property property;
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private Visit visit;
 }
