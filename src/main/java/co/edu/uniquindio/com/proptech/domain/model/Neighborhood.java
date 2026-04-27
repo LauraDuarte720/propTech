@@ -1,20 +1,30 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Entity
-@Table(name = "neighborhood")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "neighborhood")
+
 public class Neighborhood {
     @Id
     private int id;
+    @Column(nullable = false, unique = true)
     private String name;
-    private GeographicZone geographicZone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Zone zone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private City city;
+
 }
