@@ -1,13 +1,13 @@
 package co.edu.uniquindio.com.proptech.structures.hashTable;
 
 
-public class EntryNode<V> {
+public class EntryNode<K,V> {
 
-    public String key;
+    public K key;
     public V value;
-    public EntryNode<V> next;
+    public EntryNode<K, V> next;
 
-    public EntryNode(String key, V value) {
+    public EntryNode(K key, V value) {
         this.key   = key;
         this.value = value;
         this.next  = null;

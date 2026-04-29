@@ -1,7 +1,9 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
-import jakarta.persistence.*;
+
+import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import lombok.*;
+
 
 import java.util.List;
 
@@ -17,9 +19,9 @@ public class PropTech {
     
     private List<Property> properties;
 
-    private List<Client> clients;
+    private HashTable<String, Client> clients;
 
-    private List<Agent> agents;
+    private HashTable<String, Agent> agents;
 
     private List<Operation> operations;
     
