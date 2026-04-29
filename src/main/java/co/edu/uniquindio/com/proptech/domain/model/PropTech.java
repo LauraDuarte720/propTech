@@ -36,8 +36,8 @@ public class PropTech {
     @JoinColumn(name = "proptech_id")
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private List<Visit> visits;
-    @JoinColumn(name = "proptech_id")
 
+    @JoinColumn(name = "proptech_id")
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private List<Alert> alerts;
 }

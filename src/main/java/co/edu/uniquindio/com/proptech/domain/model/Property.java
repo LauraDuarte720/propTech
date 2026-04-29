@@ -54,6 +54,7 @@ public class Property {
     @Column(nullable = false)
     private boolean available;
 
+    @JoinColumn(name = "agent_id")
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private Agent agent;
 }
