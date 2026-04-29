@@ -9,11 +9,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class User {
-    @Id
+    
     private String cedula;
-    @Column(nullable = false)
+    
     private String name;
 }
