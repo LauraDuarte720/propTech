@@ -1,4 +1,4 @@
-package co.edu.uniquindio.com.proptech.structures.linkedList;
+package co.edu.uniquindio.com.proptech.structures;
 
 /**
  * Generic Node for singly linked structures.

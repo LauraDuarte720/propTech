@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.structures.linkedList;
 
+import co.edu.uniquindio.com.proptech.structures.Node;
+
 /**
  * Singly Linked List — built from scratch using {@link Node}.
  *
