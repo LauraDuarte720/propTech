@@ -5,6 +5,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.*;
 
@@ -12,9 +13,10 @@ import java.time.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "alert")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Alert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

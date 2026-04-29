@@ -6,6 +6,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.SearchStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "client")
 public class Client extends User {
@@ -38,7 +39,7 @@ public class Client extends User {
     @JoinTable(
             name = "client_interest_zones",
             joinColumns = @JoinColumn(name = "cedula"),
-            inverseJoinColumns = @JoinColumn(name = "code")
+            inverseJoinColumns = @JoinColumn(name = "id")
     )
     private List<GeographicZone> interestZones;
 

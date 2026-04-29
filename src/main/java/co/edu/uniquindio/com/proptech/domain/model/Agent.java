@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -9,10 +10,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "agent")
-
 public class Agent extends User{
     @Column(nullable = false, length = 10)
     private String contact;

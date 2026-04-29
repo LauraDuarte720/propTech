@@ -2,12 +2,13 @@ package co.edu.uniquindio.com.proptech.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class User {
