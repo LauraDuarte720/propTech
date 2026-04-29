@@ -14,6 +14,7 @@ import lombok.*;
 @Table(name = "geographiczone")
 public class GeographicZone {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Enumerated(EnumType.STRING)
@@ -22,6 +23,7 @@ public class GeographicZone {
     @Enumerated(EnumType.STRING)
     private City city;
 
+    @JoinColumn(name = "neighborhood_id")
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private Neighborhood neighborhood;
 }

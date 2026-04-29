@@ -15,6 +15,7 @@ import lombok.*;
 
 public class Neighborhood {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(nullable = false, unique = true)
     private String name;
