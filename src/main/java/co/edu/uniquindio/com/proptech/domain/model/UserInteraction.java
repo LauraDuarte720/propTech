@@ -19,4 +19,8 @@ public class UserInteraction {
     private InteractionType interactionType;
     
     private LocalDateTime timestamp;
+
+    private Client client;
+
+    private Property property;
 }

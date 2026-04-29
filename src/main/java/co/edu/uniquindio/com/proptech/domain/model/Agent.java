@@ -1,5 +1,8 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
+import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -15,9 +18,9 @@ public class Agent extends User{
 
     private GeographicZone assignedZone;
 
-    private List<Property> assignedProperties;
+    private ArrayList<Property> assignedProperties;
 
-    private List<Visit> scheduledVisits;
+    private Queue<Visit> scheduledVisits;
 
     private int closedDeals;
 }

@@ -21,8 +21,7 @@ public class Visit {
     
     private LocalDate date;
     
-    private LocalTime time;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+
     private Agent agent;
 
     private VisitStatus status;

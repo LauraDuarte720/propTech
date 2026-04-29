@@ -4,6 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.ClientType;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.enums.SearchStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -29,9 +30,9 @@ public class Client extends User {
     
     private SearchStatus searchStatus;
 
-    private List<GeographicZone> interestZones;
+    private ArrayList<GeographicZone> interestZones;
     
     private PropertyType desiredPropertyType;
 
-    private List<UserInteraction> interactionHistory;
+    private ArrayList<UserInteraction> interactionHistory;
 }
