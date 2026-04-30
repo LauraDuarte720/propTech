@@ -18,6 +18,7 @@ public class Agent extends User{
 
     private ArrayList<Property> assignedProperties;
 
+
     private Queue<Visit> scheduledVisits;
 
     private int closedDeals;
