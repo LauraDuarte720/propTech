@@ -171,6 +171,15 @@ public class LinkedList<T> {
         return arr;
     }
 
+    public void set(int index, T data) {
+        if (index < 0 || index >= size)
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        Node<T> current = head;
+        for (int i = 0; i < index; i++) current = current.next;
+        current.data = data;
+    }
+
+
     @Override
     public String toString() {
         if (isEmpty()) return "[]";
