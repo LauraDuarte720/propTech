@@ -22,8 +22,8 @@ public class Agent extends User{
 
     private int closedDeals;
 
-    public Agent(String cedula, String name, String contact, GeographicZone assignedZone, int closedDeals) {
-        super(cedula, name);
+    public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, int closedDeals) {
+        super(cedula, name, username, password);
         this.contact = contact;
         this.assignedZone = assignedZone;
         this.assignedProperties = new ArrayList<>();

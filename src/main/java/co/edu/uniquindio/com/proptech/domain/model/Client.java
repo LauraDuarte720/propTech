@@ -31,8 +31,8 @@ public class Client extends User {
 
     private ArrayList<UserInteraction> interactionHistory;
 
-    public Client(String cedula, String name, String email, String phone, double budget, int minBedrooms, ClientType clientType, SearchStatus searchStatus, PropertyType desiredPropertyType) {
-        super(cedula, name);
+    public Client(String cedula, String name, String username, String password, String email, String phone, double budget, int minBedrooms, ClientType clientType, SearchStatus searchStatus, PropertyType desiredPropertyType) {
+        super(cedula, name, password, username);
         this.email = email;
         this.phone = phone;
         this.budget = budget;

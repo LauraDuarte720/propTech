@@ -14,4 +14,9 @@ public class User {
     private String cedula;
     
     private String name;
+
+    private String username;
+
+    private String password;
+
 }
