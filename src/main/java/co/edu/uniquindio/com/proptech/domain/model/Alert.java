@@ -29,7 +29,6 @@ public class Alert {
 
     private boolean reviewed;
 
-
     private Agent agent;
 
     private Client client;

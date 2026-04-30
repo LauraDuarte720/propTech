@@ -44,4 +44,39 @@ public class Client extends User {
         this.interactionHistory = new ArrayList<>();
     }
 
+    public void addInterestZone(GeographicZone zone) {
+        interestZones.add(zone);
+    }
+
+    public boolean removeInterestZone(GeographicZone zone) {
+        for (int i = 0; i < interestZones.size(); i++) {
+            if (interestZones.get(i).equals(zone)) {
+                interestZones.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addInteraction(UserInteraction interaction) {
+        interactionHistory.add(interaction);
+    }
+
+    public UserInteraction getInteraction(String id) {
+        for (int i = 0; i < interactionHistory.size(); i++) {
+            UserInteraction ui = interactionHistory.get(i);
+            if (ui.getId().equals(id)) return ui;
+        }
+        return null;
+    }
+
+    public boolean removeInteraction(String id) {
+        for (int i = 0; i < interactionHistory.size(); i++) {
+            if (interactionHistory.get(i).getId().equals(id)) {
+                interactionHistory.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
 }
