@@ -28,4 +28,14 @@ public class PropTech {
     private LinkedList<Visit> visits;
 
     private ArrayList<Alert> alerts;
+
+    public PropTech(String NIT) {
+        this.NIT = NIT;
+        this.properties = new HashTable<>();
+        this.clients = new HashTable<>();
+        this.agents = new HashTable<>();
+        this.operations = new LinkedList<>();
+        this.visits = new LinkedList<>();
+        this.alerts = new ArrayList<>();
+    }
 }

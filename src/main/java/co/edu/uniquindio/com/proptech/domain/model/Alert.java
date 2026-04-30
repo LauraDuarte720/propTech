@@ -23,13 +23,12 @@ public class Alert {
 
     private AlertType alertType;
 
-    private boolean anomal;
+    private boolean anormal;
 
     private LocalDateTime timestamp;
 
     private boolean reviewed;
 
-    private AttentionLevel attentionLevel;
 
     private Agent agent;
 

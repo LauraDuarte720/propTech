@@ -19,8 +19,7 @@ public class Visit {
     
     private Property property;
     
-    private LocalDate date;
-    
+    private LocalDateTime date;
 
     private Agent agent;
 

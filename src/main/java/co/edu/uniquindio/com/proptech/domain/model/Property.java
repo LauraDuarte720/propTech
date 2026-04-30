@@ -19,8 +19,6 @@ public class Property {
     
     private String address;
 
-    private City city;
-
     private Neighborhood neighborhood;
 
     private PropertyType propertyType;
