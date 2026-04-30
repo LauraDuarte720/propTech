@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @Builder
 public class Operation {
 
-    private int id;
+    private String id;
     
     private Property property;
     

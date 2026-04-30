@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class GeographicZone {
 
-    private int id;
+    private String id;
 
     private Zone zone;
 

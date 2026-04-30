@@ -14,7 +14,7 @@ import java.time.*;
 @Builder
 public class UserInteraction {
 
-    private int id;
+    private String id;
 
     private InteractionType interactionType;
     

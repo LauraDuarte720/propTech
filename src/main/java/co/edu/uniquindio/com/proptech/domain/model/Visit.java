@@ -13,7 +13,7 @@ import java.time.*;
 @Builder
 public class Visit {
 
-    private int id;
+    private String id;
     
     private Client client;
     

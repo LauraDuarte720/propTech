@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class Alert {
 
-    private int id;
+    private String id;
 
     private AlertType alertType;
 
