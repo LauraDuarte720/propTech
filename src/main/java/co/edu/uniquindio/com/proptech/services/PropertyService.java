@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.repositories.impl.PropertyRepositoryImpl;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 
 public class PropertyService {
 
@@ -14,7 +15,7 @@ public class PropertyService {
         if (exists) {
             throw new RuntimeException("Ya existe una propiedad con ese código");
         }
-
+        property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
         propertyRepository.save(property);
     }
 
