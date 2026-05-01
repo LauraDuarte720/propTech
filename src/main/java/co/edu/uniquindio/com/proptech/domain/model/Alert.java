@@ -21,10 +21,6 @@ public class Alert {
 
     private String id;
 
-    private AlertType alertType;
-
-    private boolean anormal;
-
     private LocalDateTime timestamp;
 
     private boolean reviewed;

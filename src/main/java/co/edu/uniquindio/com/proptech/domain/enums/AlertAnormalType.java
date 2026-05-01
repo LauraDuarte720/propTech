@@ -1,16 +1,21 @@
 package co.edu.uniquindio.com.proptech.domain.enums;
 
+import lombok.Getter;
+
 public enum AlertAnormalType {
-    HIGH_VISITS_NO_CLOSING("High Visits No Closing"),
-    CLIENT_MULTIPLE_VISITS_NO_CONTINUITY("Client Multiple Visits No Continuity"),
-    ADVISOR_EXCESSIVE_OVERLOAD("Advisor Excessive Overload"),
-    PROPERTY_PRICE_CHANGE("Property Price Change"),
-    ZONE_INTEREST_CONCENTRATION("Zone Interest Concentration");
+    HIGH_VISITS_NO_CLOSING("High Visits No Closing", EntityAlert.PROPERTY),
+    CLIENT_MULTIPLE_VISITS_NO_CONTINUITY("Client Multiple Visits No Continuity", EntityAlert.CLIENT),
+    AGENT_EXCESSIVE_OVERLOAD("Advisor Excessive Overload", EntityAlert.AGENT),
+    PROPERTY_PRICE_CHANGE("Property Price Change", EntityAlert.PROPERTY),
+    ZONE_INTEREST_CONCENTRATION("Zone Interest Concentration", EntityAlert.ZONE);
 
     private final String displayName;
+    @Getter
+    private final EntityAlert requiredEntity;
 
-    AlertAnormalType(String displayName) {
+    AlertAnormalType(String displayName, EntityAlert requiredEntity) {
         this.displayName = displayName;
+        this.requiredEntity = requiredEntity;
     }
 
     @Override
