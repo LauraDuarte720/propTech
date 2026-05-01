@@ -7,4 +7,5 @@ public interface OperationRepository {
     Operation save(Operation operation);
     Optional<Operation> findById(String id);
     boolean deleteById(String id);
+    Operation update(Operation operation);
 }

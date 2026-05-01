@@ -7,4 +7,5 @@ public interface VisitRepository {
     Visit save(Visit visit);
     Optional<Visit> findById(String id);
     boolean deleteById(String id);
+    Visit update(Visit visit);
 }

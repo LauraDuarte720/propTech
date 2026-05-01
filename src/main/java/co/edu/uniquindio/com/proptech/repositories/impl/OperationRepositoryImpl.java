@@ -29,4 +29,11 @@ public class OperationRepositoryImpl implements OperationRepository {
     public boolean deleteById(String id) {
         return propTech.removeOperation(id);
     }
+
+    @Override
+    public Operation update(Operation operation) {
+        return propTech.updateOperation(operation);
+    }
+
+
 }

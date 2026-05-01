@@ -27,4 +27,11 @@ public class VisitRepositoryImpl implements VisitRepository {
     public boolean deleteById(String id) {
         return propTech.removeVisit(id);
     }
+
+    @Override
+    public Visit update(Visit visit) {
+        return propTech.updateVisit(visit);
+    }
+
+
 }

@@ -27,4 +27,9 @@ public class AlertRepositoryImpl implements AlertRepository {
     public boolean deleteById(String id) {
         return propTech.removeAlert(id);
     }
+
+    @Override
+    public Alert update(Alert alert) {
+        return propTech.updateAlert(alert);
+    }
 }

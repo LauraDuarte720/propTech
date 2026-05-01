@@ -7,4 +7,5 @@ public interface AlertRepository {
     Alert save(Alert alert);
     Optional<Alert> findById(String id);
     boolean deleteById(String id);
+    Alert update(Alert alert);
 }
