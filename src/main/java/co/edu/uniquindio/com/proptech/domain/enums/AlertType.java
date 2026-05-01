@@ -1,20 +1,22 @@
 package co.edu.uniquindio.com.proptech.domain.enums;
-/**
- * Enum representing the type of alert.
- */
+
+import lombok.Getter;
+
 public enum AlertType {
-    CONTRACT_EXPIRING("Contract Expiring"),
-    PROPERTY_NO_VISITS("Property No Visits"),
-    HIGH_DEMAND("High Demand"),
-    PENDING_VISIT_CONFIRMATION("Pending Visit Confirmation"),
-    RESERVE_NO_CLOSURE("Reserve No Closure"),
-    INACTIVE_CLIENT("Inactive Client"),
-    ANORMAL("Anormal");
+    CONTRACT_EXPIRING("Contract Expiring", EntityAlert.OPERATION),
+    PROPERTY_NO_VISITS("Property No Visits", EntityAlert.PROPERTY),
+    HIGH_DEMAND("High Demand", EntityAlert.PROPERTY),
+    PENDING_VISIT_CONFIRMATION("Pending Visit Confirmation", EntityAlert.VISIT),
+    RESERVE_NO_CLOSURE("Reserve No Closure", EntityAlert.PROPERTY),
+    INACTIVE_CLIENT("Inactive Client", EntityAlert.CLIENT);
 
     private final String displayName;
+    @Getter
+    private final EntityAlert requiredEntity;
 
-    AlertType(String displayName) {
+    AlertType(String displayName, EntityAlert requiredEntity) {
         this.displayName = displayName;
+        this.requiredEntity = requiredEntity;
     }
 
     @Override
