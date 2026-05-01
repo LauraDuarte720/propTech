@@ -3,10 +3,14 @@ package co.edu.uniquindio.com.proptech.domain.dtos;
 import co.edu.uniquindio.com.proptech.domain.enums.ClientType;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.enums.SearchStatus;
-import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
-import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
-import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ClientDtoCreate {
 
     private String cedula;
