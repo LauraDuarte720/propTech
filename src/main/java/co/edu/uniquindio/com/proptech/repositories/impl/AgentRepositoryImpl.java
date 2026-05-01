@@ -3,6 +3,8 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
+import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+
 import java.util.Optional;
 
 public class AgentRepositoryImpl implements AgentRepository {
@@ -26,5 +28,9 @@ public class AgentRepositoryImpl implements AgentRepository {
     @Override
     public boolean deleteById(String cedula) {
         return propTech.removeAgent(cedula);
+    }
+
+    public HashTable<String,Agent> getAgents(){
+        return propTech.getAgents();
     }
 }
