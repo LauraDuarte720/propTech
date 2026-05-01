@@ -19,7 +19,7 @@ public class AgentDtoReturn {
 
     private String contact;
 
-    private GeographicZone assignedZone;
+    private GeographicZoneDto assignedZone;
 
     private int closedDeals;
 

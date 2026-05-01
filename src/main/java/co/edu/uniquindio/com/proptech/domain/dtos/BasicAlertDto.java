@@ -1,10 +1,6 @@
 package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.AlertType;
-import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
-import co.edu.uniquindio.com.proptech.domain.model.Client;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,23 +14,24 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class AlertDto {
+public class BasicAlertDto {
 
     private String id;
 
-    private AlertType alertType;
-
-    private boolean anormal;
+    private LocalDateTime timestamp;
 
     private boolean reviewed;
 
-    private AgentDtoReturn agentDto;
+    private AgentDtoReturn agent;
 
-    private ClientDtoReturn clientDto;
+    private ClientDtoReturn client;
 
     private OperationDto operation;
 
     private PropertyDto property;
 
     private VisitDto visit;
+
+    private AlertType alertType;
+
 }
