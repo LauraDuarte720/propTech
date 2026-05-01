@@ -37,4 +37,6 @@ public class CodeGenerator {
         return getPrefixFor(type) + "-" + String.format("%04d", number);
     }
 
+
+
 }

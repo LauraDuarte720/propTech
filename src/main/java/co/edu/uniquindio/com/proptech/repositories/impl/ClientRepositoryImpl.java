@@ -3,6 +3,8 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
+import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+
 import java.util.Optional;
 
 public class ClientRepositoryImpl implements ClientRepository {
@@ -27,4 +29,11 @@ public class ClientRepositoryImpl implements ClientRepository {
     public boolean deleteById(String cedula) {
         return propTech.removeClient(cedula);
     }
+
+    @Override
+    public HashTable<String, Client> getClients() {
+        return propTech.getClients();
+    }
+
+
 }

@@ -1,13 +1,13 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Property;
-import co.edu.uniquindio.com.proptech.repositories.impl.PropertyRepositoryImpl;
+import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 
 public class PropertyService {
 
-    PropertyRepositoryImpl propertyRepository;
+    PropertyRepository propertyRepository;
 
     public Property registerProperty(Property property) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
@@ -44,5 +44,9 @@ public class PropertyService {
         }
 
         return properties;
+    }
+
+    public Property getPropertyByCode(String code) {
+        return propertyRepository.findByCode(code).orElseThrow(() -> new RuntimeException("No existe una propiedad con ese codigo"));
     }
 }
