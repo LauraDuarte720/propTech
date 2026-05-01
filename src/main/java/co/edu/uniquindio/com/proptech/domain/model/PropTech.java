@@ -31,8 +31,10 @@ public class PropTech {
     }
 
 
-    public void addUpdateProperty(Property property) {
+    public Property addUpdateProperty(Property property) {
+
         properties.put(property.getCode(), property);
+        return property;
     }
 
     public Property getProperty(String code) {
@@ -44,8 +46,9 @@ public class PropTech {
     }
 
 
-    public void addUpdateClient(Client client) {
+    public Client addUpdateClient(Client client) {
         clients.put(client.getCedula(), client);
+        return client;
     }
 
     public Client getClient(String id) {
@@ -58,8 +61,9 @@ public class PropTech {
     }
 
 
-    public void addUpdateAgent(Agent agent) {
+    public Agent addUpdateAgent(Agent agent) {
         agents.put(agent.getCedula(), agent);
+        return agent;
     }
 
     public Agent getAgent(String id) {
@@ -71,8 +75,9 @@ public class PropTech {
     }
 
 
-    public void addOperation(Operation operation) {
+    public Operation addOperation(Operation operation) {
         operations.addLast(operation);
+        return operation;
     }
 
     public Operation getOperation(String id) {
@@ -93,18 +98,19 @@ public class PropTech {
         return false;
     }
 
-    public void updateOperation(Operation operation) {
+    public Operation updateOperation(Operation operation) {
         for (int i = 0; i < operations.size(); i++) {
             if (operations.get(i).getId().equals(operation.getId())) {
                 operations.set(i, operation);
-                return;
             }
         }
+        return operation;
     }
 
 
-    public void addVisit(Visit visit) {
+    public Visit addVisit(Visit visit) {
         visits.addLast(visit);
+        return visit;
     }
 
     public Visit getVisit(String id) {
@@ -125,18 +131,20 @@ public class PropTech {
         return false;
     }
 
-    public void updateVisit(Visit visit) {
+    public Visit updateVisit(Visit visit) {
         for (int i = 0; i < visits.size(); i++) {
             if (visits.get(i).getId().equals(visit.getId())) {
                 visits.set(i, visit);
-                return;
+
             }
         }
+        return visit;
     }
 
 
-    public void addAlert(Alert alert) {
+    public Alert addAlert(Alert alert) {
         alerts.add(alert);
+        return alert;
     }
 
     public Alert getAlert(String id) {
@@ -157,13 +165,14 @@ public class PropTech {
         return false;
     }
 
-    public void updateAlert(Alert alert) {
+    public Alert updateAlert(Alert alert) {
         for (int i = 0; i < alerts.size(); i++) {
             if (alerts.get(i).getId().equals(alert.getId())) {
                 alerts.set(i, alert);
-                return;
+
             }
         }
+        return alert;
     }
 
 }

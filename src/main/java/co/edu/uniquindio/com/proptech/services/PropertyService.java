@@ -9,22 +9,22 @@ public class PropertyService {
 
     PropertyRepositoryImpl propertyRepository;
 
-    public void registerProperty(Property property) {
+    public Property registerProperty(Property property) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
 
         if (exists) {
             throw new RuntimeException("Ya existe una propiedad con ese código");
         }
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
-        propertyRepository.save(property);
+        return propertyRepository.save(property);
     }
 
-    public void updateProperty(Property property) {
+    public Property updateProperty(Property property) {
         if (propertyRepository.findByCode(property.getCode()).isEmpty()) {
             throw new RuntimeException("No existe una propiedad con ese código");
         }
 
-        propertyRepository.save(property);
+       return propertyRepository.save(property);
     }
 
     public void deleteProperty(Property property) {

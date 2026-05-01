@@ -4,7 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import java.util.Optional;
 
 public interface AgentRepository {
-    void save(Agent agent);
+    Agent save(Agent agent);
     Optional<Agent> findByCedula(String cedula);
     boolean deleteById(String cedula);
 }

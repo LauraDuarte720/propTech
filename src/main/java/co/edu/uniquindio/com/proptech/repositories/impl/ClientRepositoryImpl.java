@@ -14,8 +14,8 @@ public class ClientRepositoryImpl implements ClientRepository {
     }
 
     @Override
-    public void save(Client client) {
-        propTech.addUpdateClient(client);
+    public Client save(Client client) {
+        return propTech.addUpdateClient(client);
     }
 
     @Override

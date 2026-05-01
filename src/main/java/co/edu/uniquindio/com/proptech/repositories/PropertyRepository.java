@@ -6,7 +6,7 @@ import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import java.util.Optional;
 
 public interface PropertyRepository {
-    void save(Property property);
+    Property save(Property property);
     Optional<Property> findByCode(String code);
     boolean deleteById(String code);
     HashTable<String, Property> getProperties();

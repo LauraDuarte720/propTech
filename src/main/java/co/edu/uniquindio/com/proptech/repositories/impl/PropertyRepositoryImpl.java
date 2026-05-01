@@ -16,8 +16,8 @@ public class PropertyRepositoryImpl implements PropertyRepository {
     }
 
     @Override
-    public void save(Property property) {
-        propTech.addUpdateProperty(property);
+    public Property save(Property property) {
+        return propTech.addUpdateProperty(property);
     }
 
     @Override

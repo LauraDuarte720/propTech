@@ -14,8 +14,8 @@ public class AlertRepositoryImpl implements AlertRepository {
     }
 
     @Override
-    public void save(Alert alert) {
-        propTech.addAlert(alert);
+    public Alert save(Alert alert) {
+        return propTech.addAlert(alert);
     }
 
     @Override

@@ -15,8 +15,8 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
-    public void save(Operation operation) {
-        propTech.addOperation(operation);
+    public Operation save(Operation operation) {
+        return propTech.addOperation(operation);
     }
 
     @Override

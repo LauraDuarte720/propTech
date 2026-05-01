@@ -14,8 +14,8 @@ public class AgentRepositoryImpl implements AgentRepository {
     }
 
     @Override
-    public void save(Agent agent) {
-        propTech.addUpdateAgent(agent);
+    public Agent save(Agent agent) {
+        return propTech.addUpdateAgent(agent);
     }
 
     @Override

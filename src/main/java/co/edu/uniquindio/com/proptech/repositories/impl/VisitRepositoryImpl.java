@@ -14,8 +14,8 @@ public class VisitRepositoryImpl implements VisitRepository {
     }
 
     @Override
-    public void save(Visit visit) {
-        propTech.addVisit(visit);
+    public Visit save(Visit visit) {
+        return propTech.addVisit(visit);
     }
 
     @Override
