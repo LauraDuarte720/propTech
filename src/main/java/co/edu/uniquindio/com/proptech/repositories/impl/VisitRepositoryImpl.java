@@ -1,8 +1,10 @@
-package co.edu.uniquindio.com.proptech.repository.impl;
+package co.edu.uniquindio.com.proptech.repositories.impl;
 
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
+
 import java.util.Optional;
 
 public class VisitRepositoryImpl implements VisitRepository {
@@ -33,5 +35,9 @@ public class VisitRepositoryImpl implements VisitRepository {
         return propTech.updateVisit(visit);
     }
 
+    @Override
+    public LinkedList<Visit> getAllVisits() {
+        return propTech.getVisits();
+    }
 
 }

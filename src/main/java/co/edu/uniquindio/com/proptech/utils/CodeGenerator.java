@@ -6,6 +6,7 @@ public class CodeGenerator {
 
     private static final PropertyType[] types = PropertyType.values();
     private static final int[] propertyCounters = new int[types.length];
+    private static int visitCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -38,5 +39,8 @@ public class CodeGenerator {
     }
 
 
+    public static String generateVisitCode() {
+        return "VIS-" + String.format("%04d", visitCounter++);
+    }
 
 }
