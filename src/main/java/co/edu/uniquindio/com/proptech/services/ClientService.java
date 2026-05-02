@@ -60,53 +60,35 @@ public class ClientService {
         if (userInteraction == null) {
             throw new RuntimeException("Interaction cannot be null");
         }
-
-        if (userInteraction.getInteractionType() == null) {
-            throw new RuntimeException("Interaction type cannot be null");
-        }
-
-        if (userInteraction.getProperty() == null) {
-            throw new RuntimeException("Interaction property cannot be null");
-        }
-
         userInteraction.setId(CodeGenerator.generateInteractionCode());
-        userInteraction.setClient(client);
         userInteraction.setTimestamp(LocalDateTime.now());
+        userInteraction.setClient(client);
         client.addInteraction(userInteraction);
-
         return userInteraction;
     }
 
     public ArrayList<Property> getFavorites(Client client) {
-        ArrayList<UserInteraction> interactions = client.getInteractionHistory();
+        ArrayList<UserInteraction> saved = client.getInteractionsByType(InteractionType.SAVED);
         ArrayList<Property> favorites = new ArrayList<>();
-
-        for (int i = 0; i < interactions.size(); i++) {
-            UserInteraction interaction = interactions.get(i);
-            if (interaction.getInteractionType() == InteractionType.SAVED) {
-                favorites.add(interaction.getProperty());
-            }
+        for (int i = 0; i < saved.size(); i++) {
+            favorites.add(saved.get(i).getProperty());
         }
-
         if (favorites.isEmpty()) {
             throw new RuntimeException("The client has no saved properties");
         }
-
         return favorites;
     }
 
-    public ArrayList<UserInteraction> getUserInteractions(Client client) {
 
+    public HashTable<InteractionType, ArrayList<UserInteraction>> getUserInteractions(Client client) {
         if (client == null) {
             throw new RuntimeException("Client cannot be null");
         }
-
-        ArrayList<UserInteraction> interactions = client.getInteractionHistory();
+        HashTable<InteractionType, ArrayList<UserInteraction>> interactions = client.getInteractionHistory();
 
         if (interactions == null || interactions.isEmpty()) {
             throw new RuntimeException("The client has no recorded interactions");
         }
-
         return interactions;
     }
 }
