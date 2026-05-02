@@ -1,8 +1,15 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
+import co.edu.uniquindio.com.proptech.domain.model.Property;
+import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+
+import java.time.LocalDateTime;
 
 public class ClientService {
 
@@ -45,4 +52,60 @@ public class ClientService {
                 .orElseThrow(() -> new RuntimeException("No existe un cliente con esa cédula: " + cedula));
     }
 
+    public UserInteraction registerUserInteraction(Client client, UserInteraction userInteraction) {
+        if (client == null) {
+            throw new RuntimeException("El cliente no puede ser nulo");
+        }
+
+        if (userInteraction == null) {
+            throw new RuntimeException("La interacción no puede ser nula");
+        }
+
+        if (userInteraction.getInteractionType() == null) {
+            throw new RuntimeException("El tipo de interacción no puede ser nulo");
+        }
+
+        if (userInteraction.getProperty() == null) {
+            throw new RuntimeException("La propiedad de la interacción no puede ser nula");
+        }
+
+        userInteraction.setId(CodeGenerator.generateInteractionCode());
+        userInteraction.setClient(client);
+        userInteraction.setTimestamp(LocalDateTime.now());
+        client.addInteraction(userInteraction);
+
+        return userInteraction;
+    }
+
+    public ArrayList<Property> getFavorites(Client client) {
+        ArrayList<UserInteraction> interactions = client.getInteractionHistory();
+        ArrayList<Property> favorites = new ArrayList<>();
+
+        for (int i = 0; i < interactions.size(); i++) {
+            UserInteraction interaction = interactions.get(i);
+            if (interaction.getInteractionType() == InteractionType.SAVED) {
+                favorites.add(interaction.getProperty());
+            }
+        }
+
+        if (favorites.isEmpty()) {
+            throw new RuntimeException("El cliente no tiene propiedades guardadas");
+        }
+
+        return favorites;
+    }
+
+    public ArrayList<UserInteraction> getUserInteractions(Client client) {
+        if (client == null) {
+            throw new RuntimeException("El cliente no puede ser nulo");
+        }
+
+        ArrayList<UserInteraction> interactions = client.getInteractionHistory();
+
+        if (interactions == null || interactions.isEmpty()) {
+            throw new RuntimeException("El cliente no tiene interacciones registradas");
+        }
+
+        return interactions;
+    }
 }

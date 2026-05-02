@@ -7,6 +7,7 @@ public class CodeGenerator {
     private static final PropertyType[] types = PropertyType.values();
     private static final int[] propertyCounters = new int[types.length];
     private static int visitCounter = 1;
+    private static int interactionCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -36,6 +37,10 @@ public class CodeGenerator {
         int index = getIndexOf(type);
         int number = propertyCounters[index]++;
         return getPrefixFor(type) + "-" + String.format("%04d", number);
+    }
+
+    public static String generateInteractionCode() {
+        return "INT-" + String.format("%04d", interactionCounter++);
     }
 
 
