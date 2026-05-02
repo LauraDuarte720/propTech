@@ -14,10 +14,6 @@ import lombok.*;
 public class GeographicZoneDtoReturn {
 
     @NotBlank(message = "ID is required")
-    @Pattern(
-            regexp = "^[a-zA-Z0-9\\-]+$",
-            message = "ID can only contain letters, numbers, and hyphens"
-    )
     @Size(min = 1, max = 50, message = "ID must be between 1 and 50 characters")
     private String id;
 

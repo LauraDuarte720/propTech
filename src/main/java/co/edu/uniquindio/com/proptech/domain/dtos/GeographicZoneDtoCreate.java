@@ -19,10 +19,6 @@ public class GeographicZoneDtoCreate {
     private City city;
 
     @NotBlank(message = "Neighborhood ID is required")
-    @Pattern(
-            regexp = "^[a-zA-Z0-9\\- ]+$",
-            message = "Neighborhood ID can only contain letters, numbers, spaces, and hyphens"
-    )
     @Size(min = 2, max = 100, message = "Neighborhood ID must be between 2 and 100 characters")
     private String neighborhoodId;
 }
