@@ -9,13 +9,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GeographicZoneDto {
+public class NeighborhoodDtoReturn {
 
     private String id;
+
+    private String name;
 
     private Zone zone;
 
     private City city;
-
-    private NeighborhoodDto neighborhood;
 }

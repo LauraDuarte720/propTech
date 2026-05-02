@@ -1,7 +1,6 @@
 package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.*;
@@ -11,13 +10,13 @@ import java.time.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VisitDto {
+public class VisitDtoReturn {
 
     private String id;
 
     private ClientDtoReturn client;
 
-    private PropertyDto property;
+    private PropertyDtoReturn property;
 
     private LocalDateTime date;
 

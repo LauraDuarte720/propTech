@@ -45,7 +45,7 @@ public class AgentDtoReturn {
 
     @NotNull(message = "Assigned zone is required")
     @Valid
-    private GeographicZoneDto assignedZone;
+    private GeographicZoneDtoCreate assignedZone;
 
     @Min(value = 0, message = "Closed deals cannot be negative")
     @Max(value = 100000, message = "Closed deals exceeds realistic limit")

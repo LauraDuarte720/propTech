@@ -2,7 +2,6 @@ package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
-import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -10,13 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NeighborhoodDto {
-
-    private String id;
-
-    private String name;
+public class GeographicZoneDtoCreate {
 
     private Zone zone;
 
     private City city;
+
+    private NeighborhoodDtoReturn neighborhood;
 }

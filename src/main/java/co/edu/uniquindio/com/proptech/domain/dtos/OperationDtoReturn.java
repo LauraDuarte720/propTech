@@ -12,11 +12,11 @@ import java.time.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OperationDto {
+public class OperationDtoReturn {
 
     private String id;
 
-    private PropertyDto property;
+    private PropertyDtoReturn property;
 
     private ClientDtoReturn client;
 

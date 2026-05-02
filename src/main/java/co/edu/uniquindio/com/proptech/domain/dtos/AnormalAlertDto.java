@@ -2,7 +2,6 @@ package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.AlertAnormalType;
 import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
-import co.edu.uniquindio.com.proptech.domain.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,11 +27,11 @@ public class AnormalAlertDto {
 
     private ClientDtoReturn client;
 
-    private OperationDto operation;
+    private OperationDtoCreate operation;
 
-    private PropertyDto property;
+    private PropertyDtoReturn property;
 
-    private VisitDto visit;
+    private VisitDtoReturn visit;
 
     private AlertAnormalType alertAnormalType;
 

@@ -26,11 +26,11 @@ public class BasicAlertDto {
 
     private ClientDtoReturn client;
 
-    private OperationDto operation;
+    private OperationDtoCreate operation;
 
-    private PropertyDto property;
+    private PropertyDtoReturn property;
 
-    private VisitDto visit;
+    private VisitDtoReturn visit;
 
     private AlertType alertType;
 
