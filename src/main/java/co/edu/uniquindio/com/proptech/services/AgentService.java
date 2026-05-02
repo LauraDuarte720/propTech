@@ -11,30 +11,28 @@ public class AgentService {
     public Agent registerAgent(Agent agent) {
         boolean exists = agentRepository.findByCedula(agent.getCedula()).isPresent();
         if (exists) {
-            throw new RuntimeException("Ya existe un agente con esa cédula");
+            throw new RuntimeException("An agent with this ID already exists");
         }
         return agentRepository.save(agent);
     }
 
     public Agent updateAgent(Agent agent) {
         if (agentRepository.findByCedula(agent.getCedula()).isEmpty()) {
-            throw new RuntimeException("No existe un agente con esa cédula");
+            throw new RuntimeException("No agent found with this ID");
         }
         return agentRepository.save(agent);
     }
 
-
-
     public HashTable<String, Agent> getAgents() {
         HashTable<String, Agent> agents = agentRepository.getAgents();
         if (agents == null || agents.isEmpty()) {
-            throw new RuntimeException("No hay agentes registrados");
+            throw new RuntimeException("No agents registered");
         }
         return agents;
     }
 
     public Agent getAgentByCedula(String cedula) {
         return agentRepository.findByCedula(cedula)
-                .orElseThrow(() -> new RuntimeException("No existe un agente con esa cédula: " + cedula));
+                .orElseThrow(() -> new RuntimeException("No agent found with this ID: " + cedula));
     }
 }

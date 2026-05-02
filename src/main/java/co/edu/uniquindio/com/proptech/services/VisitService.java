@@ -13,7 +13,7 @@ public class VisitService {
         boolean exists = visitRepository.findById(visit.getId()).isPresent();
 
         if (exists) {
-            throw new RuntimeException("Ya existe una visita con ese ID");
+            throw new RuntimeException("A visit with this ID already exists");
         }
 
         visit.setId(CodeGenerator.generateVisitCode());
@@ -22,7 +22,7 @@ public class VisitService {
 
     public Visit updateVisit(Visit visit) {
         if (visitRepository.findById(visit.getId()).isEmpty()) {
-            throw new RuntimeException("No existe una visita con ese ID");
+            throw new RuntimeException("No visit found with this ID");
         }
 
         return visitRepository.update(visit);
@@ -30,7 +30,7 @@ public class VisitService {
 
     public void deleteVisit(Visit visit) {
         if (visitRepository.findById(visit.getId()).isEmpty()) {
-            throw new RuntimeException("No existe una visita con ese ID");
+            throw new RuntimeException("No visit found with this ID");
         }
 
         visitRepository.deleteById(visit.getId());
@@ -40,7 +40,7 @@ public class VisitService {
         LinkedList<Visit> visits = visitRepository.getAllVisits();
 
         if (visits == null || visits.isEmpty()) {
-            throw new RuntimeException("No hay visitas registradas");
+            throw new RuntimeException("No visits registered");
         }
 
         return visits;
@@ -48,6 +48,6 @@ public class VisitService {
 
     public Visit getVisitById(String id) {
         return visitRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No existe una visita con ese ID: " + id));
+                .orElseThrow(() -> new RuntimeException("No visit found with this ID: " + id));
     }
 }

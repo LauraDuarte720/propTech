@@ -18,55 +18,55 @@ public class ClientService {
     public Client registerClient(Client client) {
         boolean exists = clientRepository.findByCedula(client.getCedula()).isPresent();
         if (exists) {
-            throw new RuntimeException("Ya existe un cliente con esa cédula");
+            throw new RuntimeException("A client with this ID already exists");
         }
         return clientRepository.save(client);
     }
 
     public Client updateClient(Client client) {
-        if  (clientRepository.findByCedula(client.getCedula()).isEmpty()) {
-            throw new RuntimeException("No existe un cliente con esa cédula");
+        if (clientRepository.findByCedula(client.getCedula()).isEmpty()) {
+            throw new RuntimeException("No client found with this ID");
         }
         return clientRepository.save(client);
     }
 
     public void deleteClient(Client client) {
-        if  (clientRepository.findByCedula(client.getCedula()).isEmpty()) {
-            throw new RuntimeException("No existe un cliente con esa cédula");
+        if (clientRepository.findByCedula(client.getCedula()).isEmpty()) {
+            throw new RuntimeException("No client found with this ID");
         }
         clientRepository.deleteById(client.getCedula());
     }
 
     public HashTable<String, Client> getClients() {
-        HashTable<String,Client> clients = clientRepository.getClients();
+        HashTable<String, Client> clients = clientRepository.getClients();
 
         if (clients == null || clients.isEmpty()) {
-            throw new RuntimeException("No hay clientes registrados");
-
+            throw new RuntimeException("No clients registered");
         }
         return clients;
     }
 
     public Client getClientByCedula(String cedula) {
         return clientRepository.findByCedula(cedula)
-                .orElseThrow(() -> new RuntimeException("No existe un cliente con esa cédula: " + cedula));
+                .orElseThrow(() -> new RuntimeException("No client found with this ID: " + cedula));
     }
 
     public UserInteraction registerUserInteraction(Client client, UserInteraction userInteraction) {
+
         if (client == null) {
-            throw new RuntimeException("El cliente no puede ser nulo");
+            throw new RuntimeException("Client cannot be null");
         }
 
         if (userInteraction == null) {
-            throw new RuntimeException("La interacción no puede ser nula");
+            throw new RuntimeException("Interaction cannot be null");
         }
 
         if (userInteraction.getInteractionType() == null) {
-            throw new RuntimeException("El tipo de interacción no puede ser nulo");
+            throw new RuntimeException("Interaction type cannot be null");
         }
 
         if (userInteraction.getProperty() == null) {
-            throw new RuntimeException("La propiedad de la interacción no puede ser nula");
+            throw new RuntimeException("Interaction property cannot be null");
         }
 
         userInteraction.setId(CodeGenerator.generateInteractionCode());
@@ -89,21 +89,22 @@ public class ClientService {
         }
 
         if (favorites.isEmpty()) {
-            throw new RuntimeException("El cliente no tiene propiedades guardadas");
+            throw new RuntimeException("The client has no saved properties");
         }
 
         return favorites;
     }
 
     public ArrayList<UserInteraction> getUserInteractions(Client client) {
+
         if (client == null) {
-            throw new RuntimeException("El cliente no puede ser nulo");
+            throw new RuntimeException("Client cannot be null");
         }
 
         ArrayList<UserInteraction> interactions = client.getInteractionHistory();
 
         if (interactions == null || interactions.isEmpty()) {
-            throw new RuntimeException("El cliente no tiene interacciones registradas");
+            throw new RuntimeException("The client has no recorded interactions");
         }
 
         return interactions;

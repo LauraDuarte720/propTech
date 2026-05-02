@@ -13,40 +13,41 @@ public class PropertyService {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
 
         if (exists) {
-            throw new RuntimeException("Ya existe una propiedad con ese código");
+            throw new RuntimeException("A property with this code already exists");
         }
+
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
         return propertyRepository.save(property);
     }
 
     public Property updateProperty(Property property) {
         if (propertyRepository.findByCode(property.getCode()).isEmpty()) {
-            throw new RuntimeException("No existe una propiedad con ese código");
+            throw new RuntimeException("No property found with this code");
         }
 
-       return propertyRepository.save(property);
+        return propertyRepository.save(property);
     }
 
     public void deleteProperty(Property property) {
         if (propertyRepository.findByCode(property.getCode()).isEmpty()) {
-            throw new RuntimeException("No existe una propiedad con ese código");
+            throw new RuntimeException("No property found with this code");
         }
 
         propertyRepository.deleteById(property.getCode());
-
     }
 
     public HashTable<String, Property> getAllProperties() {
         HashTable<String, Property> properties = propertyRepository.getProperties();
 
         if (properties == null || properties.isEmpty()) {
-            throw new RuntimeException("No hay propiedades registradas");
+            throw new RuntimeException("No properties registered");
         }
 
         return properties;
     }
 
     public Property getPropertyByCode(String code) {
-        return propertyRepository.findByCode(code).orElseThrow(() -> new RuntimeException("No existe una propiedad con ese codigo"));
+        return propertyRepository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("No property found with this code"));
     }
 }
