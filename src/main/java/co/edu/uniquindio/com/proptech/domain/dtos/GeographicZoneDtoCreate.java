@@ -12,13 +12,11 @@ import lombok.*;
 @Builder
 public class GeographicZoneDtoCreate {
 
-    @NotNull(message = "Zone is required")
-    private Zone zone;
 
     @NotNull(message = "City is required")
     private City city;
 
-    @NotBlank(message = "Neighborhood ID is required")
-    @Size(min = 2, max = 100, message = "Neighborhood ID must be between 2 and 100 characters")
+    private Zone zone;
+
     private String neighborhoodId;
 }

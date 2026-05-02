@@ -13,17 +13,11 @@ import lombok.*;
 @Builder
 public class GeographicZoneDtoReturn {
 
-    @NotBlank(message = "ID is required")
-    @Size(min = 1, max = 50, message = "ID must be between 1 and 50 characters")
     private String id;
 
-    @NotNull(message = "Zone is required")
-    private Zone zone;
-
-    @NotNull(message = "City is required")
     private City city;
 
-    @NotNull(message = "Neighborhood is required")
-    @Valid
+    private Zone zone;
+
     private NeighborhoodDtoReturn neighborhood;
 }
