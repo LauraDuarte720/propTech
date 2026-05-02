@@ -13,34 +13,57 @@ import lombok.*;
 @Builder
 public class ClientDtoReturn {
 
-    @NotBlank(message = "Cedula cannot be empty")
+    @NotBlank(message = "ID (cedula) is required")
+    @Pattern(
+            regexp = "^[0-9]+$",
+            message = "ID must contain only numeric characters"
+    )
+    @Size(min = 6, max = 20, message = "ID must be between 6 and 20 digits")
     private String cedula;
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Name is required")
+    @Pattern(
+            regexp = "^[\\p{L} ]+$",
+            message = "Name must contain only letters and spaces"
+    )
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
 
-    @NotBlank(message = "Username cannot be empty")
+    @NotBlank(message = "Username is required")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._-]+$",
+            message = "Username can only contain letters, numbers, dots, underscores, and hyphens"
+    )
+    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
     private String username;
 
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be a valid format")
+    @Size(max = 100, message = "Email must not exceed 100 characters")
     private String email;
 
-    @NotBlank(message = "Phone cannot be empty")
+    @NotBlank(message = "Phone is required")
+    @Pattern(
+            regexp = "^[0-9+\\-() ]+$",
+            message = "Phone must be a valid format"
+    )
+    @Size(min = 7, max = 20, message = "Phone must be between 7 and 20 characters")
     private String phone;
 
-    @PositiveOrZero(message = "Budget cannot be negative")
+    @Positive(message = "Budget must be greater than 0")
+    @Max(value = 1_000_000_000, message = "Budget exceeds realistic limit")
     private double budget;
 
     @Min(value = 0, message = "Minimum bedrooms cannot be negative")
+    @Max(value = 100, message = "Minimum bedrooms exceeds realistic limit")
     private int minBedrooms;
 
-    @NotNull(message = "Client type cannot be null")
+    @NotNull(message = "Client type is required")
     private ClientType clientType;
 
-    @NotNull(message = "Search status cannot be null")
+    @NotNull(message = "Search status is required")
     private SearchStatus searchStatus;
 
-    @NotNull(message = "Desired property type cannot be null")
+    @NotNull(message = "Desired property type is required")
     private PropertyType desiredPropertyType;
 }
