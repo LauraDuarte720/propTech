@@ -1,9 +1,10 @@
 package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.time.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -11,15 +12,22 @@ import java.time.*;
 @AllArgsConstructor
 @Builder
 public class VisitDtoCreate {
+
+    @NotBlank(message = "Client ID is required")
     private String clientId;
 
+    @NotBlank(message = "Property ID is required")
     private String propertyId;
 
+    @NotNull(message = "Date is required")
     private LocalDateTime date;
 
-    private AgentDtoReturn agent;
+    @NotBlank(message = "Agent ID is required")
+    private String agentId;
 
+    @NotNull(message = "Visit status is required")
     private VisitStatus status;
 
+    @Size(max = 500, message = "Post visit notes must not exceed 500 characters")
     private String postVisitNotes;
 }
