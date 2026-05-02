@@ -16,9 +16,9 @@ public class OperationDtoCreate {
 
     private String id;
 
-    private PropertyDtoReturn property;
+    private String propertyId;
 
-    private ClientDtoReturn client;
+    private String clientId;
 
     private AgentDtoReturn agent;
 

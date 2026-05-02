@@ -15,5 +15,5 @@ public class GeographicZoneDtoCreate {
 
     private City city;
 
-    private NeighborhoodDtoReturn neighborhood;
+    private String neighborhoodId;
 }

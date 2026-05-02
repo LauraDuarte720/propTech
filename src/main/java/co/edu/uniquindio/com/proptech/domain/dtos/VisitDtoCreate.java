@@ -11,9 +11,9 @@ import java.time.*;
 @AllArgsConstructor
 @Builder
 public class VisitDtoCreate {
-    private ClientDtoReturn client;
+    private String clientId;
 
-    private PropertyDtoReturn property;
+    private String propertyId;
 
     private LocalDateTime date;
 

@@ -15,7 +15,7 @@ public class PropertyDtoCreate {
 
     private String address;
 
-    private NeighborhoodDtoReturn neighborhood;
+    private String neighborhoodId;
 
     private PropertyType propertyType;
 
@@ -33,5 +33,5 @@ public class PropertyDtoCreate {
 
     private boolean available;
 
-    private AgentDtoReturn agent;
+    private String agentId;
 }
