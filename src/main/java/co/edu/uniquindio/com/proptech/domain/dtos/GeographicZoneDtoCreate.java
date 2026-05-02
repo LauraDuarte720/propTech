@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Getter
@@ -11,9 +12,17 @@ import lombok.*;
 @Builder
 public class GeographicZoneDtoCreate {
 
+    @NotNull(message = "Zone is required")
     private Zone zone;
 
+    @NotNull(message = "City is required")
     private City city;
 
+    @NotBlank(message = "Neighborhood ID is required")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9\\- ]+$",
+            message = "Neighborhood ID can only contain letters, numbers, spaces, and hyphens"
+    )
+    @Size(min = 2, max = 100, message = "Neighborhood ID must be between 2 and 100 characters")
     private String neighborhoodId;
 }
