@@ -40,8 +40,8 @@ public class ClientDtoCreate {
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
     @Pattern(
-            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&]).+$",
-            message = "Password must include uppercase, lowercase, number, and special character"
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$",
+            message = "Password must include uppercase, lowercase, and number"
     )
     private String password;
 
