@@ -1,14 +1,23 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
-import co.edu.uniquindio.com.proptech.domain.dtos.PropertyDtoCreate;
-import co.edu.uniquindio.com.proptech.domain.dtos.PropertyDtoUpdate;
-import co.edu.uniquindio.com.proptech.domain.dtos.PropertyDtoReturn;
+import co.edu.uniquindio.com.proptech.domain.dtos.*;
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
+import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> {
+
+    MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper;
+
+    public PropertyMapper(MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper, MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper) {
+        this.agentMapper = agentMapper;
+        this.neighborhoodMapper = neighborhoodMapper;
+    }
+
+    MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper;
 
     @Override
     public Property toEntity(PropertyDtoCreate dto) {
@@ -32,7 +41,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
         return PropertyDtoReturn.builder()
                 .code(entity.getCode())
                 .address(entity.getAddress())
-                .neighborhood(null)
+                .neighborhood(neighborhoodMapper.toDto(entity.getNeighborhood()))
                 .propertyType(entity.getPropertyType())
                 .purpose(entity.getPurpose())
                 .price(entity.getPrice())
@@ -41,7 +50,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
                 .numBathrooms(entity.getNumBathrooms())
                 .status(entity.getStatus())
                 .available(entity.isAvailable())
-                .agent(null)
+                .agent(agentMapper.toDto(entity.getAgent()))
                 .build();
     }
 

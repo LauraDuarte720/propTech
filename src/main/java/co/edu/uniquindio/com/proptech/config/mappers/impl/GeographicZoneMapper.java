@@ -1,14 +1,18 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
-import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoCreate;
-import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoUpdate;
-import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoReturn;
+import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
+import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GeographicZoneMapper implements MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> {
+    MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper;
+
+    public GeographicZoneMapper(MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper) {
+        this.neighborhoodMapper = neighborhoodMapper;
+    }
 
     @Override
     public GeographicZone toEntity(GeographicZoneDtoCreate dto) {
@@ -25,7 +29,7 @@ public class GeographicZoneMapper implements MapperCrud<GeographicZone, Geograph
                 .id(entity.getId())
                 .city(entity.getCity())
                 .zone(entity.getZone())
-                .neighborhood(null)
+                .neighborhood(neighborhoodMapper.toDto(entity.getNeighborhood()))
                 .build();
     }
 

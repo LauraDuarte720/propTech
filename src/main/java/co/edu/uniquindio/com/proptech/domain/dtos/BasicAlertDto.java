@@ -27,7 +27,7 @@ public class BasicAlertDto {
 
     private ClientDtoReturn client;
 
-    private OperationDtoCreate operation;
+    private OperationDtoReturn operation;
 
     private PropertyDtoReturn property;
 
