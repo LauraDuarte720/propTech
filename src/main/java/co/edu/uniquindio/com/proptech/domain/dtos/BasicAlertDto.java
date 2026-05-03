@@ -19,27 +19,19 @@ public class BasicAlertDto {
 
     private String id;
 
-    @NotNull(message = "Timestamp is required")
-    @PastOrPresent(message = "Timestamp cannot be in the future")
     private LocalDateTime timestamp;
 
     private boolean reviewed;
 
-    @Valid
     private AgentDtoReturn agent;
 
-    @Valid
     private ClientDtoReturn client;
 
-    @Valid
     private OperationDtoCreate operation;
 
-    @Valid
     private PropertyDtoReturn property;
 
-    @Valid
     private VisitDtoReturn visit;
 
-    @NotNull(message = "Alert type is required")
     private AlertType alertType;
 }

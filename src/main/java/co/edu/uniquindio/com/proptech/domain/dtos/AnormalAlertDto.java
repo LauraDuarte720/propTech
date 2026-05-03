@@ -23,29 +23,21 @@ public class AnormalAlertDto {
 
     private String id;
 
-    @NotNull(message = "Timestamp is required")
     private LocalDateTime timestamp;
 
     private boolean reviewed;
 
-    @Valid
     private AgentDtoReturn agent;
 
-    @Valid
     private ClientDtoReturn client;
 
-    @Valid
     private OperationDtoCreate operation;
 
-    @Valid
     private PropertyDtoReturn property;
 
-    @Valid
     private VisitDtoReturn visit;
 
-    @NotNull(message = "Alert type is required")
     private AlertAnormalType alertAnormalType;
 
-    @NotNull(message = "Attention level is required")
     private AttentionLevel attentionLevel;
 }
