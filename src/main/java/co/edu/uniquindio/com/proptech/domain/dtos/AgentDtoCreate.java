@@ -53,8 +53,7 @@ public class AgentDtoCreate {
     private String contact;
 
     @NotNull(message = "Assigned zone is required")
-    @Valid
-    private GeographicZoneDtoCreate assignedZone;
+    private String assignedZoneId;
 
     @Min(value = 0, message = "Closed deals cannot be negative")
     @Max(value = 100000, message = "Closed deals exceeds realistic limit")

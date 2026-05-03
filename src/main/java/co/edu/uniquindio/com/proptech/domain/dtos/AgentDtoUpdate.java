@@ -47,8 +47,7 @@ public class AgentDtoUpdate {
     @Size(min = 7, max = 20, message = "Contact must be between 7 and 20 characters")
     private String contact;
 
-    @Valid
-    private GeographicZoneDtoCreate assignedZone;
+    private String assignedZoneId;
 
     @Min(value = 0, message = "Closed deals cannot be negative")
     @Max(value = 100000, message = "Closed deals exceeds realistic limit")
