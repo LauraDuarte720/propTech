@@ -13,9 +13,9 @@ public class GeographicZone {
 
     private String id;
 
-    private Zone zone;
-
     private City city;
+
+    private Zone zone;
 
     private Neighborhood neighborhood;
 }
