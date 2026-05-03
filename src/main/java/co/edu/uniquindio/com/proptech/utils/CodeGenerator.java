@@ -8,6 +8,7 @@ public class CodeGenerator {
     private static final int[] propertyCounters = new int[types.length];
     private static int visitCounter = 1;
     private static int interactionCounter = 1;
+    private static int operationCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -48,4 +49,7 @@ public class CodeGenerator {
         return "VIS-" + String.format("%04d", visitCounter++);
     }
 
+    public static String generateOperationCode() {
+        return "OPR-" + String.format("%04d", operationCounter++);
+    }
 }

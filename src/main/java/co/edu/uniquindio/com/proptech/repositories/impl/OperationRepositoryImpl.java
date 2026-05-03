@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 
 import java.util.Optional;
 
@@ -35,5 +36,9 @@ public class OperationRepositoryImpl implements OperationRepository {
         return propTech.updateOperation(operation);
     }
 
+    @Override
+    public LinkedList<Operation> getOperations() {
+        return propTech.getOperations();
+    }
 
 }
