@@ -12,7 +12,6 @@ import lombok.*;
 @Builder
 public class GeographicZoneDtoUpdate {
 
-    @NotNull(message = "City is required")
     private City city;
 
     private Zone zone;
