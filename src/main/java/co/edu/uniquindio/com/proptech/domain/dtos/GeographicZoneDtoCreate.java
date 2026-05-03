@@ -12,11 +12,21 @@ import lombok.*;
 @Builder
 public class GeographicZoneDtoCreate {
 
-
-    @NotNull(message = "City is required")
     private City city;
 
     private Zone zone;
 
     private String neighborhoodId;
+
+    @AssertTrue(message = "If zone is provided, city must also be provided")
+    public boolean isZoneValid() {
+        if (zone == null) return true;
+        return city != null;
+    }
+
+    @AssertTrue(message = "If neighborhood is provided, both city and zone must be provided")
+    public boolean isNeighborhoodValid() {
+        if (neighborhoodId == null || neighborhoodId.isBlank()) return true;
+        return city != null && zone != null;
+    }
 }
