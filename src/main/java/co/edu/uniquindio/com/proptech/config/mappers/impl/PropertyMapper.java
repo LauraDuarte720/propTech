@@ -51,12 +51,12 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
                 .neighborhood(null)
                 .propertyType(dto.getPropertyType())
                 .purpose(dto.getPurpose())
-                .price(dto.getPrice() != null ? dto.getPrice() : 0)
-                .area(dto.getArea() != null ? dto.getArea() : 0)
-                .numBedrooms(dto.getNumBedrooms() != null ? dto.getNumBedrooms() : 0)
-                .numBathrooms(dto.getNumBathrooms() != null ? dto.getNumBathrooms() : 0)
+                .price(dto.getPrice())
+                .area(dto.getArea())
+                .numBedrooms(dto.getNumBedrooms())
+                .numBathrooms(dto.getNumBathrooms())
                 .status(dto.getStatus())
-                .available(dto.getAvailable() != null ? dto.getAvailable() : false)
+                .available(dto.getAvailable())
                 .agent(null)
                 .build();
     }
