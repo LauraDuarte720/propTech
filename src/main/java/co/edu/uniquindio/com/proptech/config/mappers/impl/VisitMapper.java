@@ -3,7 +3,9 @@ package co.edu.uniquindio.com.proptech.config.mappers.impl;
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
+import org.springframework.stereotype.Component;
 
+@Component
 public class VisitMapper implements MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> {
 
     @Override

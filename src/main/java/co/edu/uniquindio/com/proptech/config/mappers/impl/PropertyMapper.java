@@ -5,7 +5,9 @@ import co.edu.uniquindio.com.proptech.domain.dtos.PropertyDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.PropertyDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.PropertyDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> {
 
     @Override

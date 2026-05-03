@@ -3,7 +3,9 @@ package co.edu.uniquindio.com.proptech.config.mappers.impl;
 import co.edu.uniquindio.com.proptech.config.mappers.MapperSimple;
 import co.edu.uniquindio.com.proptech.domain.dtos.BasicAlertDto;
 import co.edu.uniquindio.com.proptech.domain.model.BasicAlert;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BasicAlertMapper implements MapperSimple<BasicAlert, BasicAlertDto> {
 
     @Override

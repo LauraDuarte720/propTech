@@ -5,7 +5,9 @@ import co.edu.uniquindio.com.proptech.domain.dtos.NeighborhoodDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.NeighborhoodDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.NeighborhoodDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NeighborhoodMapper implements MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> {
 
     @Override

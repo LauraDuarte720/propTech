@@ -3,7 +3,9 @@ package co.edu.uniquindio.com.proptech.config.mappers.impl;
 import co.edu.uniquindio.com.proptech.config.mappers.MapperSimple;
 import co.edu.uniquindio.com.proptech.domain.dtos.AnormalAlertDto;
 import co.edu.uniquindio.com.proptech.domain.model.AnormalAlert;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AnormalAlertMapper implements MapperSimple<AnormalAlert, AnormalAlertDto> {
     @Override
     public AnormalAlertDto toDto(AnormalAlert entity) {

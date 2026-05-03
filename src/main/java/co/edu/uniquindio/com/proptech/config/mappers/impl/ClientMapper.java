@@ -5,7 +5,9 @@ import co.edu.uniquindio.com.proptech.domain.dtos.ClientDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.ClientDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.ClientDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ClientMapper implements MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> {
 
     @Override

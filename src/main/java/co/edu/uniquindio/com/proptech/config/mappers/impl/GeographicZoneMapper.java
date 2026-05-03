@@ -5,7 +5,9 @@ import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GeographicZoneMapper implements MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> {
 
     @Override

@@ -5,7 +5,9 @@ import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> {
 
     @Override

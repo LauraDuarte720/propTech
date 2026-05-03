@@ -5,7 +5,9 @@ import co.edu.uniquindio.com.proptech.domain.dtos.OperationDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.OperationDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.OperationDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OperationMapper implements MapperCrud<Operation, OperationDtoCreate, OperationDtoUpdate, OperationDtoReturn> {
 
     @Override
