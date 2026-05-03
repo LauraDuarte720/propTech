@@ -17,15 +17,15 @@ public class Client extends User {
 
     private String email;
     private String phone;
-    private double budget;
-    private int minBedrooms;
+    private Double budget;
+    private Integer minBedrooms;
     private ClientType clientType;
     private SearchStatus searchStatus;
     private ArrayList<GeographicZone> interestZones;
     private PropertyType desiredPropertyType;
     private HashTable<InteractionType, ArrayList<UserInteraction>> interactionHistory;
 
-    public Client(String cedula, String name, String username, String password, String email, String phone, double budget, int minBedrooms, ClientType clientType, SearchStatus searchStatus, PropertyType desiredPropertyType) {
+    public Client(String cedula, String name, String username, String password, String email, String phone, Double budget, Integer minBedrooms, ClientType clientType, SearchStatus searchStatus, PropertyType desiredPropertyType) {
         super(cedula, name, password, username);
         this.email = email;
         this.phone = phone;

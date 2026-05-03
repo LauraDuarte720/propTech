@@ -21,9 +21,9 @@ public class Agent extends User{
 
     private Queue<Visit> scheduledVisits;
 
-    private int closedDeals;
+    private Integer closedDeals;
 
-    public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, int closedDeals) {
+    public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, Integer closedDeals) {
         super(cedula, name, username, password);
         this.contact = contact;
         this.assignedZone = assignedZone;

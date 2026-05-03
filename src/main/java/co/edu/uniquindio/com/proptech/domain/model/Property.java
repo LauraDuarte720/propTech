@@ -25,13 +25,13 @@ public class Property {
 
     private Purpose purpose;
 
-    private double price;
+    private Double price;
 
-    private double area;
+    private Double area;
 
-    private int numBedrooms;
+    private Integer numBedrooms;
 
-    private int numBathrooms;
+    private Integer numBathrooms;
 
     private PropertyStatus status;
 

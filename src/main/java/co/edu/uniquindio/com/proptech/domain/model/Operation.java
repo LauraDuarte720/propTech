@@ -30,9 +30,9 @@ public class Operation {
 
     private OperationType operationType;
      
-    private double value;
+    private Double value;
      
-    private double commission;
+    private Double commission;
 
     private ProcessStatus processStatus;
 }
