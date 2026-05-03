@@ -1,12 +1,12 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
-import co.edu.uniquindio.com.proptech.config.mappers.Mapper;
+import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 
-public class AgentMapper implements Mapper<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> {
+public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> {
 
     @Override
     public Agent toEntity(AgentDtoCreate dto) {
@@ -22,13 +22,13 @@ public class AgentMapper implements Mapper<Agent, AgentDtoCreate, AgentDtoUpdate
     }
 
     @Override
-    public AgentDtoReturn toDto(Agent entity) {
+    public AgentDtoReturn toDto(Agent agent) {
         return AgentDtoReturn.builder()
-                .cedula(entity.getCedula())
-                .name(entity.getName())
-                .username(entity.getUsername())
-                .contact(entity.getContact())
-                .closedDeals(entity.getClosedDeals())
+                .cedula(agent.getCedula())
+                .name(agent.getName())
+                .username(agent.getUsername())
+                .contact(agent.getContact())
+                .closedDeals(agent.getClosedDeals())
                 .assignedZone(null) // map separately if needed
                 .build();
     }
