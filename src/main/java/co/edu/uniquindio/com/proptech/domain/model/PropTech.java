@@ -19,6 +19,7 @@ public class PropTech {
     private LinkedList<Operation> operations;
     private LinkedList<Visit> visits;
     private ArrayList<Alert> alerts;
+    private ArrayList<GeographicZone> geographicZones;
 
     public PropTech(String NIT) {
         this.NIT = NIT;
@@ -28,6 +29,7 @@ public class PropTech {
         this.operations = new LinkedList<>();
         this.visits = new LinkedList<>();
         this.alerts = new ArrayList<>();
+        this.geographicZones = new ArrayList<>();
     }
 
 
@@ -175,4 +177,36 @@ public class PropTech {
         return alert;
     }
 
+    public GeographicZone addGeographicZone(GeographicZone zone) {
+        geographicZones.add(zone);
+        return zone;
+    }
+
+    public GeographicZone updateGeographicZone(GeographicZone zone) {
+        for (int i = 0; i < geographicZones.size(); i++) {
+            if (geographicZones.get(i).getId().equals(zone.getId())) {
+                geographicZones.set(i, zone);
+            }
+        }
+        return zone;
+    }
+
+    public boolean removeGeographicZone(String id) {
+        for (int i = 0; i < geographicZones.size(); i++) {
+            if (geographicZones.get(i).getId().equals(id)) {
+                geographicZones.remove(i);
+                return true;
+            }
+        }
+       return false;
+    }
+
+    public GeographicZone getGeographicZone(String id) {
+        for (int i = 0; i < geographicZones.size(); i++) {
+            if (geographicZones.get(i).getId().equals(id)) {
+                return geographicZones.get(i);
+            }
+        }
+        return null;
+    }
 }

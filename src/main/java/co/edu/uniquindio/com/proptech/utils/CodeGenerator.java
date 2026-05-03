@@ -9,6 +9,7 @@ public class CodeGenerator {
     private static int visitCounter = 1;
     private static int interactionCounter = 1;
     private static int operationCounter = 1;
+    private static int zoneCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -51,5 +52,9 @@ public class CodeGenerator {
 
     public static String generateOperationCode() {
         return "OPR-" + String.format("%04d", operationCounter++);
+    }
+
+    public static String generateZoneCode() {
+        return "ZON-" + String.format("%04d", zoneCounter++);
     }
 }
