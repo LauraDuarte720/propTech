@@ -20,6 +20,7 @@ public class PropTech {
     private LinkedList<Visit> visits;
     private ArrayList<Alert> alerts;
     private ArrayList<GeographicZone> geographicZones;
+    private ArrayList<Neighborhood> neighborhoods;
 
     public PropTech(String NIT) {
         this.NIT = NIT;
@@ -208,5 +209,38 @@ public class PropTech {
             }
         }
         return null;
+    }
+
+    public Neighborhood addNeighborhood(Neighborhood neighborhood) {
+        neighborhoods.add(neighborhood);
+        return neighborhood;
+    }
+
+    public Neighborhood getNeighborhood(String id) {
+        for (int i = 0; i < neighborhoods.size(); i++) {
+            if (neighborhoods.get(i).getId().equals(id)) {
+                return neighborhoods.get(i);
+            }
+        }
+        return null;
+    }
+
+    public boolean removeNeighborhood(String id) {
+        for (int i = 0; i < neighborhoods.size(); i++) {
+            if (neighborhoods.get(i).getId().equals(id)) {
+                neighborhoods.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Neighborhood updateNeighborhood(Neighborhood neighborhood) {
+        for (int i = 0; i < neighborhoods.size(); i++) {
+            if (neighborhoods.get(i).getId().equals(neighborhood.getId())) {
+                neighborhoods.set(i, neighborhood);
+            }
+        }
+        return neighborhood;
     }
 }

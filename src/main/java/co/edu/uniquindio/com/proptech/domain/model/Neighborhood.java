@@ -14,9 +14,9 @@ public class Neighborhood {
 
     private String id;
 
-    private String name;
+    private City city;
     
     private Zone zone;
-    
-    private City city;
+
+    private String name;
 }
