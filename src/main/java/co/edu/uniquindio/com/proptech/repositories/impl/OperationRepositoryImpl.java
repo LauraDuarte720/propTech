@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.repositories.impl;
 
+import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
@@ -40,6 +41,23 @@ public class OperationRepositoryImpl implements OperationRepository {
     @Override
     public LinkedList<Operation> getOperations() {
         return propTech.getOperations();
+    }
+
+    @Override
+    public LinkedList<Operation> getOperationsByType(OperationType operationType) {
+        LinkedList<Operation> operationsByType = new LinkedList<>();
+        LinkedList<Operation> operations = propTech.getOperations();
+        for(Operation operation: operations){
+            if(operation.getOperationType().equals(operationType)){
+                operationsByType.addLast(operation);
+            }
+        }
+        return operationsByType;
+    }
+
+    @Override
+    public LinkedList<Operation> getOperationsByAgent() {
+        return null;
     }
 
 }

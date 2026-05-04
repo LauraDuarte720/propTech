@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
@@ -89,5 +90,9 @@ public class OperationService {
         }
 
         return result;
+    }
+
+    public LinkedList<Operation> getOperationsByAgent(Agent agent){
+
     }
 }

@@ -11,4 +11,6 @@ public interface OperationRepository {
     boolean deleteById(String id);
     Operation update(Operation operation);
     LinkedList<Operation> getOperations();
+    LinkedList<Operation> getOperationsByType();
+    LinkedList<Operation> getOperationsByAgent();
 }
