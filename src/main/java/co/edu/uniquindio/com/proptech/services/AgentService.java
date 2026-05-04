@@ -10,6 +10,10 @@ public class AgentService {
 
     AgentRepository agentRepository;
 
+    public AgentService(AgentRepository agentRepository) {
+        this.agentRepository = agentRepository;
+    }
+
     public Agent registerAgent(Agent agent) {
         boolean exists = agentRepository.findByCedula(agent.getCedula()).isPresent();
         if (exists) {

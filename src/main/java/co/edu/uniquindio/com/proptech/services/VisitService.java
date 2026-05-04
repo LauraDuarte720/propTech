@@ -11,6 +11,10 @@ public class VisitService {
 
     VisitRepository visitRepository;
 
+    public VisitService(VisitRepository visitRepository) {
+        this.visitRepository = visitRepository;
+    }
+
     public Visit registerVisit(Visit visit) {
         boolean exists = visitRepository.findById(visit.getId()).isPresent();
 

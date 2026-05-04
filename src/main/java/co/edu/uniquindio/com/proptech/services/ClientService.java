@@ -16,6 +16,10 @@ public class ClientService {
 
     ClientRepository clientRepository;
 
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
+
     public Client registerClient(Client client) {
         boolean exists = clientRepository.findByCedula(client.getCedula()).isPresent();
         if (exists) {

@@ -11,6 +11,10 @@ public class PropertyService {
 
     PropertyRepository propertyRepository;
 
+    public PropertyService(PropertyRepository propertyRepository) {
+        this.propertyRepository = propertyRepository;
+    }
+
     public Property registerProperty(Property property) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
 

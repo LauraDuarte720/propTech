@@ -12,6 +12,10 @@ public class OperationService {
 
     OperationRepository operationRepository;
 
+    public OperationService(OperationRepository operationRepository) {
+        this.operationRepository = operationRepository;
+    }
+
     public Operation registerOperation(Operation operation) {
         if (operation == null) {
             throw new RuntimeException("La operación no puede ser nula");

@@ -11,6 +11,10 @@ public class GeographicZoneService {
 
     GeographicZoneRepository geographicZoneRepository;
 
+    public GeographicZoneService(GeographicZoneRepository geographicZoneRepository) {
+        this.geographicZoneRepository = geographicZoneRepository;
+    }
+
     public GeographicZone registerGeographicZone(GeographicZone geographicZone) {
         if (geographicZone == null) {
             throw new RuntimeException("La zona geográfica no puede ser nula");
