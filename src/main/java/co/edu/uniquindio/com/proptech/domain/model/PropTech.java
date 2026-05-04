@@ -10,31 +10,22 @@ import org.springframework.stereotype.Component;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Component
 public class PropTech {
 
     private String NIT;
-    private HashTable<String, Property> properties;
-    private HashTable<String, Client> clients;
-    private HashTable<String, Agent> agents;
-    private LinkedList<Operation> operations;
-    private LinkedList<Visit> visits;
-    private ArrayList<BasicAlert> basicAlerts;
-    private ArrayList<AbnormalAlert> abnormalAlerts;
-    private ArrayList<GeographicZone> geographicZones;
-    private ArrayList<Neighborhood> neighborhoods;
+    private HashTable<String, Property> properties = new HashTable<>();
+    private HashTable<String, Client> clients = new HashTable<>();
+    private HashTable<String, Agent> agents = new HashTable<>();
+    private LinkedList<Operation> operations = new LinkedList<>();
+    private LinkedList<Visit> visits = new LinkedList<>();
+    private ArrayList<BasicAlert> basicAlerts = new ArrayList<>();
+    private ArrayList<AbnormalAlert> abnormalAlerts = new ArrayList<>();
+    private ArrayList<GeographicZone> geographicZones = new ArrayList<>();
+    private ArrayList<Neighborhood> neighborhoods = new ArrayList<>();
 
     public PropTech(String NIT) {
         this.NIT = NIT;
-        this.properties = new HashTable<>();
-        this.clients = new HashTable<>();
-        this.agents = new HashTable<>();
-        this.operations = new LinkedList<>();
-        this.visits = new LinkedList<>();
-        this.basicAlerts = new ArrayList<>();
-        this.abnormalAlerts = new ArrayList<>();
-        this.geographicZones = new ArrayList<>();
     }
 
 
