@@ -18,7 +18,8 @@ public class PropTech {
     private HashTable<String, Agent> agents;
     private LinkedList<Operation> operations;
     private LinkedList<Visit> visits;
-    private ArrayList<Alert> alerts;
+    private ArrayList<BasicAlert> basicAlerts;
+    private ArrayList<AbnormalAlert> abnormalAlerts;
     private ArrayList<GeographicZone> geographicZones;
     private ArrayList<Neighborhood> neighborhoods;
 
@@ -29,7 +30,8 @@ public class PropTech {
         this.agents = new HashTable<>();
         this.operations = new LinkedList<>();
         this.visits = new LinkedList<>();
-        this.alerts = new ArrayList<>();
+        this.basicAlerts = new ArrayList<>();
+        this.abnormalAlerts = new ArrayList<>();
         this.geographicZones = new ArrayList<>();
     }
 
@@ -145,34 +147,67 @@ public class PropTech {
     }
 
 
-    public Alert addAlert(Alert alert) {
-        alerts.add(alert);
+    public BasicAlert addBasicAlert(BasicAlert alert) {
+        basicAlerts.add(alert);
         return alert;
     }
 
-    public Alert getAlert(String id) {
-        for (int i = 0; i < alerts.size(); i++) {
-            Alert a = alerts.get(i);
-            if (a.getId().equals(id)) return a;
+    public BasicAlert getBasicAlert(String id) {
+        for (int i = 0; i < basicAlerts.size(); i++) {
+            if (basicAlerts.get(i).getId().equals(id)) {
+                return basicAlerts.get(i);
+            }
         }
         return null;
     }
 
-    public boolean removeAlert(String id) {
-        for (int i = 0; i < alerts.size(); i++) {
-            if (alerts.get(i).getId().equals(id)) {
-                alerts.remove(i);
+    public boolean removeBasicAlert(String id) {
+        for (int i = 0; i < basicAlerts.size(); i++) {
+            if (basicAlerts.get(i).getId().equals(id)) {
+                basicAlerts.remove(i);
                 return true;
             }
         }
         return false;
     }
 
-    public Alert updateAlert(Alert alert) {
-        for (int i = 0; i < alerts.size(); i++) {
-            if (alerts.get(i).getId().equals(alert.getId())) {
-                alerts.set(i, alert);
+    public BasicAlert updateBasicAlert(BasicAlert alert) {
+        for (int i = 0; i < basicAlerts.size(); i++) {
+            if (basicAlerts.get(i).getId().equals(alert.getId())) {
+                basicAlerts.set(i, alert);
+            }
+        }
+        return alert;
+    }
 
+    public AbnormalAlert addAbnormalAlert(AbnormalAlert alert) {
+        abnormalAlerts.add(alert);
+        return alert;
+    }
+
+    public AbnormalAlert getAbnormalAlert(String id) {
+        for (int i = 0; i < abnormalAlerts.size(); i++) {
+            if (abnormalAlerts.get(i).getId().equals(id)) {
+                return abnormalAlerts.get(i);
+            }
+        }
+        return null;
+    }
+
+    public boolean removeAbnormalAlert(String id) {
+        for (int i = 0; i < abnormalAlerts.size(); i++) {
+            if (abnormalAlerts.get(i).getId().equals(id)) {
+                abnormalAlerts.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public AbnormalAlert updateAbnormalAlert(AbnormalAlert alert) {
+        for (int i = 0; i < abnormalAlerts.size(); i++) {
+            if (abnormalAlerts.get(i).getId().equals(alert.getId())) {
+                abnormalAlerts.set(i, alert);
             }
         }
         return alert;
