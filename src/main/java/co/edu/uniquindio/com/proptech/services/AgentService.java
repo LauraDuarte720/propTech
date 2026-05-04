@@ -3,7 +3,9 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AgentService {
 
     AgentRepository agentRepository;

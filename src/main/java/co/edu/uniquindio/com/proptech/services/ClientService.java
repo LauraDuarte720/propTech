@@ -8,9 +8,10 @@ import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
-
+import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
+@Service
 public class ClientService {
 
     ClientRepository clientRepository;

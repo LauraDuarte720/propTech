@@ -4,9 +4,10 @@ import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public class AgentRepositoryImpl implements AgentRepository {
 
     private final PropTech propTech;
@@ -30,7 +31,7 @@ public class AgentRepositoryImpl implements AgentRepository {
         return propTech.removeAgent(cedula);
     }
 
-    public HashTable<String,Agent> getAgents(){
+    public HashTable<String, Agent> getAgents() {
         return propTech.getAgents();
     }
 }

@@ -4,7 +4,9 @@ import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.repositories.GeographicZoneRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GeographicZoneService {
 
     GeographicZoneRepository geographicZoneRepository;

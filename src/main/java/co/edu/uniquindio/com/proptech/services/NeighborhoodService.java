@@ -3,7 +3,9 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.repositories.NeighborhoodRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NeighborhoodService {
 
     NeighborhoodRepository neighborhoodRepository;

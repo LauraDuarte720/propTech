@@ -1,7 +1,9 @@
 package co.edu.uniquindio.com.proptech.utils;
 
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CodeGenerator {
 
     private static final PropertyType[] types = PropertyType.values();

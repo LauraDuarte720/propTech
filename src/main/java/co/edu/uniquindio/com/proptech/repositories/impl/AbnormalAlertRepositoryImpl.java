@@ -3,9 +3,10 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.AbnormalAlert;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.AbnormalAlertRepository;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public class AbnormalAlertRepositoryImpl implements AbnormalAlertRepository {
 
     private final PropTech propTech;

@@ -4,9 +4,10 @@ import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public class VisitRepositoryImpl implements VisitRepository {
 
     private final PropTech propTech;

@@ -4,7 +4,9 @@ import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VisitService {
 
     VisitRepository visitRepository;

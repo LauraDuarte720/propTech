@@ -4,9 +4,10 @@ import co.edu.uniquindio.com.proptech.domain.model.Client;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public class ClientRepositoryImpl implements ClientRepository {
 
     private final PropTech propTech;

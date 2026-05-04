@@ -4,9 +4,10 @@ import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public class OperationRepositoryImpl implements OperationRepository {
 
     private final PropTech propTech;

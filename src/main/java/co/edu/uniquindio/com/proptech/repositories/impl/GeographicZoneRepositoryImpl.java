@@ -4,9 +4,10 @@ import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.GeographicZoneRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public class GeographicZoneRepositoryImpl implements GeographicZoneRepository {
 
     private PropTech propTech;

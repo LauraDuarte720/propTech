@@ -4,7 +4,9 @@ import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PropertyService {
 
     PropertyRepository propertyRepository;
