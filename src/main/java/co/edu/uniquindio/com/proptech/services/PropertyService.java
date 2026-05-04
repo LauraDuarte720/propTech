@@ -1,6 +1,8 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
+import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -12,12 +14,14 @@ import java.util.Optional;
 public class PropertyService {
 
     PropertyRepository propertyRepository;
+    AgentService agentService;
 
-    public PropertyService(PropertyRepository propertyRepository) {
+    public PropertyService(PropertyRepository propertyRepository, AgentService agentService) {
         this.propertyRepository = propertyRepository;
+        this.agentService = agentService;
     }
 
-    public Property registerProperty(Property property) {
+    public Property registerProperty(Property property, Agent agent) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
 
         if (exists) {
@@ -25,7 +29,9 @@ public class PropertyService {
         }
 
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
-        return propertyRepository.save(property);
+        Property property1 = agentService.addProperty(property, agent);
+        return propertyRepository.save(property1);
+
     }
 
     public Property updateProperty(Property property) {

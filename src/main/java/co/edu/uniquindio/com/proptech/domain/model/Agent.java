@@ -34,8 +34,8 @@ public class Agent extends User{
     }
 
 
-    public void addProperty(Property property) {
-        assignedProperties.add(property);
+    public Property addProperty(Property property) {
+        return assignedProperties.add(property);
     }
 
     public Property getProperty(String code) {

@@ -58,10 +58,11 @@ public class ArrayList<T> {
     }
 
 
-    public void add(T element) {
+    public T add(T element) {
         if (size == data.length) grow();
         data[size] = element;
         size++;
+        return element;
     }
 
 

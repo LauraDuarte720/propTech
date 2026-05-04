@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
+import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
@@ -75,4 +76,25 @@ public class AgentService {
         return agent.getScheduledVisits();
     }
 
+    public Property addProperty(Property property, Agent agent) {
+        if (agent == null) {
+            throw new RuntimeException("El agente no puede ser nulo");
+        }
+        if (property == null) {
+            throw new RuntimeException("La propiedad no puede ser nula");
+        }
+        if (property.getNeighborhood().getCity() == agent.getAssignedZone().getCity()) {
+            if (agent.getAssignedZone().getZone() == null) {
+                property.setAgent(agent);
+                return agent.addProperty(property);
+            } else if (agent.getAssignedZone().getZone().equals(property.getNeighborhood().getZone())) {
+                property.setAgent(agent);
+                return agent.addProperty(property);
+            } else  {
+                throw new RuntimeException("La zona asignada del agente no corresponde a la zona de la propiedad");
+            }
+        }else  {
+            throw new RuntimeException("La ciudad del agente no corresponde a la de la propiedad");
+        }
+    }
 }
