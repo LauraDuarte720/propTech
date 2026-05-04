@@ -31,6 +31,8 @@ public class AgentService {
 
     public Agent updateAgent(Agent agent) {
         return agentRepository.findByCedula(agent.getCedula()).map(existing -> {
+            Optional.ofNullable(agent.getName()).ifPresent(existing::setName);
+            Optional.ofNullable(agent.getUsername()).ifPresent(existing::setUsername);
             Optional.ofNullable(agent.getContact()).ifPresent(existing::setContact);
             Optional.ofNullable(agent.getAssignedZone()).ifPresent(existing::setAssignedZone);
             Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);

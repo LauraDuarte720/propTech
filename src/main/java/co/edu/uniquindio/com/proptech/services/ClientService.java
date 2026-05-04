@@ -31,6 +31,8 @@ public class ClientService {
 
     public Client updateClient(Client client) {
         return clientRepository.findByCedula(client.getCedula()).map(existing -> {
+            Optional.ofNullable(client.getName()).ifPresent(existing::setName);
+            Optional.ofNullable(client.getUsername()).ifPresent(existing::setUsername);
             Optional.ofNullable(client.getEmail()).ifPresent(existing::setEmail);
             Optional.ofNullable(client.getPhone()).ifPresent(existing::setPhone);
             Optional.ofNullable(client.getBudget()).ifPresent(existing::setBudget);
