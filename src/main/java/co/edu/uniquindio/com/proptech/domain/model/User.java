@@ -1,6 +1,5 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

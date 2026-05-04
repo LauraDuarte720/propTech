@@ -2,7 +2,6 @@ package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
 import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.*;

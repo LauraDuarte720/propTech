@@ -4,7 +4,6 @@ import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.enums.Purpose;
-import jakarta.persistence.*;
 import lombok.*;
 
 

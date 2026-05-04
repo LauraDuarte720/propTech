@@ -4,12 +4,14 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Component
 public class PropTech {
 
     private String NIT;

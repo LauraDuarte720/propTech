@@ -1,7 +1,6 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.*;
