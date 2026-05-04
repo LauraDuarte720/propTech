@@ -26,6 +26,7 @@ public class OperationDtoCreate {
     @Size(max = 50, message = "Agent ID must not exceed 50 characters")
     private String agentId;
 
+    @NotBlank(message = "Initial date is mandatory")
     private LocalDate dateInitial;
 
     private LocalDate dateFinal;
@@ -45,12 +46,12 @@ public class OperationDtoCreate {
     private ProcessStatus processStatus;
 
 
-    @AssertTrue(message = "Initial and final dates are required when operation type is CONTRACT")
+    @AssertTrue(message = "Initial and final dates are required when operation type is CONTRACT_RENEWAL")
     public boolean isDatesRequiredForContract() {
         if (operationType == null) return true;
 
         if (operationType == OperationType.CONTRACT_RENEWAL) {
-            return dateInitial != null && dateFinal != null;
+            return dateFinal != null;
         }
 
         return true;

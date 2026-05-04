@@ -4,14 +4,17 @@ import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
+import co.edu.uniquindio.com.proptech.services.NeighborhoodService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GeographicZoneMapper implements MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> {
     MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper;
+    NeighborhoodService neighborhoodService;
 
-    public GeographicZoneMapper(MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper) {
+    public GeographicZoneMapper(MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper, NeighborhoodService neighborhoodService) {
         this.neighborhoodMapper = neighborhoodMapper;
+        this.neighborhoodService = neighborhoodService;
     }
 
     @Override
@@ -19,7 +22,7 @@ public class GeographicZoneMapper implements MapperCrud<GeographicZone, Geograph
         return GeographicZone.builder()
                 .city(dto.getCity())
                 .zone(dto.getZone())
-                .neighborhood(null)
+                .neighborhood(dto.getNeighborhoodId() == null ? null : neighborhoodService.getNeighborhoodById(dto.getNeighborhoodId()))
                 .build();
     }
 
@@ -38,7 +41,7 @@ public class GeographicZoneMapper implements MapperCrud<GeographicZone, Geograph
         return GeographicZone.builder()
                 .city(dto.getCity())
                 .zone(dto.getZone())
-                .neighborhood(null)
+                .neighborhood(dto.getNeighborhoodId() == null ? null : neighborhoodService.getNeighborhoodById(dto.getNeighborhoodId()))
                 .build();
     }
 }
