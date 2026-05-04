@@ -1,10 +1,12 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Comparator;
 
 
 @Getter
@@ -18,8 +20,7 @@ public class Agent extends User{
 
     private ArrayList<Property> assignedProperties;
 
-
-    private Queue<Visit> scheduledVisits;
+    private PriorityQueue<Visit> scheduledVisits;
 
     private Integer closedDeals;
 
@@ -28,7 +29,7 @@ public class Agent extends User{
         this.contact = contact;
         this.assignedZone = assignedZone;
         this.assignedProperties = new ArrayList<>();
-        this.scheduledVisits = new Queue<>();
+        this.scheduledVisits = new PriorityQueue<>(Comparator.comparing(Visit::getDate));
         this.closedDeals = closedDeals;
     }
 
@@ -65,15 +66,15 @@ public class Agent extends User{
     }
 
     public void enqueueVisit(Visit visit) {
-        scheduledVisits.enqueue(visit);
+        scheduledVisits.add(visit);
     }
 
     public Visit dequeueVisit() {
-        return scheduledVisits.dequeue();
+        return scheduledVisits.poll();
     }
 
     public Visit peekNextVisit() {
-        return scheduledVisits.peekFront();
+        return scheduledVisits.peek();
     }
 
     public boolean hasVisits() {
