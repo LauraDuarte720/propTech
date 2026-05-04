@@ -2,7 +2,7 @@ package co.edu.uniquindio.com.proptech.domain.dtos;
 
 
 import co.edu.uniquindio.com.proptech.domain.dtos.AgentDtoReturn;
-import co.edu.uniquindio.com.proptech.domain.enums.AlertAnormalType;
+import co.edu.uniquindio.com.proptech.domain.enums.AlertAbnormalType;
 import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class AnormalAlertDto {
+public class AbnormalAlertDto {
 
     private String id;
 
@@ -37,7 +37,7 @@ public class AnormalAlertDto {
 
     private VisitDtoReturn visit;
 
-    private AlertAnormalType alertAnormalType;
+    private AlertAbnormalType alertAbnormalType;
 
     private AttentionLevel attentionLevel;
 }

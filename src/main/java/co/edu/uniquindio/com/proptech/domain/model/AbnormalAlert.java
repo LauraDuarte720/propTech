@@ -1,6 +1,6 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
-import co.edu.uniquindio.com.proptech.domain.enums.AlertAnormalType;
+import co.edu.uniquindio.com.proptech.domain.enums.AlertAbnormalType;
 import co.edu.uniquindio.com.proptech.domain.enums.AttentionLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,9 +13,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class AnormalAlert extends Alert {
+public class AbnormalAlert extends Alert {
 
-    private AlertAnormalType alertAnormalType;
+    private AlertAbnormalType alertAbnormalType;
 
     private AttentionLevel attentionLevel;
 }

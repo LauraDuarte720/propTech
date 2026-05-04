@@ -7,7 +7,7 @@ import co.edu.uniquindio.com.proptech.domain.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AnormalAlertMapper implements MapperSimple<AnormalAlert, AnormalAlertDto> {
+public class AbnormalAlertMapper implements MapperSimple<AbnormalAlert, AbnormalAlertDto> {
 
     MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper;
     MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> clientMapper;
@@ -15,7 +15,7 @@ public class AnormalAlertMapper implements MapperSimple<AnormalAlert, AnormalAle
     MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper;
     MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper;
 
-    public AnormalAlertMapper(MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper, MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> clientMapper, MapperCrud<Operation, OperationDtoCreate, OperationDtoUpdate, OperationDtoReturn> operationMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper, MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper) {
+    public AbnormalAlertMapper(MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper, MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> clientMapper, MapperCrud<Operation, OperationDtoCreate, OperationDtoUpdate, OperationDtoReturn> operationMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper, MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper) {
         this.agentMapper = agentMapper;
         this.clientMapper = clientMapper;
         this.operationMapper = operationMapper;
@@ -24,12 +24,12 @@ public class AnormalAlertMapper implements MapperSimple<AnormalAlert, AnormalAle
     }
 
     @Override
-    public AnormalAlertDto toDto(AnormalAlert entity) {
-        return AnormalAlertDto.builder()
+    public AbnormalAlertDto toDto(AbnormalAlert entity) {
+        return AbnormalAlertDto.builder()
                 .id(entity.getId())
                 .timestamp(entity.getTimestamp())
                 .reviewed(entity.isReviewed())
-                .alertAnormalType(entity.getAlertAnormalType())
+                .alertAbnormalType(entity.getAlertAbnormalType())
                 .attentionLevel(entity.getAttentionLevel())
                 .agent(agentMapper.toDto(entity.getAgent()))
                 .client(clientMapper.toDto(entity.getClient()))

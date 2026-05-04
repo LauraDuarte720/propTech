@@ -4,15 +4,18 @@ import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
+import co.edu.uniquindio.com.proptech.services.GeographicZoneService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> {
+    GeographicZoneService geographicZoneService;
 
     MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper;
 
-    public AgentMapper(MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper) {
+    public AgentMapper(MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper, GeographicZoneService geographicZoneService) {
         this.geographicZoneMapper = geographicZoneMapper;
+        this.geographicZoneService = geographicZoneService;
     }
 
 
@@ -25,7 +28,7 @@ public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUp
                 .password(dto.getPassword())
                 .contact(dto.getContact())
                 .closedDeals(dto.getClosedDeals())
-                .assignedZone(null) // map separately if needed (GeographicZoneMapper)
+                .assignedZone(geographicZoneService.getGeographicZoneById(dto.getAssignedZoneId()))
                 .build();
     }
 
@@ -37,7 +40,7 @@ public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUp
                 .username(agent.getUsername())
                 .contact(agent.getContact())
                 .closedDeals(agent.getClosedDeals())
-                .assignedZone(geographicZoneMapper.toDto(agent.getAssignedZone())) // map separately if needed
+                .assignedZone(geographicZoneMapper.toDto(agent.getAssignedZone()))
                 .build();
     }
 
@@ -50,7 +53,7 @@ public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUp
                 .password(dto.getPassword())
                 .contact(dto.getContact())
                 .closedDeals(dto.getClosedDeals())
-                .assignedZone(null) // map separately if needed (GeographicZoneMapper)
+                .assignedZone(dto.getAssignedZoneId() == null ? null : geographicZoneService.getGeographicZoneById(dto.getAssignedZoneId()))
                 .build();
     }
 }

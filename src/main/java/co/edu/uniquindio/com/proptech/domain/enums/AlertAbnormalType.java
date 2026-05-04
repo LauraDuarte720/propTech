@@ -2,7 +2,7 @@ package co.edu.uniquindio.com.proptech.domain.enums;
 
 import lombok.Getter;
 
-public enum AlertAnormalType {
+public enum AlertAbnormalType {
     HIGH_VISITS_NO_CLOSING("High Visits No Closing", EntityAlert.PROPERTY),
     CLIENT_MULTIPLE_VISITS_NO_CONTINUITY("Client Multiple Visits No Continuity", EntityAlert.CLIENT),
     AGENT_EXCESSIVE_OVERLOAD("Advisor Excessive Overload", EntityAlert.AGENT),
@@ -13,7 +13,7 @@ public enum AlertAnormalType {
     @Getter
     private final EntityAlert requiredEntity;
 
-    AlertAnormalType(String displayName, EntityAlert requiredEntity) {
+    AlertAbnormalType(String displayName, EntityAlert requiredEntity) {
         this.displayName = displayName;
         this.requiredEntity = requiredEntity;
     }
