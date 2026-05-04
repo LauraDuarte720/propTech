@@ -33,11 +33,11 @@ public class GeographicZoneRepositoryImpl implements GeographicZoneRepository {
 
     @Override
     public GeographicZone update(GeographicZone geographicZone) {
-        return null;
+        return propTech.updateGeographicZone(geographicZone);
     }
 
     @Override
     public ArrayList<GeographicZone> getGeographicZones() {
-        return null;
+        return propTech.getGeographicZones();
     }
 }
