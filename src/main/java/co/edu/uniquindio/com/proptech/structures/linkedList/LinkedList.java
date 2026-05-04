@@ -2,7 +2,9 @@ package co.edu.uniquindio.com.proptech.structures.linkedList;
 
 import co.edu.uniquindio.com.proptech.structures.Node;
 
-public class LinkedList<T> {
+import java.util.Iterator;
+
+public class LinkedList<T> implements Iterable<T>{
 
 
     private Node<T> head;
@@ -191,5 +193,22 @@ public class LinkedList<T> {
             current = current.next;
         }
         return sb.append("]").toString();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private Node<T> current = head;
+
+            @Override
+            public boolean hasNext() { return current != null; }
+
+            @Override
+            public T next() {
+                T data = current.data;
+                current = current.next;
+                return data;
+            }
+        };
     }
 }
