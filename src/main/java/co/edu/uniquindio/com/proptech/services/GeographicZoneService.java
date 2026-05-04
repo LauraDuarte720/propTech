@@ -6,6 +6,8 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class GeographicZoneService {
 
@@ -25,11 +27,12 @@ public class GeographicZoneService {
     }
 
     public GeographicZone updateGeographicZone(GeographicZone geographicZone) {
-        if (geographicZoneRepository.findById(geographicZone.getId()).isEmpty()) {
-            throw new RuntimeException("No existe una zona geográfica con ese ID");
-        }
-
-        return geographicZoneRepository.update(geographicZone);
+        return geographicZoneRepository.findById(geographicZone.getId()).map(existing -> {
+            Optional.ofNullable(geographicZone.getCity()).ifPresent(existing::setCity);
+            Optional.ofNullable(geographicZone.getZone()).ifPresent(existing::setZone);
+            Optional.ofNullable(geographicZone.getNeighborhood()).ifPresent(existing::setNeighborhood);
+            return geographicZoneRepository.update(existing);
+        }).orElseThrow(() -> new RuntimeException("No existe una zona geográfica con ese ID: " + geographicZone.getId()));
     }
 
     public void deleteGeographicZone(GeographicZone geographicZone) {

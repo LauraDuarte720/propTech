@@ -5,6 +5,8 @@ import co.edu.uniquindio.com.proptech.repositories.NeighborhoodRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class NeighborhoodService {
 
@@ -25,11 +27,12 @@ public class NeighborhoodService {
     }
 
     public Neighborhood updateNeighborhood(Neighborhood neighborhood) {
-        if (neighborhoodRepository.findById(neighborhood.getId()).isEmpty()) {
-            throw new RuntimeException("No neighborhood found with this ID");
-        }
-
-        return neighborhoodRepository.update(neighborhood);
+        return neighborhoodRepository.findById(neighborhood.getId()).map(existing -> {
+            Optional.ofNullable(neighborhood.getCity()).ifPresent(existing::setCity);
+            Optional.ofNullable(neighborhood.getZone()).ifPresent(existing::setZone);
+            Optional.ofNullable(neighborhood.getName()).ifPresent(existing::setName);
+            return neighborhoodRepository.update(existing);
+        }).orElseThrow(() -> new RuntimeException("No neighborhood found with this ID: " + neighborhood.getId()));
     }
 
     public void deleteNeighborhood(String id) {

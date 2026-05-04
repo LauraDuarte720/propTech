@@ -8,6 +8,8 @@ import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AgentService {
 
@@ -28,10 +30,12 @@ public class AgentService {
     }
 
     public Agent updateAgent(Agent agent) {
-        if (agentRepository.findByCedula(agent.getCedula()).isEmpty()) {
-            throw new RuntimeException("No agent found with this ID");
-        }
-        return agentRepository.save(agent);
+        return agentRepository.findByCedula(agent.getCedula()).map(existing -> {
+            Optional.ofNullable(agent.getContact()).ifPresent(existing::setContact);
+            Optional.ofNullable(agent.getAssignedZone()).ifPresent(existing::setAssignedZone);
+            Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);
+            return agentRepository.save(existing);
+        }).orElseThrow(() -> new RuntimeException("No agent found with this ID: " + agent.getCedula()));
     }
 
     public HashTable<String, Agent> getAgents() {

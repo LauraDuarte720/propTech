@@ -7,6 +7,8 @@ import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class OperationService {
 
@@ -30,11 +32,18 @@ public class OperationService {
     }
 
     public Operation updateOperation(Operation operation) {
-        if (operationRepository.findById(operation.getId()).isEmpty()) {
-            throw new RuntimeException("No existe una operación con ese ID");
-        }
-
-        return operationRepository.update(operation);
+        return operationRepository.findById(operation.getId()).map(existing -> {
+            Optional.ofNullable(operation.getProperty()).ifPresent(existing::setProperty);
+            Optional.ofNullable(operation.getClient()).ifPresent(existing::setClient);
+            Optional.ofNullable(operation.getAgent()).ifPresent(existing::setAgent);
+            Optional.ofNullable(operation.getDateInitial()).ifPresent(existing::setDateInitial);
+            Optional.ofNullable(operation.getDateFinal()).ifPresent(existing::setDateFinal);
+            Optional.ofNullable(operation.getOperationType()).ifPresent(existing::setOperationType);
+            Optional.ofNullable(operation.getValue()).ifPresent(existing::setValue);
+            Optional.ofNullable(operation.getCommission()).ifPresent(existing::setCommission);
+            Optional.ofNullable(operation.getProcessStatus()).ifPresent(existing::setProcessStatus);
+            return operationRepository.update(existing);
+        }).orElseThrow(() -> new RuntimeException("No existe una operación con ese ID: " + operation.getId()));
     }
 
     public void deleteOperation(Operation operation) {

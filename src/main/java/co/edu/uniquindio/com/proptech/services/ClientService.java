@@ -10,6 +10,7 @@ import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -29,10 +30,17 @@ public class ClientService {
     }
 
     public Client updateClient(Client client) {
-        if (clientRepository.findByCedula(client.getCedula()).isEmpty()) {
-            throw new RuntimeException("No client found with this ID");
-        }
-        return clientRepository.save(client);
+        return clientRepository.findByCedula(client.getCedula()).map(existing -> {
+            Optional.ofNullable(client.getEmail()).ifPresent(existing::setEmail);
+            Optional.ofNullable(client.getPhone()).ifPresent(existing::setPhone);
+            Optional.ofNullable(client.getBudget()).ifPresent(existing::setBudget);
+            Optional.ofNullable(client.getMinBedrooms()).ifPresent(existing::setMinBedrooms);
+            Optional.ofNullable(client.getClientType()).ifPresent(existing::setClientType);
+            Optional.ofNullable(client.getSearchStatus()).ifPresent(existing::setSearchStatus);
+            Optional.ofNullable(client.getDesiredPropertyType()).ifPresent(existing::setDesiredPropertyType);
+            Optional.ofNullable(client.getInterestZones()).ifPresent(existing::setInterestZones);
+            return clientRepository.save(existing);
+        }).orElseThrow(() -> new RuntimeException("No client found with this ID: " + client.getCedula()));
     }
 
     public void deleteClient(Client client) {

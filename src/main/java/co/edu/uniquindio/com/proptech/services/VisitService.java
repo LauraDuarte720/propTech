@@ -6,6 +6,8 @@ import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class VisitService {
 
@@ -27,11 +29,14 @@ public class VisitService {
     }
 
     public Visit updateVisit(Visit visit) {
-        if (visitRepository.findById(visit.getId()).isEmpty()) {
-            throw new RuntimeException("No visit found with this ID");
-        }
-
-        return visitRepository.update(visit);
+        return visitRepository.findById(visit.getId()).map(existing -> {
+            Optional.ofNullable(visit.getDate()).ifPresent(existing::setDate);
+            Optional.ofNullable(visit.getClient()).ifPresent(existing::setClient);
+            Optional.ofNullable(visit.getProperty()).ifPresent(existing::setProperty);
+            Optional.ofNullable(visit.getStatus()).ifPresent(existing::setStatus);
+            Optional.ofNullable(visit.getPostVisitNotes()).ifPresent(existing::setPostVisitNotes);
+            return visitRepository.update(existing);
+        }).orElseThrow(() -> new RuntimeException("No visit found with this ID: " + visit.getId()));
     }
 
     public void deleteVisit(Visit visit) {

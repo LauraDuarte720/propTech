@@ -6,6 +6,8 @@ import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PropertyService {
 
@@ -27,11 +29,18 @@ public class PropertyService {
     }
 
     public Property updateProperty(Property property) {
-        if (propertyRepository.findByCode(property.getCode()).isEmpty()) {
-            throw new RuntimeException("No property found with this code");
-        }
-
-        return propertyRepository.save(property);
+        return propertyRepository.findByCode(property.getCode()).map(existing -> {
+            Optional.ofNullable(property.getAddress()).ifPresent(existing::setAddress);
+            Optional.ofNullable(property.getNeighborhood()).ifPresent(existing::setNeighborhood);
+            Optional.ofNullable(property.getPurpose()).ifPresent(existing::setPurpose);
+            Optional.ofNullable(property.getPrice()).ifPresent(existing::setPrice);
+            Optional.ofNullable(property.getArea()).ifPresent(existing::setArea);
+            Optional.ofNullable(property.getNumBedrooms()).ifPresent(existing::setNumBedrooms);
+            Optional.ofNullable(property.getNumBathrooms()).ifPresent(existing::setNumBathrooms);
+            Optional.ofNullable(property.getStatus()).ifPresent(existing::setStatus);
+            Optional.ofNullable(property.getAgent()).ifPresent(existing::setAgent);
+            return propertyRepository.save(existing);
+        }).orElseThrow(() -> new RuntimeException("No property found with this code: " + property.getCode()));
     }
 
     public void deleteProperty(Property property) {
