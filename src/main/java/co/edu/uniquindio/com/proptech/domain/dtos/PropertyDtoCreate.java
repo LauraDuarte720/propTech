@@ -45,7 +45,4 @@ public class PropertyDtoCreate {
     private PropertyStatus status;
 
     private boolean available;
-
-    @NotBlank(message = "Agent ID is required")
-    private String agentId;
 }
