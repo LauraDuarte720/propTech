@@ -25,4 +25,6 @@ public class Visit {
     private VisitStatus status;
      
     private String postVisitNotes;
+
+    private LocalDateTime createdAt;
 }

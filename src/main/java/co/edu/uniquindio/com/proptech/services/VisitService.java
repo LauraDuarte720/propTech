@@ -6,6 +6,7 @@ import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,7 @@ public class VisitService {
         }
 
         visit.setId(CodeGenerator.generateVisitCode());
+        visit.setCreatedAt(LocalDateTime.now());
         return visitRepository.save(visit);
     }
 
