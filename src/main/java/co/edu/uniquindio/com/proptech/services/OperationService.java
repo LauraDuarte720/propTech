@@ -92,7 +92,25 @@ public class OperationService {
         return result;
     }
 
-    public LinkedList<Operation> getOperationsByAgent(Agent agent){
+    public LinkedList<Operation> getOperationsByAgent(Agent agent) {
+        if (agent == null) {
+            throw new RuntimeException("El agente de la operación no puede ser nulo");
+        }
 
+        LinkedList<Operation> all = getAllOperations();
+        LinkedList<Operation> result = new LinkedList<>();
+
+        for (int i = 0; i < all.size(); i++) {
+            Operation op = all.get(i);
+            if (op.getAgent().getCedula().equals(agent.getCedula())) {
+                result.addLast(op);
+            }
+        }
+
+        if (result.isEmpty()) {
+            throw new RuntimeException("No hay operaciones del agente: " + agent.getCedula());
+        }
+
+        return result;
     }
 }
