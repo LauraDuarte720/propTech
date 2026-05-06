@@ -1,19 +1,15 @@
 package co.edu.uniquindio.com.proptech.structures.arrayList;
 
-
-public class ArrayList<T> {
-
+public class ArrayList<T> implements Iterable<T> {
 
     private Object[] data;
     private int size;
     private static final int DEFAULT_CAPACITY = 16;
 
-
     public ArrayList() {
         this.data = new Object[DEFAULT_CAPACITY];
         this.size = 0;
     }
-
 
     public ArrayList(int initialCapacity) {
         if (initialCapacity < 1)
@@ -21,7 +17,6 @@ public class ArrayList<T> {
         this.data = new Object[initialCapacity];
         this.size = 0;
     }
-
 
     private void grow() {
         int newCapacity = data.length * 2;
@@ -31,7 +26,6 @@ public class ArrayList<T> {
         }
         data = newData;
     }
-
 
     private void shrink() {
         if (data.length > DEFAULT_CAPACITY && size < data.length / 4) {
@@ -50,13 +44,11 @@ public class ArrayList<T> {
                     "Index " + index + " out of bounds for size " + size);
     }
 
-
     private void checkIndexForAdd(int index) {
         if (index < 0 || index > size)
             throw new IndexOutOfBoundsException(
                     "Index " + index + " out of bounds for size " + size);
     }
-
 
     public T add(T element) {
         if (size == data.length) grow();
@@ -65,18 +57,15 @@ public class ArrayList<T> {
         return element;
     }
 
-
     public void add(int index, T element) {
         checkIndexForAdd(index);
         if (size == data.length) grow();
-        // Shift elements right to open a slot
         for (int i = size; i > index; i--) {
             data[i] = data[i - 1];
         }
         data[index] = element;
         size++;
     }
-
 
     public void addAll(ArrayList<T> other) {
         if (other == null || other.isEmpty()) return;
@@ -85,13 +74,11 @@ public class ArrayList<T> {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public T get(int index) {
         checkIndex(index);
         return (T) data[index];
     }
-
 
     @SuppressWarnings("unchecked")
     public T set(int index, T element) {
@@ -100,7 +87,6 @@ public class ArrayList<T> {
         data[index] = element;
         return old;
     }
-
 
     @SuppressWarnings("unchecked")
     public T getFirst() {
@@ -114,21 +100,18 @@ public class ArrayList<T> {
         return (T) data[size - 1];
     }
 
-
     @SuppressWarnings("unchecked")
     public T remove(int index) {
         checkIndex(index);
         T old = (T) data[index];
-        // Shift elements left to close the gap
         for (int i = index; i < size - 1; i++) {
             data[i] = data[i + 1];
         }
-        data[size - 1] = null;  // allow GC to collect the old reference
+        data[size - 1] = null;
         size--;
         shrink();
         return old;
     }
-
 
     public boolean remove(T element) {
         int index = indexOf(element);
@@ -136,7 +119,6 @@ public class ArrayList<T> {
         remove(index);
         return true;
     }
-
 
     @SuppressWarnings("unchecked")
     public T removeLast() {
@@ -147,7 +129,6 @@ public class ArrayList<T> {
         shrink();
         return old;
     }
-
 
     public void removeRange(int fromIndex, int toIndex) {
         if (fromIndex < 0 || toIndex > size || fromIndex >= toIndex)
@@ -162,11 +143,9 @@ public class ArrayList<T> {
         shrink();
     }
 
-
     public boolean contains(T element) {
         return indexOf(element) != -1;
     }
-
 
     public int indexOf(T element) {
         for (int i = 0; i < size; i++) {
@@ -176,7 +155,6 @@ public class ArrayList<T> {
         return -1;
     }
 
-
     public int lastIndexOf(T element) {
         for (int i = size - 1; i >= 0; i--) {
             if (element == null ? data[i] == null : element.equals(data[i]))
@@ -184,7 +162,6 @@ public class ArrayList<T> {
         }
         return -1;
     }
-
 
     @SuppressWarnings("unchecked")
     public void sort() {
@@ -199,7 +176,6 @@ public class ArrayList<T> {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public void sort(Comparator<T> comparator) {
         for (int i = 1; i < size; i++) {
@@ -213,7 +189,6 @@ public class ArrayList<T> {
         }
     }
 
-
     public ArrayList<T> filter(Predicate<T> predicate) {
         ArrayList<T> result = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -222,7 +197,6 @@ public class ArrayList<T> {
         }
         return result;
     }
-
 
     public ArrayList<T> subList(int fromIndex, int toIndex) {
         if (fromIndex < 0 || toIndex > size || fromIndex >= toIndex)
@@ -233,15 +207,11 @@ public class ArrayList<T> {
         return sub;
     }
 
-
     public int size() { return size; }
-
 
     public boolean isEmpty() { return size == 0; }
 
-
     public int capacity() { return data.length; }
-
 
     public void clear() {
         data = new Object[DEFAULT_CAPACITY];
@@ -256,20 +226,17 @@ public class ArrayList<T> {
         }
     }
 
-
     public Object[] toArray() {
         Object[] arr = new Object[size];
         for (int i = 0; i < size; i++) arr[i] = data[i];
         return arr;
     }
 
-
     public ArrayList<T> copy() {
         ArrayList<T> clone = new ArrayList<>(size == 0 ? DEFAULT_CAPACITY : size);
         for (int i = 0; i < size; i++) clone.add(get(i));
         return clone;
     }
-
 
     public void reverse() {
         for (int i = 0, j = size - 1; i < j; i++, j--) {
@@ -279,7 +246,6 @@ public class ArrayList<T> {
         }
     }
 
-
     public void swap(int i, int j) {
         checkIndex(i);
         checkIndex(j);
@@ -287,7 +253,6 @@ public class ArrayList<T> {
         data[i] = data[j];
         data[j] = temp;
     }
-
 
     public String stats() {
         return "ArrayList | size=" + size + " | capacity=" + data.length
@@ -305,6 +270,27 @@ public class ArrayList<T> {
         return sb.append("]").toString();
     }
 
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return new ArrayListIterator();
+    }
+
+    private class ArrayListIterator implements java.util.Iterator<T> {
+
+        private int cursor = 0;
+
+        @Override
+        public boolean hasNext() {
+            return cursor < size;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public T next() {
+            if (!hasNext()) throw new java.util.NoSuchElementException();
+            return (T) data[cursor++];
+        }
+    }
 
     @FunctionalInterface
     public interface Predicate<T> {
