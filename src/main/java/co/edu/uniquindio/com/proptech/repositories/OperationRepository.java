@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.repositories;
 
+import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 
@@ -11,6 +13,6 @@ public interface OperationRepository {
     boolean deleteById(String id);
     Operation update(Operation operation);
     LinkedList<Operation> getOperations();
-    LinkedList<Operation> getOperationsByType();
-    LinkedList<Operation> getOperationsByAgent();
+    LinkedList<Operation> getOperationsByType(OperationType operationType);
+    LinkedList<Operation> getOperationsByAgent(Agent agent);
 }

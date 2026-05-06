@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.repositories.impl;
 
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
@@ -45,19 +46,30 @@ public class OperationRepositoryImpl implements OperationRepository {
 
     @Override
     public LinkedList<Operation> getOperationsByType(OperationType operationType) {
-        LinkedList<Operation> operationsByType = new LinkedList<>();
-        LinkedList<Operation> operations = propTech.getOperations();
-        for(Operation operation: operations){
-            if(operation.getOperationType().equals(operationType)){
-                operationsByType.addLast(operation);
+        LinkedList<Operation> all = propTech.getOperations();
+        LinkedList<Operation> result = new LinkedList<>();
+        for (int i = 0; i < all.size(); i++) {
+            Operation op = all.get(i);
+            if (op.getOperationType() == operationType) {
+                result.addLast(op);
             }
         }
-        return operationsByType;
+        return result;
     }
 
     @Override
-    public LinkedList<Operation> getOperationsByAgent() {
-        return null;
+    public LinkedList<Operation> getOperationsByAgent(Agent agent) {
+        LinkedList<Operation> all = propTech.getOperations();
+        LinkedList<Operation> result = new LinkedList<>();
+
+        for (int i = 0; i < all.size(); i++) {
+            Operation op = all.get(i);
+            if (op.getAgent().equals(agent)) {
+                result.addLast(op);
+            }
+        }
+        return result;
     }
+
 
 }
