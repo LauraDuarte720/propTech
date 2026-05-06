@@ -4,7 +4,8 @@ package co.edu.uniquindio.com.proptech.domain.enums;
  */
 public enum ProcessStatus {
     CREATED("Created"),
-    CANCELLED("Cancelled");
+    CANCELLED("Cancelled"),
+    CLOSED("Closed");
 
     private final String displayName;
 

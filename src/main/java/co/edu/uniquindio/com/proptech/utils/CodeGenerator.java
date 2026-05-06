@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.utils;
 
+import co.edu.uniquindio.com.proptech.domain.enums.AlertType;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ public class CodeGenerator {
     private static int interactionCounter = 1;
     private static int operationCounter = 1;
     private static int zoneCounter = 1;
+    private static int alertCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -58,5 +60,21 @@ public class CodeGenerator {
 
     public static String generateZoneCode() {
         return "ZON-" + String.format("%04d", zoneCounter++);
+    }
+
+
+    private static String getAlertPrefix(AlertType type) {
+        return switch (type) {
+            case CONTRACT_EXPIRING          -> "ALT-CEX";
+            case PROPERTY_NO_VISITS         -> "ALT-PNV";
+            case HIGH_DEMAND                -> "ALT-HDM";
+            case PENDING_VISIT_CONFIRMATION -> "ALT-PVC";
+            case RESERVE_NO_CLOSURE         -> "ALT-RNC";
+            case INACTIVE_CLIENT            -> "ALT-ICL";
+        };
+    }
+
+    public static String generateAlertCode(AlertType type) {
+        return getAlertPrefix(type) + "-" + String.format("%04d", alertCounter++);
     }
 }
