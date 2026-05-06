@@ -6,7 +6,6 @@ import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
-import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -83,18 +82,22 @@ public class AgentService {
         if (property == null) {
             throw new RuntimeException("La propiedad no puede ser nula");
         }
-        if (property.getNeighborhood().getCity() == agent.getAssignedZone().getCity()) {
-            if (agent.getAssignedZone().getZone() == null) {
-                property.setAgent(agent);
-                return agent.addProperty(property);
-            } else if (agent.getAssignedZone().getZone().equals(property.getNeighborhood().getZone())) {
-                property.setAgent(agent);
-                return agent.addProperty(property);
-            } else  {
-                throw new RuntimeException("La zona asignada del agente no corresponde a la zona de la propiedad");
-            }
-        }else  {
-            throw new RuntimeException("La ciudad del agente no corresponde a la de la propiedad");
+        match(property, agent);
+        property.setAgent(agent);
+        return agent.addProperty(property);
+    }
+
+    private void match(Property property, Agent agent){
+        boolean match;
+        match = property.getNeighborhood().getCity().equals(agent.getAssignedZone().getCity());
+        if(!match) throw new RuntimeException("La ciudad del agente no corresponde a la de la propiedad");
+        if(agent.getAssignedZone().getZone() != null){
+            match = property.getNeighborhood().getZone().equals(agent.getAssignedZone().getZone());
+            if(!match) throw new RuntimeException("La zona asignado del agente no corresponde a la de la propiedad");
+        }
+        if(agent.getAssignedZone().getNeighborhood() != null){
+            match = property.getNeighborhood().equals(agent.getAssignedZone().getNeighborhood());
+            if(!match) throw new RuntimeException("El barrio asignado del agente no corresponde a la de la propiedad");
         }
     }
 }
