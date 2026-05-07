@@ -24,7 +24,7 @@ public class AbnormalAlertMapper implements MapperSimple<AbnormalAlert, Abnormal
     }
 
     @Override
-    public AbnormalAlertDto toDto(AbnormalAlert entity) {
+    public AbnormalAlertDto toOnlyDto(AbnormalAlert entity) {
         return AbnormalAlertDto.builder()
                 .id(entity.getId())
                 .timestamp(entity.getTimestamp())

@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
+import co.edu.uniquindio.com.proptech.config.mappers.MapperSimple;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
@@ -10,7 +11,7 @@ import co.edu.uniquindio.com.proptech.services.NeighborhoodService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> {
+public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn>, MapperSimple<Property, AffectedPropertyDto> {
 
     MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper;
     MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper;
@@ -74,6 +75,13 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
                 .status(dto.getStatus())
                 .available(dto.getAvailable())
                 .agent(dto.getAgentId() == null ? null : agentService.getAgentByCedula(dto.getAgentId()))
+                .build();
+    }
+    @Override
+    public AffectedPropertyDto toOnlyDto(Property entity) {
+        return AffectedPropertyDto.builder()
+                .code(entity.getCode())
+                .address(entity.getAddress())
                 .build();
     }
 }
