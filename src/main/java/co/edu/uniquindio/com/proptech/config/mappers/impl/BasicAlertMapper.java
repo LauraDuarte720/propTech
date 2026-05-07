@@ -1,13 +1,13 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
-import co.edu.uniquindio.com.proptech.config.mappers.MapperSimple;
+import co.edu.uniquindio.com.proptech.config.mappers.MapperOnlyDto;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BasicAlertMapper implements MapperSimple<BasicAlert, BasicAlertDto> {
+public class BasicAlertMapper implements MapperOnlyDto<BasicAlert, BasicAlertDto> {
 
     MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper;
     MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> clientMapper;

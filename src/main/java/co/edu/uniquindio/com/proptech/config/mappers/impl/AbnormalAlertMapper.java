@@ -1,13 +1,13 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
-import co.edu.uniquindio.com.proptech.config.mappers.MapperSimple;
+import co.edu.uniquindio.com.proptech.config.mappers.MapperOnlyDto;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AbnormalAlertMapper implements MapperSimple<AbnormalAlert, AbnormalAlertDto> {
+public class AbnormalAlertMapper implements MapperOnlyDto<AbnormalAlert, AbnormalAlertDto> {
 
     MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper;
     MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> clientMapper;
@@ -24,7 +24,7 @@ public class AbnormalAlertMapper implements MapperSimple<AbnormalAlert, Abnormal
     }
 
     @Override
-    public AbnormalAlertDto toOnlyDto(AbnormalAlert entity) {
+    public AbnormalAlertDto toDto(AbnormalAlert entity) {
         return AbnormalAlertDto.builder()
                 .id(entity.getId())
                 .timestamp(entity.getTimestamp())
