@@ -10,6 +10,7 @@ import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZonesNotMatc
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import org.springframework.stereotype.Service;
 
@@ -89,18 +90,23 @@ public class AgentService {
         if (property == null) {
             throw new RuntimeException("La propiedad no puede ser nula");
         }
-        if(!match(property, agent)){
+        if (!match(agent.getAssignedZone(), property.getNeighborhood())) {
             throw new ZonesNotMatchingException("The zone of the agent assigned with this property does not match with the neighborhood");
         }
         property.setAgent(agent);
         return agent.addProperty(property);
     }
 
+    public Property removeProperty(Property property) {
+        property.setAgent(null);
+        return property;
+    }
+
 
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
         ArrayList<Property> incompatibles = new ArrayList<>();
         for (Property property : agent.getAssignedProperties()) {
-            boolean matches = match(property, agent);
+            boolean matches = match(geographicZone, property.getNeighborhood());
             if (!matches) {
                 incompatibles.add(property);
             }
@@ -108,8 +114,8 @@ public class AgentService {
         return incompatibles;
     }
 
-    public void updateGeographicZone(GeographicZone geographicZone, Agent agent, boolean confirm) {
-        ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, geographicZone);
+    public void updateGeographicZone(GeographicZone newGeographicZone, Agent agent, boolean confirm) {
+        ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, newGeographicZone);
 
         if (!confirm && !incompatibleProperties.isEmpty()) {
             List<AffectedPropertyDto> affectedProperties = List.of();
@@ -121,7 +127,7 @@ public class AgentService {
             throw new ZoneChangeConflictException(
                     "If you make this change, the following properties will not have an assigned agent anymore", affectedProperties);
         }
-        agent.setAssignedZone(geographicZone);
+        agent.setAssignedZone(newGeographicZone);
         if (confirm) {
             for (Property property : incompatibleProperties) {
                 property.setAgent(null);
@@ -131,20 +137,40 @@ public class AgentService {
     }
 
 
-    private boolean match(Property property, Agent agent) {
-        Neighborhood propertyNeighborhood = property.getNeighborhood();
-        GeographicZone zone = agent.getAssignedZone();
+    private boolean match(GeographicZone zone, Neighborhood propertyNeighborhood) {
+        if (propertyNeighborhood == null) {
+            return false;
+        }
 
-        if (propertyNeighborhood == null) {return false;}
+        if (zone == null) {
+            return true;
+        }
 
-        if (zone == null) {return true;}
+        if (!zone.getCity().equals(propertyNeighborhood.getCity())) {
+            return false;
+        }
 
-        if (!zone.getCity().equals(propertyNeighborhood.getCity())) {return false;}
+        if (zone.getZone() != null && !zone.getZone().equals(propertyNeighborhood.getZone())) {
+            return false;
+        }
 
-        if (zone.getZone() != null && !zone.getZone().equals(propertyNeighborhood.getZone())) {return false;}
-
-        if (zone.getNeighborhood() != null && !zone.getNeighborhood().equals(propertyNeighborhood.getName())) {return false;}
+        if (zone.getNeighborhood() != null && !zone.getNeighborhood().equals(propertyNeighborhood.getName())) {
+            return false;
+        }
 
         return true;
     }
+
+    private LinkedList<Agent> getAgentsMatching(Neighborhood neighborhood) {
+        LinkedList<Agent> matching = new LinkedList<>();
+        HashTable<String, Agent> agents = agentRepository.getAgents();
+
+        for (Agent agent : agents.values()) {
+            if (match(agent.getAssignedZone(), neighborhood)) {
+                matching.addLast(agent);
+            }
+        }
+        return matching;
+    }
+
 }

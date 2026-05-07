@@ -55,14 +55,8 @@ public class Agent extends User{
         }
     }
 
-    public boolean removeProperty(String code) {
-        for (int i = 0; i < assignedProperties.size(); i++) {
-            if (assignedProperties.get(i).getCode().equals(code)) {
-                assignedProperties.remove(i);
-                return true;
-            }
-        }
-        return false;
+    public boolean removeProperty(Property property) {
+        return assignedProperties.remove(property);
     }
 
     public void enqueueVisit(Visit visit) {
