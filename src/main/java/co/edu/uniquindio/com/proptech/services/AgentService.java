@@ -1,11 +1,17 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
+import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
+import co.edu.uniquindio.com.proptech.utils.validators.FieldErrorDetail;
+import co.edu.uniquindio.com.proptech.utils.validators.LocationValidator;
+import co.edu.uniquindio.com.proptech.utils.validators.ValidationResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,10 +21,12 @@ public class AgentService {
 
     AgentRepository agentRepository;
     VisitService visitService;
+    LocationValidator locationValidator;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, LocationValidator locationValidator) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
+        this.locationValidator = locationValidator;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -34,7 +42,6 @@ public class AgentService {
             Optional.ofNullable(agent.getName()).ifPresent(existing::setName);
             Optional.ofNullable(agent.getUsername()).ifPresent(existing::setUsername);
             Optional.ofNullable(agent.getContact()).ifPresent(existing::setContact);
-            Optional.ofNullable(agent.getAssignedZone()).ifPresent(existing::setAssignedZone);
             Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);
             return agentRepository.save(existing);
         }).orElseThrow(() -> new RuntimeException("No agent found with this ID: " + agent.getCedula()));
@@ -87,17 +94,58 @@ public class AgentService {
         return agent.addProperty(property);
     }
 
-    private void match(Property property, Agent agent){
-        boolean match;
-        match = property.getNeighborhood().getCity().equals(agent.getAssignedZone().getCity());
-        if(!match) throw new RuntimeException("La ciudad del agente no corresponde a la de la propiedad");
-        if(agent.getAssignedZone().getZone() != null){
-            match = property.getNeighborhood().getZone().equals(agent.getAssignedZone().getZone());
-            if(!match) throw new RuntimeException("La zona asignado del agente no corresponde a la de la propiedad");
+
+    private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
+        ArrayList<Property> incompatible = new ArrayList<>();
+        for (Property property : agent.getAssignedProperties()) {
+            ValidationResult result = locationValidator.validate(
+                    geographicZone,
+                    property.getNeighborhood()
+            );
+            if (result.hasErrors()) {
+                incompatible.add(property);
+            }
         }
-        if(agent.getAssignedZone().getNeighborhood() != null){
-            match = property.getNeighborhood().equals(agent.getAssignedZone().getNeighborhood());
-            if(!match) throw new RuntimeException("El barrio asignado del agente no corresponde a la de la propiedad");
+        return incompatible;
+    }
+
+    public void updateGeographicZone(GeographicZone geographicZone, Agent agent, boolean confirm) {
+        ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, geographicZone);
+
+        if (!confirm && !incompatibleProperties.isEmpty()) {
+            ArrayList<AffectedPropertyDto> affectedProperties = new ArrayList<>();
+            for (Property property : incompatibleProperties) {
+                affectedProperties.add(
+                        AffectedPropertyDto.builder()
+                                .code(property.getCode())
+                                .address(property.getAddress())
+                                .build()
+                );
+            }
+            throw new RuntimeException(
+                    "Si realizas este cambio, las siguientes propiedades quedarán sin agente asignado"
+                   //affectedProperties
+            );
+        }
+        agent.setAssignedZone(geographicZone);
+        if (confirm) {
+            for (Property property : incompatibleProperties) {
+                property.setAgent(null);
+            }
+        }
+        agentRepository.save(agent);
+    }
+
+
+    private void match(Property property, Agent agent) {
+
+        ValidationResult result = locationValidator.validate(
+                agent.getAssignedZone(),
+                property.getNeighborhood()
+        );
+
+        if (result.hasErrors()) {
+           // throw new RuntimeException(result.getErrors());
         }
     }
 }
