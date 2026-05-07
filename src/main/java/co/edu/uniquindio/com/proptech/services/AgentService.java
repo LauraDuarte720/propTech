@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.config.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
@@ -22,11 +23,13 @@ public class AgentService {
     AgentRepository agentRepository;
     VisitService visitService;
     LocationValidator locationValidator;
+    PropertyMapper propertyMapper;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, LocationValidator locationValidator) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, LocationValidator locationValidator, PropertyMapper propertyMapper) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.locationValidator = locationValidator;
+        this.propertyMapper = propertyMapper;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -116,10 +119,7 @@ public class AgentService {
             ArrayList<AffectedPropertyDto> affectedProperties = new ArrayList<>();
             for (Property property : incompatibleProperties) {
                 affectedProperties.add(
-                        AffectedPropertyDto.builder()
-                                .code(property.getCode())
-                                .address(property.getAddress())
-                                .build()
+                        propertyMapper.toSimpleDto(property)
                 );
             }
             throw new RuntimeException(
