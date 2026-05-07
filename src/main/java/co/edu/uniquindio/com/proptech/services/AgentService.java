@@ -97,7 +97,8 @@ public class AgentService {
         return agent.addProperty(property);
     }
 
-    public Property removeProperty(Property property) {
+    public Property removePropertyFromAgent(Property property) {
+        property.getAgent().removeProperty(property);
         property.setAgent(null);
         return property;
     }
@@ -161,7 +162,7 @@ public class AgentService {
         return true;
     }
 
-    private LinkedList<Agent> getAgentsMatching(Neighborhood neighborhood) {
+    private LinkedList<Agent> getAgentsMatchingNeighbor(Neighborhood neighborhood) {
         LinkedList<Agent> matching = new LinkedList<>();
         HashTable<String, Agent> agents = agentRepository.getAgents();
 
