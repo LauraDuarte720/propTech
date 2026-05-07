@@ -2,17 +2,11 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.config.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
-import co.edu.uniquindio.com.proptech.domain.model.Agent;
-import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
-import co.edu.uniquindio.com.proptech.domain.model.Property;
-import co.edu.uniquindio.com.proptech.domain.model.Visit;
+import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
-import co.edu.uniquindio.com.proptech.utils.validators.FieldErrorDetail;
-import co.edu.uniquindio.com.proptech.utils.validators.LocationValidator;
-import co.edu.uniquindio.com.proptech.utils.validators.ValidationResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,13 +16,11 @@ public class AgentService {
 
     AgentRepository agentRepository;
     VisitService visitService;
-    LocationValidator locationValidator;
     PropertyMapper propertyMapper;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, LocationValidator locationValidator, PropertyMapper propertyMapper) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
-        this.locationValidator = locationValidator;
         this.propertyMapper = propertyMapper;
     }
 
@@ -92,24 +84,23 @@ public class AgentService {
         if (property == null) {
             throw new RuntimeException("La propiedad no puede ser nula");
         }
-        match(property, agent);
+        if(!match(property, agent)){
+            throw new RuntimeException();
+        }
         property.setAgent(agent);
         return agent.addProperty(property);
     }
 
 
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
-        ArrayList<Property> incompatible = new ArrayList<>();
+        ArrayList<Property> incompatibles = new ArrayList<>();
         for (Property property : agent.getAssignedProperties()) {
-            ValidationResult result = locationValidator.validate(
-                    geographicZone,
-                    property.getNeighborhood()
-            );
-            if (result.hasErrors()) {
-                incompatible.add(property);
+            boolean matches = match(property, agent);
+            if (!matches) {
+                incompatibles.add(property);
             }
         }
-        return incompatible;
+        return incompatibles;
     }
 
     public void updateGeographicZone(GeographicZone geographicZone, Agent agent, boolean confirm) {
@@ -137,15 +128,31 @@ public class AgentService {
     }
 
 
-    private void match(Property property, Agent agent) {
-
-        ValidationResult result = locationValidator.validate(
-                agent.getAssignedZone(),
-                property.getNeighborhood()
-        );
-
-        if (result.hasErrors()) {
-           // throw new RuntimeException(result.getErrors());
+    private boolean match(Property property, Agent agent) {
+        Neighborhood propertyNeighborhood = property.getNeighborhood();
+        GeographicZone zone = agent.getAssignedZone();
+        if (propertyNeighborhood == null) {
+            return false;
         }
+
+        if (zone == null) {
+            return true;
+        }
+
+        if (!zone.getCity().equals(propertyNeighborhood.getCity())) {
+            return false;
+        }
+
+        if (zone.getZone() != null &&
+                !zone.getZone().equals(propertyNeighborhood.getZone())) {
+            return false;
+        }
+
+        if (zone.getNeighborhood() != null &&
+                !zone.getNeighborhood().equals(propertyNeighborhood.getName())) {
+            return false;
+        }
+
+        return true;
     }
 }
