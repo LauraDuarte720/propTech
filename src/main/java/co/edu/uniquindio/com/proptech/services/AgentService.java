@@ -3,12 +3,17 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.config.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
 import co.edu.uniquindio.com.proptech.domain.model.*;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.AgentAlreadyExists;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.AgentDoesNotExist;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZoneChangeConflictException;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZonesNotMatchingException;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,7 +32,7 @@ public class AgentService {
     public Agent registerAgent(Agent agent) {
         boolean exists = agentRepository.findByCedula(agent.getCedula()).isPresent();
         if (exists) {
-            throw new RuntimeException("An agent with this ID already exists");
+            throw new AgentAlreadyExists("cedula", agent.getCedula());
         }
         return agentRepository.save(agent);
     }
@@ -39,7 +44,7 @@ public class AgentService {
             Optional.ofNullable(agent.getContact()).ifPresent(existing::setContact);
             Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);
             return agentRepository.save(existing);
-        }).orElseThrow(() -> new RuntimeException("No agent found with this ID: " + agent.getCedula()));
+        }).orElseThrow(() -> new AgentDoesNotExist("cedula", agent.getCedula()));
     }
 
     public HashTable<String, Agent> getAgents() {
@@ -52,7 +57,7 @@ public class AgentService {
 
     public Agent getAgentByCedula(String cedula) {
         return agentRepository.findByCedula(cedula)
-                .orElseThrow(() -> new RuntimeException("No agent found with this ID: " + cedula));
+                .orElseThrow(() -> new AgentDoesNotExist("cedula", cedula));
     }
 
     public Visit registerVisit(Visit visit) {
@@ -85,7 +90,7 @@ public class AgentService {
             throw new RuntimeException("La propiedad no puede ser nula");
         }
         if(!match(property, agent)){
-            throw new RuntimeException();
+            throw new ZonesNotMatchingException("The zone of the agent assigned with this property does not match with the neighborhood");
         }
         property.setAgent(agent);
         return agent.addProperty(property);
@@ -107,16 +112,14 @@ public class AgentService {
         ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, geographicZone);
 
         if (!confirm && !incompatibleProperties.isEmpty()) {
-            ArrayList<AffectedPropertyDto> affectedProperties = new ArrayList<>();
+            List<AffectedPropertyDto> affectedProperties = List.of();
             for (Property property : incompatibleProperties) {
                 affectedProperties.add(
                         propertyMapper.toSimpleDto(property)
                 );
             }
-            throw new RuntimeException(
-                    "Si realizas este cambio, las siguientes propiedades quedarán sin agente asignado"
-                   //affectedProperties
-            );
+            throw new ZoneChangeConflictException(
+                    "If you make this change, the following properties will not have an assigned agent anymore", affectedProperties);
         }
         agent.setAssignedZone(geographicZone);
         if (confirm) {
@@ -131,27 +134,16 @@ public class AgentService {
     private boolean match(Property property, Agent agent) {
         Neighborhood propertyNeighborhood = property.getNeighborhood();
         GeographicZone zone = agent.getAssignedZone();
-        if (propertyNeighborhood == null) {
-            return false;
-        }
 
-        if (zone == null) {
-            return true;
-        }
+        if (propertyNeighborhood == null) {return false;}
 
-        if (!zone.getCity().equals(propertyNeighborhood.getCity())) {
-            return false;
-        }
+        if (zone == null) {return true;}
 
-        if (zone.getZone() != null &&
-                !zone.getZone().equals(propertyNeighborhood.getZone())) {
-            return false;
-        }
+        if (!zone.getCity().equals(propertyNeighborhood.getCity())) {return false;}
 
-        if (zone.getNeighborhood() != null &&
-                !zone.getNeighborhood().equals(propertyNeighborhood.getName())) {
-            return false;
-        }
+        if (zone.getZone() != null && !zone.getZone().equals(propertyNeighborhood.getZone())) {return false;}
+
+        if (zone.getNeighborhood() != null && !zone.getNeighborhood().equals(propertyNeighborhood.getName())) {return false;}
 
         return true;
     }
