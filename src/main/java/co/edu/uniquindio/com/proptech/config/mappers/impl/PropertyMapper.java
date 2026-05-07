@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.config.mappers.impl;
 
 import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
+import co.edu.uniquindio.com.proptech.config.mappers.MapperOnlyDto;
 import co.edu.uniquindio.com.proptech.config.mappers.MapperSimple;
 import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
@@ -78,7 +79,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
                 .build();
     }
     @Override
-    public AffectedPropertyDto toOnlyDto(Property entity) {
+    public AffectedPropertyDto toSimpleDto(Property entity) {
         return AffectedPropertyDto.builder()
                 .code(entity.getCode())
                 .address(entity.getAddress())

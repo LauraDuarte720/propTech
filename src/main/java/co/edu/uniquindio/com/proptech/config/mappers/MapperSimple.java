@@ -1,5 +1,5 @@
 package co.edu.uniquindio.com.proptech.config.mappers;
 
-public interface MapperSimple<S, E> {
+public interface MapperSimple<E, S> {
     S toSimpleDto(E entity);
 }
