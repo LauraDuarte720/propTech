@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -39,25 +40,19 @@ public class VisitService {
             Optional.ofNullable(visit.getStatus()).ifPresent(existing::setStatus);
             Optional.ofNullable(visit.getPostVisitNotes()).ifPresent(existing::setPostVisitNotes);
             return visitRepository.update(existing);
-        }).orElseThrow(() -> new RuntimeException("No visit found with this ID: " + visit.getId()));
+        }).orElseThrow(() -> new VisitDoesNotExist("id", visit.getId()));
     }
 
     public void deleteVisit(String visitId) {
         if (visitRepository.findById(visitId).isEmpty()) {
-            throw new RuntimeException("No visit found with this ID");
+            throw new VisitDoesNotExist("id", visitId);
         }
 
         visitRepository.deleteById(visitId);
     }
 
     public LinkedList<Visit> getAllVisits() {
-        LinkedList<Visit> visits = visitRepository.getAllVisits();
-
-        if (visits == null || visits.isEmpty()) {
-            throw new RuntimeException("No visits registered");
-        }
-
-        return visits;
+        return visitRepository.getAllVisits();
     }
 
     public Visit getVisitById(String id) {

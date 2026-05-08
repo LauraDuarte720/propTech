@@ -4,6 +4,8 @@ import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAgentConfirmationException;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyAlreadyExists;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
@@ -30,7 +32,7 @@ public class PropertyService {
     public Property registerProperty(Property property, String agentId, boolean confirm) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
         if (exists) {
-            throw new RuntimeException("A property with this code already exists");
+            throw new PropertyAlreadyExists("code", property.getCode());
         }
         Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
         property.setNeighborhood(resolved);
@@ -58,28 +60,22 @@ public class PropertyService {
             Optional.ofNullable(property.getStatus()).ifPresent(existing::setStatus);
             Optional.ofNullable(property.getAgent()).ifPresent(existing::setAgent);
             return propertyRepository.save(existing);
-        }).orElseThrow(() -> new RuntimeException("No property found with this code: " + property.getCode()));
+        }).orElseThrow(() -> new PropertyDoesNotExist("code", property.getCode()));
     }
 
     public void deleteProperty(String properyId) {
         if (propertyRepository.findByCode(properyId).isEmpty()) {
-            throw new RuntimeException("No property found with this code");
+            throw new PropertyDoesNotExist("code", properyId);
         }
         propertyRepository.deleteById(properyId);
     }
 
     public HashTable<String, Property> getAllProperties() {
-        HashTable<String, Property> properties = propertyRepository.getProperties();
-
-        if (properties == null || properties.isEmpty()) {
-            throw new RuntimeException("No properties registered");
-        }
-
-        return properties;
+        return propertyRepository.getProperties();
     }
 
     public Property getPropertyByCode(String code) {
         return propertyRepository.findByCode(code)
-                .orElseThrow(() -> new RuntimeException("No property found with this code"));
+                .orElseThrow(() -> new PropertyDoesNotExist("code", code));
     }
 }

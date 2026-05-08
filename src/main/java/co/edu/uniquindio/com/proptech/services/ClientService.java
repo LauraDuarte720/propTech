@@ -55,17 +55,12 @@ public class ClientService {
     }
 
     public HashTable<String, Client> getClients() {
-        HashTable<String, Client> clients = clientRepository.getClients();
-
-        if (clients == null || clients.isEmpty()) {
-            throw new RuntimeException("No clients registered");
-        }
-        return clients;
+        return clientRepository.getClients();
     }
 
     public Client getClientByCedula(String cedula) {
         return clientRepository.findByCedula(cedula)
-                .orElseThrow(() -> new RuntimeException("No client found with this ID: " + cedula));
+                .orElseThrow(() -> new ClientDoesNotExist("cedula",cedula));
     }
 
     public UserInteraction registerUserInteraction(UserInteraction userInteraction) {
@@ -84,20 +79,12 @@ public class ClientService {
         for (int i = 0; i < saved.size(); i++) {
             favorites.add(saved.get(i).getProperty());
         }
-        if (favorites.isEmpty()) {
-            throw new RuntimeException("The client has no saved properties");
-        }
         return favorites;
     }
 
 
     public HashTable<InteractionType, ArrayList<UserInteraction>> getUserInteractions(String clientId) {
         Client client = getClientByCedula(clientId);
-        HashTable<InteractionType, ArrayList<UserInteraction>> interactions = client.getInteractionHistory();
-
-        if (interactions == null || interactions.isEmpty()) {
-            throw new RuntimeException("The client has no recorded interactions");
-        }
-        return interactions;
+        return client.getInteractionHistory();
     }
 }

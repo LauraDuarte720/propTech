@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.GeographicZoneDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.GeographicZoneRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -18,10 +19,6 @@ public class GeographicZoneService {
     }
 
     public GeographicZone registerGeographicZone(GeographicZone geographicZone) {
-        if (geographicZone == null) {
-            throw new RuntimeException("La zona geográfica no puede ser nula");
-        }
-
         geographicZone.setId(CodeGenerator.generateZoneCode());
         return geographicZoneRepository.save(geographicZone);
     }
@@ -37,24 +34,17 @@ public class GeographicZoneService {
 
     public void deleteGeographicZone(GeographicZone geographicZone) {
         if (geographicZoneRepository.findById(geographicZone.getId()).isEmpty()) {
-            throw new RuntimeException("No existe una zona geográfica con ese ID");
+            throw new GeographicZoneDoesNotExist("id", geographicZone.getId());
         }
-
         geographicZoneRepository.deleteById(geographicZone.getId());
     }
 
     public ArrayList<GeographicZone> getAllGeographicZones() {
-        ArrayList<GeographicZone> zones = geographicZoneRepository.getGeographicZones();
-
-        if (zones == null || zones.isEmpty()) {
-            throw new RuntimeException("No hay zonas geográficas registradas");
-        }
-
-        return zones;
+        return geographicZoneRepository.getGeographicZones();
     }
 
     public GeographicZone getGeographicZoneById(String id) {
         return geographicZoneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No existe una zona geográfica con ese ID: " + id));
+                .orElseThrow(() -> new GeographicZoneDoesNotExist("id", id));
     }
 }

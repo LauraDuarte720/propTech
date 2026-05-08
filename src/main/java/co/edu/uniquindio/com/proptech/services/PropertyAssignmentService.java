@@ -1,10 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
-import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
-import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
-import co.edu.uniquindio.com.proptech.exceptions.generalExceptions.NotFoundException;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.AgentDoesNotExist;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoesNotExist;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZonesNotMatchingException;

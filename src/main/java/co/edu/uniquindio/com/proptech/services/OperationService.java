@@ -26,14 +26,6 @@ public class OperationService {
     }
 
     public Operation registerOperation(Operation operation) {
-        if (operation == null) {
-            throw new RuntimeException("La operación no puede ser nula");
-        }
-
-        if (operation.getOperationType() == null) {
-            throw new RuntimeException("El tipo de operación no puede ser nulo");
-        }
-
         operation.setId(CodeGenerator.generateOperationCode());
         return operationRepository.save(operation);
     }

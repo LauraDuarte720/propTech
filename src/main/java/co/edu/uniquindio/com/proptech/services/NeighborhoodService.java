@@ -1,6 +1,8 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NeighborhoodAlreadyExists;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NeighborhoodDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.NeighborhoodRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -21,7 +23,7 @@ public class NeighborhoodService {
         boolean exists = neighborhoodRepository.findById(neighborhood.getId()).isPresent();
 
         if (exists) {
-            throw new RuntimeException("A neighborhood with this ID already exists");
+            throw new NeighborhoodAlreadyExists("id", neighborhood.getId());
         }
         neighborhood.setId(CodeGenerator.generateNeighborCode());
 
@@ -34,30 +36,23 @@ public class NeighborhoodService {
             Optional.ofNullable(neighborhood.getZone()).ifPresent(existing::setZone);
             Optional.ofNullable(neighborhood.getName()).ifPresent(existing::setName);
             return neighborhoodRepository.update(existing);
-        }).orElseThrow(() -> new RuntimeException("No neighborhood found with this ID: " + neighborhood.getId()));
+        }).orElseThrow(() -> new NeighborhoodDoesNotExist("id", neighborhood.getId()));
     }
 
     public void deleteNeighborhood(String id) {
         if (neighborhoodRepository.findById(id).isEmpty()) {
-            throw new RuntimeException("No neighborhood found with this ID");
+            throw new NeighborhoodDoesNotExist("id", id);
         }
-
         neighborhoodRepository.deleteById(id);
     }
 
     public ArrayList<Neighborhood> getAllNeighborhoods() {
-        ArrayList<Neighborhood> neighborhoods = neighborhoodRepository.getNeighborhoods();
-
-        if (neighborhoods == null || neighborhoods.isEmpty()) {
-            throw new RuntimeException("No neighborhoods registered");
-        }
-
-        return neighborhoods;
+        return neighborhoodRepository.getNeighborhoods();
     }
 
     public Neighborhood getNeighborhoodById(String id) {
         return neighborhoodRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No neighborhood found with this ID: " + id));
+                .orElseThrow(() -> new NeighborhoodDoesNotExist("id", id));
     }
 
     public Neighborhood findOrCreate(Neighborhood neighborhood) {
