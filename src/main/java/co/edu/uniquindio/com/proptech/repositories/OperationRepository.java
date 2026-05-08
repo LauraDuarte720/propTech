@@ -15,4 +15,5 @@ public interface OperationRepository {
     LinkedList<Operation> getOperations();
     LinkedList<Operation> getOperationsByType(OperationType operationType);
     LinkedList<Operation> getOperationsByAgent(Agent agent);
+    LinkedList<Operation> getOperationsByProperty(String propertyCode);
 }

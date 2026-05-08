@@ -71,5 +71,18 @@ public class OperationRepositoryImpl implements OperationRepository {
         return result;
     }
 
+    @Override
+    public LinkedList<Operation> getOperationsByProperty(String propertyCode) {
+        LinkedList<Operation> all = propTech.getOperations();
+        LinkedList<Operation> result = new LinkedList<>();
+        for (int i = 0; i < all.size(); i++) {
+            Operation op = all.get(i);
+            if (op.getProperty() != null
+                    && op.getProperty().getCode().equals(propertyCode)) {
+                result.addLast(op);
+            }
+        }
+        return result;
+    }
 
 }
