@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.repositories.impl;
 
+import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.NeighborhoodRepository;
@@ -39,5 +41,15 @@ public class NeighborhoodRepositoryImpl implements NeighborhoodRepository {
     @Override
     public ArrayList<Neighborhood> getNeighborhoods() {
         return propTech.getNeighborhoods();
+    }
+
+    @Override
+    public Optional<Neighborhood> findByNameCityZone(String name, City city, Zone zone) {
+        for (Neighborhood n : propTech.getNeighborhoods()) {
+            if (n.getName().equals(name) && n.getCity().equals(city) && n.getZone().equals(zone)) {
+                return Optional.of(n);
+            }
+        }
+        return Optional.empty();
     }
 }
