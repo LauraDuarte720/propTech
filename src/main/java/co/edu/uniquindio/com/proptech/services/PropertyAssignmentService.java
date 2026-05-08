@@ -10,6 +10,7 @@ import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoes
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZonesNotMatchingException;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
+import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,7 +30,7 @@ public class PropertyAssignmentService {
         Agent agent = agentRepository.findByCedula(agentId)
                 .orElseThrow(() -> new AgentDoesNotExist("cedula", agentId));
 
-        if (!match(agent.getAssignedZone(), property.getNeighborhood())) {
+        if (!ZoneMatcher.match(agent.getAssignedZone(), property.getNeighborhood())) {
             throw new ZonesNotMatchingException("The zone of the agent does not match the neighborhood of the property");
         }
 
@@ -49,12 +50,4 @@ public class PropertyAssignmentService {
         return propertyRepository.save(property);
     }
 
-    public boolean match(GeographicZone zone, Neighborhood neighborhood) {
-        if (neighborhood == null) return false;
-        if (zone == null) return true;
-        if (!zone.getCity().equals(neighborhood.getCity())) return false;
-        if (zone.getZone() != null && !zone.getZone().equals(neighborhood.getZone())) return false;
-        if (zone.getNeighborhood() != null && !zone.getNeighborhood().equals(neighborhood.getName())) return false;
-        return true;
-    }
 }

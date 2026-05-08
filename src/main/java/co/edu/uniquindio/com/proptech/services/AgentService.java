@@ -12,6 +12,7 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
+import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,14 +23,12 @@ public class AgentService {
 
     AgentRepository agentRepository;
     VisitService visitService;
-    PropertyService propertyService;
     PropertyMapper propertyMapper;
     PropertyAssignmentService propertyAssignmentService;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyService propertyService, PropertyAssignmentService propertyAssignmentService) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
-        this.propertyService = propertyService;
         this.propertyMapper = propertyMapper;
         this.propertyAssignmentService = propertyAssignmentService;
     }
@@ -88,7 +87,7 @@ public class AgentService {
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
         ArrayList<Property> incompatibles = new ArrayList<>();
         for (Property property : agent.getAssignedProperties()) {
-            if (!propertyAssignmentService.match(geographicZone, property.getNeighborhood())) {
+            if (!ZoneMatcher.match(geographicZone, property.getNeighborhood())) {
                 incompatibles.add(property);
             }
         }
@@ -118,35 +117,12 @@ public class AgentService {
     }
 
 
-    private boolean match(GeographicZone zone, Neighborhood propertyNeighborhood) {
-        if (propertyNeighborhood == null) {
-            return false;
-        }
-
-        if (zone == null) {
-            return true;
-        }
-
-        if (!zone.getCity().equals(propertyNeighborhood.getCity())) {
-            return false;
-        }
-
-        if (zone.getZone() != null && !zone.getZone().equals(propertyNeighborhood.getZone())) {
-            return false;
-        }
-
-        if (zone.getNeighborhood() != null && !zone.getNeighborhood().equals(propertyNeighborhood.getName())) {
-            return false;
-        }
-
-        return true;
-    }
 
     public LinkedList<Agent> getAgentsMatchingNeighbor(Neighborhood neighborhood) {
         LinkedList<Agent> matching = new LinkedList<>();
         HashTable<String, Agent> agents = agentRepository.getAgents();
         for (Agent agent : agents.values()) {
-            if (match(agent.getAssignedZone(), neighborhood)) {
+            if (ZoneMatcher.match(agent.getAssignedZone(), neighborhood)) {
                 matching.addLast(agent);
             }
         }
