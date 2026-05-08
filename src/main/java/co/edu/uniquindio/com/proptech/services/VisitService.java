@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -22,7 +23,7 @@ public class VisitService {
         boolean exists = visitRepository.findById(visit.getId()).isPresent();
 
         if (exists) {
-            throw new RuntimeException("A visit with this ID already exists");
+            throw new VisitAlreadyExists("id", visit.getId());
         }
 
         visit.setId(CodeGenerator.generateVisitCode());
@@ -41,12 +42,12 @@ public class VisitService {
         }).orElseThrow(() -> new RuntimeException("No visit found with this ID: " + visit.getId()));
     }
 
-    public void deleteVisit(Visit visit) {
-        if (visitRepository.findById(visit.getId()).isEmpty()) {
+    public void deleteVisit(String visitId) {
+        if (visitRepository.findById(visitId).isEmpty()) {
             throw new RuntimeException("No visit found with this ID");
         }
 
-        visitRepository.deleteById(visit.getId());
+        visitRepository.deleteById(visitId);
     }
 
     public LinkedList<Visit> getAllVisits() {

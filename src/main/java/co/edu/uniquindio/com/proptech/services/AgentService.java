@@ -3,10 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.config.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
 import co.edu.uniquindio.com.proptech.domain.model.*;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.AgentAlreadyExists;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.AgentDoesNotExist;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZoneChangeConflictException;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZonesNotMatchingException;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
@@ -41,12 +38,14 @@ public class AgentService {
         return agentRepository.save(agent);
     }
 
-    public Agent updateAgent(Agent agent) {
+    public Agent updateAgent(Agent agent, boolean confirm) {
         return agentRepository.findByCedula(agent.getCedula()).map(existing -> {
             Optional.ofNullable(agent.getName()).ifPresent(existing::setName);
             Optional.ofNullable(agent.getUsername()).ifPresent(existing::setUsername);
             Optional.ofNullable(agent.getContact()).ifPresent(existing::setContact);
             Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);
+            Optional.ofNullable(agent.getAssignedZone())
+                    .ifPresent(zone -> updateGeographicZone(zone, existing, confirm));
             return agentRepository.save(existing);
         }).orElseThrow(() -> new AgentDoesNotExist("cedula", agent.getCedula()));
     }
@@ -95,6 +94,9 @@ public class AgentService {
     }
 
     public void updateGeographicZone(GeographicZone newGeographicZone, Agent agent, boolean confirm) {
+        if (agent.hasVisits()) {
+            throw new AgentHasPendingVisitsException(agent.getCedula());
+        }
         ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, newGeographicZone);
 
         if (!confirm && !incompatibleProperties.isEmpty()) {

@@ -1,8 +1,11 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.config.mappers.impl.AgentMapper;
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NotNullOperationTypeException;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.OperationDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -13,10 +16,13 @@ import java.util.Optional;
 @Service
 public class OperationService {
 
+
+    private final AgentService agentService;
     OperationRepository operationRepository;
 
-    public OperationService(OperationRepository operationRepository) {
+    public OperationService(OperationRepository operationRepository, AgentMapper agentMapper, AgentService agentService) {
         this.operationRepository = operationRepository;
+        this.agentService = agentService;
     }
 
     public Operation registerOperation(Operation operation) {
@@ -44,54 +50,37 @@ public class OperationService {
             Optional.ofNullable(operation.getCommission()).ifPresent(existing::setCommission);
             Optional.ofNullable(operation.getProcessStatus()).ifPresent(existing::setProcessStatus);
             return operationRepository.update(existing);
-        }).orElseThrow(() -> new RuntimeException("No existe una operación con ese ID: " + operation.getId()));
+        }).orElseThrow(() -> new OperationDoesNotExist("id", operation.getId()));
     }
 
-    public void deleteOperation(Operation operation) {
-        if (operationRepository.findById(operation.getId()).isEmpty()) {
-            throw new RuntimeException("No existe una operación con ese ID");
+    public void deleteOperation(String operationId) {
+        if (operationRepository.findById(operationId).isEmpty()) {
+            throw new OperationDoesNotExist("id", operationId);
         }
 
-        operationRepository.deleteById(operation.getId());
+        operationRepository.deleteById(operationId);
     }
 
     public LinkedList<Operation> getAllOperations() {
-        LinkedList<Operation> operations = operationRepository.getOperations();
-
-        if (operations == null || operations.isEmpty()) {
-            throw new RuntimeException("No hay operaciones registradas");
-        }
-
-        return operations;
+        return operationRepository.getOperations();
     }
 
     public Operation getOperationById(String id) {
         return operationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No existe una operación con ese ID: " + id));
+                .orElseThrow(() -> new OperationDoesNotExist("id", id));
     }
 
     public LinkedList<Operation> getOperationsByType(OperationType type) {
         if (type == null) {
-            throw new RuntimeException("El tipo de operación no puede ser nulo");
+            throw new NotNullOperationTypeException("The type of the operation can not be null");
         }
-        LinkedList<Operation> operations = operationRepository.getOperationsByType(type);
-        if (operations.isEmpty()) {
-            throw new RuntimeException("No hay operaciones de tipo: " + type);
-        }
-        return operations;
+        return operationRepository.getOperationsByType(type);
     }
 
-    public LinkedList<Operation> getOperationsByAgent(Agent agent) {
-        if (agent == null) {
-            throw new RuntimeException("El agente de la operación no puede ser nulo");
-        }
+    public LinkedList<Operation> getOperationsByAgent(String agentId) {
+        Agent agent = agentService.getAgentByCedula(agentId);
+        return operationRepository.getOperationsByAgent(agent);
 
-        LinkedList<Operation> result = operationRepository.getOperationsByAgent(agent);
 
-        if (result.isEmpty()) {
-            throw new RuntimeException("No hay operaciones del agente: " + agent.getCedula());
-        }
-
-        return result;
     }
 }

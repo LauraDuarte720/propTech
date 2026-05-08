@@ -4,6 +4,8 @@ import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientAlreadyExists;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
@@ -24,7 +26,7 @@ public class ClientService {
     public Client registerClient(Client client) {
         boolean exists = clientRepository.findByCedula(client.getCedula()).isPresent();
         if (exists) {
-            throw new RuntimeException("A client with this ID already exists");
+            throw new ClientAlreadyExists("id", client.getCedula());
         }
         return clientRepository.save(client);
     }
@@ -42,14 +44,14 @@ public class ClientService {
             Optional.ofNullable(client.getDesiredPropertyType()).ifPresent(existing::setDesiredPropertyType);
             Optional.ofNullable(client.getInterestZones()).ifPresent(existing::setInterestZones);
             return clientRepository.save(existing);
-        }).orElseThrow(() -> new RuntimeException("No client found with this ID: " + client.getCedula()));
+        }).orElseThrow(() -> new ClientDoesNotExist("id", client.getCedula()));
     }
 
-    public void deleteClient(Client client) {
-        if (clientRepository.findByCedula(client.getCedula()).isEmpty()) {
-            throw new RuntimeException("No client found with this ID");
+    public void deleteClient(String cedula) {
+        if (clientRepository.findByCedula(cedula).isEmpty()) {
+            throw new ClientDoesNotExist("id", cedula);
         }
-        clientRepository.deleteById(client.getCedula());
+        clientRepository.deleteById(cedula);
     }
 
     public HashTable<String, Client> getClients() {
@@ -66,15 +68,8 @@ public class ClientService {
                 .orElseThrow(() -> new RuntimeException("No client found with this ID: " + cedula));
     }
 
-    public UserInteraction registerUserInteraction(Client client, UserInteraction userInteraction) {
-
-        if (client == null) {
-            throw new RuntimeException("Client cannot be null");
-        }
-
-        if (userInteraction == null) {
-            throw new RuntimeException("Interaction cannot be null");
-        }
+    public UserInteraction registerUserInteraction(UserInteraction userInteraction) {
+        Client client = userInteraction.getClient();
         userInteraction.setId(CodeGenerator.generateInteractionCode());
         userInteraction.setTimestamp(LocalDateTime.now());
         userInteraction.setClient(client);
@@ -82,7 +77,8 @@ public class ClientService {
         return userInteraction;
     }
 
-    public ArrayList<Property> getFavorites(Client client) {
+    public ArrayList<Property> getFavorites(String clientId) {
+        Client client = getClientByCedula(clientId);
         ArrayList<UserInteraction> saved = client.getInteractionsByType(InteractionType.SAVED);
         ArrayList<Property> favorites = new ArrayList<>();
         for (int i = 0; i < saved.size(); i++) {
@@ -95,10 +91,8 @@ public class ClientService {
     }
 
 
-    public HashTable<InteractionType, ArrayList<UserInteraction>> getUserInteractions(Client client) {
-        if (client == null) {
-            throw new RuntimeException("Client cannot be null");
-        }
+    public HashTable<InteractionType, ArrayList<UserInteraction>> getUserInteractions(String clientId) {
+        Client client = getClientByCedula(clientId);
         HashTable<InteractionType, ArrayList<UserInteraction>> interactions = client.getInteractionHistory();
 
         if (interactions == null || interactions.isEmpty()) {
