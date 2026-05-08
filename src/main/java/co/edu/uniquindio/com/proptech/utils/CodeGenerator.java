@@ -14,6 +14,7 @@ public class CodeGenerator {
     private static int operationCounter = 1;
     private static int zoneCounter = 1;
     private static int alertCounter = 1;
+    private static int neighborCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -61,6 +62,9 @@ public class CodeGenerator {
     public static String generateZoneCode() {
         return "ZON-" + String.format("%04d", zoneCounter++);
     }
+    public static String generateNeighborCode() {
+        return "NGB-" + String.format("%04d", neighborCounter++);
+    }
 
 
     private static String getAlertPrefix(AlertType type) {
@@ -77,4 +81,6 @@ public class CodeGenerator {
     public static String generateAlertCode(AlertType type) {
         return getAlertPrefix(type) + "-" + String.format("%04d", alertCounter++);
     }
+
+
 }
