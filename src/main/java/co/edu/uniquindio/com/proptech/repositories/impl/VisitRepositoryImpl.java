@@ -18,22 +18,38 @@ public class VisitRepositoryImpl implements VisitRepository {
 
     @Override
     public Visit save(Visit visit) {
-        return propTech.addVisit(visit);
+        propTech.getVisits().addLast(visit);
+        return visit;
     }
 
     @Override
     public Optional<Visit> findById(String id) {
-        return Optional.ofNullable(propTech.getVisit(id));
+        for (int i = 0; i < propTech.getVisits().size(); i++) {
+            if (propTech.getVisits().get(i).getId().equals(id))
+                return Optional.of(propTech.getVisits().get(i));
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean deleteById(String id) {
-        return propTech.removeVisit(id);
+        for (int i = 0; i < propTech.getVisits().size(); i++) {
+            if (propTech.getVisits().get(i).getId().equals(id)) {
+                propTech.getVisits().removeAt(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public Visit update(Visit visit) {
-        return propTech.updateVisit(visit);
+        for (int i = 0; i < propTech.getVisits().size(); i++) {
+            if (propTech.getVisits().get(i).getId().equals(visit.getId())) {
+                propTech.getVisits().set(i, visit);
+            }
+        }
+        return visit;
     }
 
     @Override
@@ -45,10 +61,8 @@ public class VisitRepositoryImpl implements VisitRepository {
     public LinkedList<Visit> getVisitsByProperty(String propertyCode) {
         LinkedList<Visit> result = new LinkedList<>();
         for (Visit visit : propTech.getVisits()) {
-            if (visit.getProperty() != null
-                    && visit.getProperty().getCode().equals(propertyCode)) {
+            if (visit.getProperty() != null && visit.getProperty().getCode().equals(propertyCode))
                 result.addLast(visit);
-            }
         }
         return result;
     }
@@ -57,10 +71,8 @@ public class VisitRepositoryImpl implements VisitRepository {
     public LinkedList<Visit> getVisitsByClient(String clientCedula) {
         LinkedList<Visit> result = new LinkedList<>();
         for (Visit visit : propTech.getVisits()) {
-            if (visit.getClient() != null
-                    && visit.getClient().getCedula().equals(clientCedula)) {
+            if (visit.getClient() != null && visit.getClient().getCedula().equals(clientCedula))
                 result.addLast(visit);
-            }
         }
         return result;
     }
@@ -69,12 +81,9 @@ public class VisitRepositoryImpl implements VisitRepository {
     public LinkedList<Visit> getVisitsByAgent(String agentCedula) {
         LinkedList<Visit> result = new LinkedList<>();
         for (Visit visit : propTech.getVisits()) {
-            if (visit.getAgent() != null
-                    && visit.getAgent().getCedula().equals(agentCedula)) {
+            if (visit.getAgent() != null && visit.getAgent().getCedula().equals(agentCedula))
                 result.addLast(visit);
-            }
         }
         return result;
     }
-
 }

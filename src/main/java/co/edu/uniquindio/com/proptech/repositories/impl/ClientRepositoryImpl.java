@@ -18,23 +18,22 @@ public class ClientRepositoryImpl implements ClientRepository {
 
     @Override
     public Client save(Client client) {
-        return propTech.addUpdateClient(client);
+        propTech.getClients().put(client.getCedula(), client);
+        return client;
     }
 
     @Override
     public Optional<Client> findByCedula(String cedula) {
-        return Optional.ofNullable(propTech.getClient(cedula));
+        return Optional.ofNullable(propTech.getClients().get(cedula));
     }
 
     @Override
     public boolean deleteById(String cedula) {
-        return propTech.removeClient(cedula);
+        return propTech.getClients().remove(cedula);
     }
 
     @Override
     public HashTable<String, Client> getClients() {
         return propTech.getClients();
     }
-
-
 }

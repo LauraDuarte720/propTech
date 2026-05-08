@@ -20,23 +20,38 @@ public class OperationRepositoryImpl implements OperationRepository {
 
     @Override
     public Operation save(Operation operation) {
-        return propTech.addOperation(operation);
+        propTech.getOperations().addLast(operation);
+        return operation;
     }
 
     @Override
     public Optional<Operation> findById(String id) {
-        return Optional.ofNullable(propTech.getOperation(id));
+        for (int i = 0; i < propTech.getOperations().size(); i++) {
+            if (propTech.getOperations().get(i).getId().equals(id))
+                return Optional.of(propTech.getOperations().get(i));
+        }
+        return Optional.empty();
     }
-
 
     @Override
     public boolean deleteById(String id) {
-        return propTech.removeOperation(id);
+        for (int i = 0; i < propTech.getOperations().size(); i++) {
+            if (propTech.getOperations().get(i).getId().equals(id)) {
+                propTech.getOperations().removeAt(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public Operation update(Operation operation) {
-        return propTech.updateOperation(operation);
+        for (int i = 0; i < propTech.getOperations().size(); i++) {
+            if (propTech.getOperations().get(i).getId().equals(operation.getId())) {
+                propTech.getOperations().set(i, operation);
+            }
+        }
+        return operation;
     }
 
     @Override
@@ -46,43 +61,34 @@ public class OperationRepositoryImpl implements OperationRepository {
 
     @Override
     public LinkedList<Operation> getOperationsByType(OperationType operationType) {
-        LinkedList<Operation> all = propTech.getOperations();
         LinkedList<Operation> result = new LinkedList<>();
-        for (int i = 0; i < all.size(); i++) {
-            Operation op = all.get(i);
-            if (op.getOperationType() == operationType) {
+        for (int i = 0; i < propTech.getOperations().size(); i++) {
+            Operation op = propTech.getOperations().get(i);
+            if (op.getOperationType() == operationType)
                 result.addLast(op);
-            }
         }
         return result;
     }
 
     @Override
     public LinkedList<Operation> getOperationsByAgent(Agent agent) {
-        LinkedList<Operation> all = propTech.getOperations();
         LinkedList<Operation> result = new LinkedList<>();
-
-        for (int i = 0; i < all.size(); i++) {
-            Operation op = all.get(i);
-            if (op.getAgent().equals(agent)) {
+        for (int i = 0; i < propTech.getOperations().size(); i++) {
+            Operation op = propTech.getOperations().get(i);
+            if (op.getAgent().equals(agent))
                 result.addLast(op);
-            }
         }
         return result;
     }
 
     @Override
     public LinkedList<Operation> getOperationsByProperty(String propertyCode) {
-        LinkedList<Operation> all = propTech.getOperations();
         LinkedList<Operation> result = new LinkedList<>();
-        for (int i = 0; i < all.size(); i++) {
-            Operation op = all.get(i);
-            if (op.getProperty() != null
-                    && op.getProperty().getCode().equals(propertyCode)) {
+        for (int i = 0; i < propTech.getOperations().size(); i++) {
+            Operation op = propTech.getOperations().get(i);
+            if (op.getProperty() != null && op.getProperty().getCode().equals(propertyCode))
                 result.addLast(op);
-            }
         }
         return result;
     }
-
 }

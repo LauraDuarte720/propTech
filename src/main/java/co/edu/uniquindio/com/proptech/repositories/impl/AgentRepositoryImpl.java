@@ -18,19 +18,21 @@ public class AgentRepositoryImpl implements AgentRepository {
 
     @Override
     public Agent save(Agent agent) {
-        return propTech.addUpdateAgent(agent);
+        propTech.getAgents().put(agent.getCedula(), agent);
+        return agent;
     }
 
     @Override
     public Optional<Agent> findByCedula(String cedula) {
-        return Optional.ofNullable(propTech.getAgent(cedula));
+        return Optional.ofNullable(propTech.getAgents().get(cedula));
     }
 
     @Override
     public boolean deleteById(String cedula) {
-        return propTech.removeAgent(cedula);
+        return propTech.getAgents().remove(cedula);
     }
 
+    @Override
     public HashTable<String, Agent> getAgents() {
         return propTech.getAgents();
     }

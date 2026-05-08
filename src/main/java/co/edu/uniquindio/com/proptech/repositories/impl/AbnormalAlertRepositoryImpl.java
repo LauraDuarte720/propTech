@@ -17,21 +17,37 @@ public class AbnormalAlertRepositoryImpl implements AbnormalAlertRepository {
 
     @Override
     public AbnormalAlert save(AbnormalAlert alert) {
-        return propTech.addAbnormalAlert(alert);
+        propTech.getAbnormalAlerts().add(alert);
+        return alert;
     }
 
     @Override
     public Optional<AbnormalAlert> findById(String id) {
-        return Optional.ofNullable(propTech.getAbnormalAlert(id));
+        for (int i = 0; i < propTech.getAbnormalAlerts().size(); i++) {
+            if (propTech.getAbnormalAlerts().get(i).getId().equals(id))
+                return Optional.of(propTech.getAbnormalAlerts().get(i));
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean deleteById(String id) {
-        return propTech.removeAbnormalAlert(id);
+        for (int i = 0; i < propTech.getAbnormalAlerts().size(); i++) {
+            if (propTech.getAbnormalAlerts().get(i).getId().equals(id)) {
+                propTech.getAbnormalAlerts().remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public AbnormalAlert update(AbnormalAlert alert) {
-        return propTech.updateAbnormalAlert(alert);
+        for (int i = 0; i < propTech.getAbnormalAlerts().size(); i++) {
+            if (propTech.getAbnormalAlerts().get(i).getId().equals(alert.getId())) {
+                propTech.getAbnormalAlerts().set(i, alert);
+            }
+        }
+        return alert;
     }
 }

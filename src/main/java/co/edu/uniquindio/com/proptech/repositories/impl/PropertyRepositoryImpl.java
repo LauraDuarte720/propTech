@@ -18,17 +18,18 @@ public class PropertyRepositoryImpl implements PropertyRepository {
 
     @Override
     public Property save(Property property) {
-        return propTech.addUpdateProperty(property);
+        propTech.getProperties().put(property.getCode(), property);
+        return property;
     }
 
     @Override
     public Optional<Property> findByCode(String code) {
-        return Optional.ofNullable(propTech.getProperty(code));
+        return Optional.ofNullable(propTech.getProperties().get(code));
     }
 
     @Override
     public boolean deleteById(String code) {
-        return propTech.removeProperty(code);
+        return propTech.getProperties().remove(code);
     }
 
     @Override

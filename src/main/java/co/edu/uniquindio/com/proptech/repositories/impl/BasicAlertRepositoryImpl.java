@@ -17,21 +17,37 @@ public class BasicAlertRepositoryImpl implements BasicAlertRepository {
 
     @Override
     public BasicAlert save(BasicAlert alert) {
-        return propTech.addBasicAlert(alert);
+        propTech.getBasicAlerts().add(alert);
+        return alert;
     }
 
     @Override
     public Optional<BasicAlert> findById(String id) {
-        return Optional.ofNullable(propTech.getBasicAlert(id));
+        for (int i = 0; i < propTech.getBasicAlerts().size(); i++) {
+            if (propTech.getBasicAlerts().get(i).getId().equals(id))
+                return Optional.of(propTech.getBasicAlerts().get(i));
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean deleteById(String id) {
-        return propTech.removeBasicAlert(id);
+        for (int i = 0; i < propTech.getBasicAlerts().size(); i++) {
+            if (propTech.getBasicAlerts().get(i).getId().equals(id)) {
+                propTech.getBasicAlerts().remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public BasicAlert update(BasicAlert alert) {
-        return propTech.updateBasicAlert(alert);
+        for (int i = 0; i < propTech.getBasicAlerts().size(); i++) {
+            if (propTech.getBasicAlerts().get(i).getId().equals(alert.getId())) {
+                propTech.getBasicAlerts().set(i, alert);
+            }
+        }
+        return alert;
     }
 }

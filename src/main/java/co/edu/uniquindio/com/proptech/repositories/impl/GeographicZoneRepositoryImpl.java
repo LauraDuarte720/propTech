@@ -10,30 +10,46 @@ import java.util.Optional;
 @Repository
 public class GeographicZoneRepositoryImpl implements GeographicZoneRepository {
 
-    private PropTech propTech;
+    private final PropTech propTech;
 
     public GeographicZoneRepositoryImpl(PropTech propTech) {
         this.propTech = propTech;
     }
 
     @Override
-    public GeographicZone save(GeographicZone geographicZone) {
-        return propTech.addGeographicZone(geographicZone);
+    public GeographicZone save(GeographicZone zone) {
+        propTech.getGeographicZones().add(zone);
+        return zone;
     }
 
     @Override
     public Optional<GeographicZone> findById(String id) {
-        return Optional.ofNullable(propTech.getGeographicZone(id));
+        for (int i = 0; i < propTech.getGeographicZones().size(); i++) {
+            if (propTech.getGeographicZones().get(i).getId().equals(id))
+                return Optional.of(propTech.getGeographicZones().get(i));
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean deleteById(String id) {
-        return propTech.removeGeographicZone(id);
+        for (int i = 0; i < propTech.getGeographicZones().size(); i++) {
+            if (propTech.getGeographicZones().get(i).getId().equals(id)) {
+                propTech.getGeographicZones().remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public GeographicZone update(GeographicZone geographicZone) {
-        return propTech.updateGeographicZone(geographicZone);
+    public GeographicZone update(GeographicZone zone) {
+        for (int i = 0; i < propTech.getGeographicZones().size(); i++) {
+            if (propTech.getGeographicZones().get(i).getId().equals(zone.getId())) {
+                propTech.getGeographicZones().set(i, zone);
+            }
+        }
+        return zone;
     }
 
     @Override

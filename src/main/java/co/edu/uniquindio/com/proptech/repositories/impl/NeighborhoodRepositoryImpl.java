@@ -20,22 +20,38 @@ public class NeighborhoodRepositoryImpl implements NeighborhoodRepository {
 
     @Override
     public Neighborhood save(Neighborhood neighborhood) {
-        return propTech.addNeighborhood(neighborhood);
+        propTech.getNeighborhoods().add(neighborhood);
+        return neighborhood;
     }
 
     @Override
     public Optional<Neighborhood> findById(String id) {
-        return Optional.ofNullable(propTech.getNeighborhood(id));
+        for (int i = 0; i < propTech.getNeighborhoods().size(); i++) {
+            if (propTech.getNeighborhoods().get(i).getId().equals(id))
+                return Optional.of(propTech.getNeighborhoods().get(i));
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean deleteById(String id) {
-        return propTech.removeNeighborhood(id);
+        for (int i = 0; i < propTech.getNeighborhoods().size(); i++) {
+            if (propTech.getNeighborhoods().get(i).getId().equals(id)) {
+                propTech.getNeighborhoods().remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public Neighborhood update(Neighborhood neighborhood) {
-        return propTech.updateNeighborhood(neighborhood);
+        for (int i = 0; i < propTech.getNeighborhoods().size(); i++) {
+            if (propTech.getNeighborhoods().get(i).getId().equals(neighborhood.getId())) {
+                propTech.getNeighborhoods().set(i, neighborhood);
+            }
+        }
+        return neighborhood;
     }
 
     @Override
@@ -45,10 +61,10 @@ public class NeighborhoodRepositoryImpl implements NeighborhoodRepository {
 
     @Override
     public Optional<Neighborhood> findByNameCityZone(String name, City city, Zone zone) {
-        for (Neighborhood n : propTech.getNeighborhoods()) {
-            if (n.getName().equals(name) && n.getCity().equals(city) && n.getZone().equals(zone)) {
+        for (int i = 0; i < propTech.getNeighborhoods().size(); i++) {
+            Neighborhood n = propTech.getNeighborhoods().get(i);
+            if (n.getName().equals(name) && n.getCity().equals(city) && n.getZone().equals(zone))
                 return Optional.of(n);
-            }
         }
         return Optional.empty();
     }
