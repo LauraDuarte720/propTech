@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.repositories.NeighborhoodRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class NeighborhoodService {
         if (exists) {
             throw new RuntimeException("A neighborhood with this ID already exists");
         }
+        neighborhood.setId(CodeGenerator.generateNeighborCode());
 
         return neighborhoodRepository.save(neighborhood);
     }
@@ -56,5 +58,11 @@ public class NeighborhoodService {
     public Neighborhood getNeighborhoodById(String id) {
         return neighborhoodRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No neighborhood found with this ID: " + id));
+    }
+
+    public Neighborhood findOrCreate(Neighborhood neighborhood) {
+        return neighborhoodRepository
+                .findByNameCityZone(neighborhood.getName(), neighborhood.getCity(), neighborhood.getZone())
+                .orElseGet(() -> neighborhoodRepository.save(neighborhood));
     }
 }

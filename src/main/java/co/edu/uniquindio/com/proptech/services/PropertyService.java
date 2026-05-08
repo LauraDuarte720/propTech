@@ -1,7 +1,9 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
+import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAgentConfirmationException;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
@@ -15,21 +17,33 @@ public class PropertyService {
 
     PropertyRepository propertyRepository;
     AgentService agentService;
+    NeighborhoodService neighborhoodService;
+    PropertyAssignmentService propertyAssignmentService;
 
-    public PropertyService(PropertyRepository propertyRepository, AgentService agentService) {
+    public PropertyService(PropertyRepository propertyRepository, AgentService agentService, NeighborhoodService neighborhoodService, PropertyAssignmentService propertyAssignmentService) {
         this.propertyRepository = propertyRepository;
         this.agentService = agentService;
+        this.neighborhoodService = neighborhoodService;
+        this.propertyAssignmentService = propertyAssignmentService;
     }
 
-    public Property registerProperty(Property property, String agentId) {
+    public Property registerProperty(Property property, String agentId, boolean confirm) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
         if (exists) {
             throw new RuntimeException("A property with this code already exists");
         }
+        Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
+        property.setNeighborhood(resolved);
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
-        Property property1 = agentService.addPropertyToAgent(property.getCode(), agentId);
-        return propertyRepository.save(property1);
+        if (agentId == null && !confirm) {
+            throw new NoAgentConfirmationException();
+        }
+        Property saved = propertyRepository.save(property);
 
+        if (agentId != null) {
+            propertyAssignmentService.assignAgent(saved.getCode(), agentId);
+        }
+        return saved;
     }
 
     public Property updateProperty(Property property) {
@@ -47,12 +61,11 @@ public class PropertyService {
         }).orElseThrow(() -> new RuntimeException("No property found with this code: " + property.getCode()));
     }
 
-    public void deleteProperty(Property property) {
-        if (propertyRepository.findByCode(property.getCode()).isEmpty()) {
+    public void deleteProperty(String properyId) {
+        if (propertyRepository.findByCode(properyId).isEmpty()) {
             throw new RuntimeException("No property found with this code");
         }
-
-        propertyRepository.deleteById(property.getCode());
+        propertyRepository.deleteById(properyId);
     }
 
     public HashTable<String, Property> getAllProperties() {

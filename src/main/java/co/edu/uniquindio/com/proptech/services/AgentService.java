@@ -24,12 +24,14 @@ public class AgentService {
     VisitService visitService;
     PropertyService propertyService;
     PropertyMapper propertyMapper;
+    PropertyAssignmentService propertyAssignmentService;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyService propertyService) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyService propertyService, PropertyAssignmentService propertyAssignmentService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyService = propertyService;
         this.propertyMapper = propertyMapper;
+        this.propertyAssignmentService = propertyAssignmentService;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -75,31 +77,18 @@ public class AgentService {
         return agent.getScheduledVisits();
     }
 
-    public Property addPropertyToAgent(String propertyId, String agentId) {
-        Property property = propertyService.getPropertyByCode(propertyId);
-        Agent agent = getAgentByCedula(agentId);
-
-        if (!match(agent.getAssignedZone(), property.getNeighborhood())) {
-            throw new ZonesNotMatchingException("The zone of the agent assigned with this property does not match with the neighborhood");
-        }
-        property.setAgent(agent);
-        return agent.addProperty(property);
+    public Property addPropertyToAgent(String propertyCode, String agentId) {
+        return propertyAssignmentService.assignAgent(propertyCode, agentId);
     }
 
-    public Property removePropertyFromAgent(String propertyId, String agentId) {
-        Property property = propertyService.getPropertyByCode(propertyId);
-        Agent agent = getAgentByCedula(agentId);
-        agent.removeProperty(property);
-        property.setAgent(null);
-        return property;
+    public Property removePropertyFromAgent(String propertyCode, String agentId) {
+        return propertyAssignmentService.removeAgent(propertyCode, agentId);
     }
-
 
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
         ArrayList<Property> incompatibles = new ArrayList<>();
         for (Property property : agent.getAssignedProperties()) {
-            boolean matches = match(geographicZone, property.getNeighborhood());
-            if (!matches) {
+            if (!propertyAssignmentService.match(geographicZone, property.getNeighborhood())) {
                 incompatibles.add(property);
             }
         }
