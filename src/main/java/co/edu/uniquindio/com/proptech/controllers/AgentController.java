@@ -31,7 +31,7 @@ public class AgentController {
     @PostMapping
     public ResponseEntity<AgentDtoReturn> createAgent(@Validated @RequestBody AgentDtoCreate agentDtoCreate) {
         Agent agent = agentMapper.toEntity(agentDtoCreate);
-        Agent agentSaved = agentService.registerAgent(agent);
+        Agent agentSaved = agentService.registerAgent(agentDto, idZona);
         return ResponseEntity.ok(agentMapper.toDto(agentSaved));
     }
 

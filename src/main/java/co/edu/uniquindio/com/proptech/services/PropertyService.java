@@ -21,15 +21,13 @@ public class PropertyService {
         this.agentService = agentService;
     }
 
-    public Property registerProperty(Property property, Agent agent) {
+    public Property registerProperty(Property property, String agentId) {
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
-
         if (exists) {
             throw new RuntimeException("A property with this code already exists");
         }
-
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
-        Property property1 = agentService.addProperty(property, agent);
+        Property property1 = agentService.addPropertyToAgent(property.getCode(), agentId);
         return propertyRepository.save(property1);
 
     }

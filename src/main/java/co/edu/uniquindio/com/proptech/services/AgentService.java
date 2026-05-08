@@ -22,11 +22,13 @@ public class AgentService {
 
     AgentRepository agentRepository;
     VisitService visitService;
+    PropertyService propertyService;
     PropertyMapper propertyMapper;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyService propertyService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
+        this.propertyService = propertyService;
         this.propertyMapper = propertyMapper;
     }
 
@@ -64,32 +66,19 @@ public class AgentService {
     public Visit registerVisit(Visit visit) {
         Visit saved = visitService.registerVisit(visit);
         Agent agent = saved.getAgent();
-
-        if (agent == null) {
-            throw new RuntimeException("La visita no tiene un agente asignado");
-        }
-
         agent.enqueueVisit(saved);
         return saved;
     }
 
-    public PriorityQueue<Visit> getVisitsAgent(Agent agent) {
-        if (agent == null) {
-            throw new RuntimeException("El agente no puede ser nulo");
-        }
-        if (!agent.hasVisits()) {
-            throw new RuntimeException("El agente no tiene visitas programadas");
-        }
+    public PriorityQueue<Visit> getVisitsAgent(String idAgent) {
+        Agent agent = getAgentByCedula(idAgent);
         return agent.getScheduledVisits();
     }
 
-    public Property addProperty(Property property, Agent agent) {
-        if (agent == null) {
-            throw new RuntimeException("El agente no puede ser nulo");
-        }
-        if (property == null) {
-            throw new RuntimeException("La propiedad no puede ser nula");
-        }
+    public Property addPropertyToAgent(String propertyId, String agentId) {
+        Property property = propertyService.getPropertyByCode(propertyId);
+        Agent agent = getAgentByCedula(agentId);
+
         if (!match(agent.getAssignedZone(), property.getNeighborhood())) {
             throw new ZonesNotMatchingException("The zone of the agent assigned with this property does not match with the neighborhood");
         }
@@ -97,8 +86,10 @@ public class AgentService {
         return agent.addProperty(property);
     }
 
-    public Property removePropertyFromAgent(Property property) {
-        property.getAgent().removeProperty(property);
+    public Property removePropertyFromAgent(String propertyId, String agentId) {
+        Property property = propertyService.getPropertyByCode(propertyId);
+        Agent agent = getAgentByCedula(agentId);
+        agent.removeProperty(property);
         property.setAgent(null);
         return property;
     }
@@ -119,14 +110,14 @@ public class AgentService {
         ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, newGeographicZone);
 
         if (!confirm && !incompatibleProperties.isEmpty()) {
-            List<AffectedPropertyDto> affectedProperties = List.of();
+            ArrayList<AffectedPropertyDto> affectedProperties = new ArrayList<>();
             for (Property property : incompatibleProperties) {
                 affectedProperties.add(
                         propertyMapper.toSimpleDto(property)
                 );
             }
             throw new ZoneChangeConflictException(
-                    "If you make this change, the following properties will not have an assigned agent anymore", affectedProperties);
+                    "If you make this change, the following properties will not have an assigned agent anymore", (List) affectedProperties);
         }
         agent.setAssignedZone(newGeographicZone);
         if (confirm) {
@@ -162,10 +153,9 @@ public class AgentService {
         return true;
     }
 
-    private LinkedList<Agent> getAgentsMatchingNeighbor(Neighborhood neighborhood) {
+    public LinkedList<Agent> getAgentsMatchingNeighbor(Neighborhood neighborhood) {
         LinkedList<Agent> matching = new LinkedList<>();
         HashTable<String, Agent> agents = agentRepository.getAgents();
-
         for (Agent agent : agents.values()) {
             if (match(agent.getAssignedZone(), neighborhood)) {
                 matching.addLast(agent);
