@@ -11,4 +11,7 @@ public interface VisitRepository {
     boolean deleteById(String id);
     Visit update(Visit visit);
     LinkedList<Visit> getAllVisits();
+    LinkedList<Visit> getVisitsByProperty(String propertyCode);
+    LinkedList<Visit> getVisitsByClient(String clientCedula);
+    LinkedList<Visit> getVisitsByAgent(String agentCedula);
 }

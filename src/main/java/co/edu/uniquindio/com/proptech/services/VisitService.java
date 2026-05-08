@@ -64,4 +64,16 @@ public class VisitService {
         return visitRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No visit found with this ID: " + id));
     }
+
+    public LinkedList<Visit> getVisitsByProperty(String propertyCode) {
+        return visitRepository.getVisitsByProperty(propertyCode);
+    }
+
+    public LinkedList<Visit> getVisitsByClient(String clientCedula) {
+        return visitRepository.getVisitsByClient(clientCedula);
+    }
+
+    public LinkedList<Visit> getVisitsByAgent(String agentCedula) {
+        return visitRepository.getVisitsByAgent(agentCedula);
+    }
 }

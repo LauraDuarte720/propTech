@@ -41,4 +41,40 @@ public class VisitRepositoryImpl implements VisitRepository {
         return propTech.getVisits();
     }
 
+    @Override
+    public LinkedList<Visit> getVisitsByProperty(String propertyCode) {
+        LinkedList<Visit> result = new LinkedList<>();
+        for (Visit visit : propTech.getVisits()) {
+            if (visit.getProperty() != null
+                    && visit.getProperty().getCode().equals(propertyCode)) {
+                result.addLast(visit);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public LinkedList<Visit> getVisitsByClient(String clientCedula) {
+        LinkedList<Visit> result = new LinkedList<>();
+        for (Visit visit : propTech.getVisits()) {
+            if (visit.getClient() != null
+                    && visit.getClient().getCedula().equals(clientCedula)) {
+                result.addLast(visit);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public LinkedList<Visit> getVisitsByAgent(String agentCedula) {
+        LinkedList<Visit> result = new LinkedList<>();
+        for (Visit visit : propTech.getVisits()) {
+            if (visit.getAgent() != null
+                    && visit.getAgent().getCedula().equals(agentCedula)) {
+                result.addLast(visit);
+            }
+        }
+        return result;
+    }
+
 }
