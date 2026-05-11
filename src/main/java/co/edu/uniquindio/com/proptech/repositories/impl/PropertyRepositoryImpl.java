@@ -19,7 +19,13 @@ public class PropertyRepositoryImpl implements PropertyRepository {
 
     @Override
     public Property save(Property property) {
+        Property existing = propTech.getProperties().get(property.getCode());
+        if (existing != null) {
+            propTech.getPropertiesTree().delete(existing);
+        }
+
         propTech.getProperties().put(property.getCode(), property);
+        propTech.getPropertiesTree().insert(property);
         return property;
     }
 
@@ -30,6 +36,10 @@ public class PropertyRepositoryImpl implements PropertyRepository {
 
     @Override
     public boolean deleteById(String code) {
+        Property existing = propTech.getProperties().get(code);
+        if (existing != null) {
+            propTech.getPropertiesTree().delete(existing);
+        }
         return propTech.getProperties().remove(code);
     }
 
