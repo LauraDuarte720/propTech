@@ -10,6 +10,7 @@ import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoes
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
@@ -94,5 +95,33 @@ public class PropertyService {
         return propertyRepository.getPropertiesOrderedByPrice();
     }
 
+    public ArrayList<Property> getPropertiesByPriceRange(Double minPrice, Double maxPrice) {
+        if (minPrice == null || maxPrice == null) {
+            throw new IllegalArgumentException("Los límites del rango no pueden ser nulos.");
+        }
+        if (minPrice < 0 || maxPrice < 0) {
+            throw new IllegalArgumentException("Los precios no pueden ser negativos.");
+        }
+        if (minPrice > maxPrice) {
+            throw new IllegalArgumentException("El precio mínimo no puede ser mayor al máximo.");
+        }
 
+        // Creamos Properties "fantasma" solo para usar como límites de comparación en el árbol
+        Property minBound = Property.builder().price(minPrice).build();
+        Property maxBound = Property.builder().price(maxPrice).build();
+
+        AVLTree<Property> tree = getPropertiesOrderedByPrice();
+
+        if (tree.isEmpty()) {
+            throw new PropertyDoesNotExist("rango", minPrice + " - " + maxPrice);
+        }
+
+        ArrayList<Property> result = tree.rangeSearch(minBound, maxBound);
+
+        if (result.isEmpty()) {
+            throw new PropertyDoesNotExist("rango de precio", minPrice + " - " + maxPrice);
+        }
+
+        return result;
+    }
 }
