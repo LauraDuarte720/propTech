@@ -7,6 +7,7 @@ import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientAlreadyExists;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
+import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -86,5 +87,47 @@ public class ClientService {
     public HashTable<InteractionType, ArrayList<UserInteraction>> getUserInteractions(String clientId) {
         Client client = getClientByCedula(clientId);
         return client.getInteractionHistory();
+    }
+
+    public ArrayList<Client> getClientsOrderedByBudget() {
+        AVLTree<Client> tree = clientRepository.getClientsOrderedByBudget();
+
+        if (tree.isEmpty()) {
+            throw new ClientDoesNotExist("presupuesto", "árbol vacío");
+        }
+
+        return tree.inOrder();
+    }
+
+    public ArrayList<Client> getClientsByBudgetRange(Double minBudget, Double maxBudget) {
+        if (minBudget == null || maxBudget == null) {
+            throw new IllegalArgumentException("Los límites del rango no pueden ser nulos.");
+        }
+        if (minBudget < 0 || maxBudget < 0) {
+            throw new IllegalArgumentException("Los presupuestos no pueden ser negativos.");
+        }
+        if (minBudget > maxBudget) {
+            throw new IllegalArgumentException("El presupuesto mínimo no puede ser mayor al máximo.");
+        }
+
+        Client minBound = new Client();
+        minBound.setBudget(minBudget);
+
+        Client maxBound = new Client();
+        maxBound.setBudget(maxBudget);
+
+        AVLTree<Client> tree = clientRepository.getClientsOrderedByBudget();
+
+        if (tree.isEmpty()) {
+            throw new ClientDoesNotExist("rango de presupuesto", minBudget + " - " + maxBudget);
+        }
+
+        ArrayList<Client> result = tree.rangeSearch(minBound, maxBound);
+
+        if (result.isEmpty()) {
+            throw new ClientDoesNotExist("rango de presupuesto", minBudget + " - " + maxBudget);
+        }
+
+        return result;
     }
 }

@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public class Client extends User {
+public class Client extends User implements Comparable<Client> {
 
     private String email;
     private String phone;
@@ -116,5 +116,9 @@ public class Client extends User {
         return false;
     }
 
+    @Override
+    public int compareTo(Client o) {
+        return Double.compare(this.budget, o.getBudget());
+    }
 
 }

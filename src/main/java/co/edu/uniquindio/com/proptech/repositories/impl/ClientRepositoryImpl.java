@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
+import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -18,7 +19,12 @@ public class ClientRepositoryImpl implements ClientRepository {
 
     @Override
     public Client save(Client client) {
+        Client existing = propTech.getClients().get(client.getCedula());
+        if (existing != null) {
+            propTech.getClientsTree().delete(existing);
+        }
         propTech.getClients().put(client.getCedula(), client);
+        propTech.getClientsTree().insert(client);
         return client;
     }
 
@@ -29,11 +35,20 @@ public class ClientRepositoryImpl implements ClientRepository {
 
     @Override
     public boolean deleteById(String cedula) {
+        Client existing = propTech.getClients().get(cedula);
+        if (existing != null) {
+            propTech.getClientsTree().delete(existing);
+        }
         return propTech.getClients().remove(cedula);
     }
 
     @Override
     public HashTable<String, Client> getClients() {
         return propTech.getClients();
+    }
+
+    @Override
+    public AVLTree<Client> getClientsOrderedByBudget() {
+        return propTech.getClientsTree();
     }
 }

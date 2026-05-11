@@ -25,7 +25,9 @@ public class PropTech {
     private ArrayList<GeographicZone> geographicZones = new ArrayList<>();
     private ArrayList<Neighborhood> neighborhoods = new ArrayList<>();
     private AVLTree<Property> propertiesTree = new AVLTree<>();
+    private AVLTree<Client> clientsTree = new AVLTree<>();
     public PropTech(String NIT) {
         this.NIT = NIT;
     }
+
 }
