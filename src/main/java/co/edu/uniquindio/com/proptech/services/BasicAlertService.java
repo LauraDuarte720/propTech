@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.enums.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.repositories.BasicAlertRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
@@ -51,7 +52,7 @@ public class BasicAlertService {
         createAlertHighDemand();
         createAlertPendingVisitConfirmation();
         createAlertReserveNoClosure();
-        //createAlertInactiveClient();
+        createAlertInactiveClient();
     }
 
     // ─── Helper para crear y enrutar la alerta ───────────────────────
@@ -187,35 +188,35 @@ public class BasicAlertService {
         }
     }
 
-    // ─── 6. Clientes sin interacción en 30 días ──────────────────────
+//     ─── 6. Clientes sin interacción en 30 días ──────────────────────
 
-//    public void createAlertInactiveClient() {
-//        for (Client client : clientService.getClients().values()) {
-//            boolean hasRecentInteraction = false;
-//
-//            for (InteractionType type : InteractionType.values()) {
-//                LinkedList<UserInteraction> interactions =
-//                        client.getInteractionsByType(type);
-//
-//                if (interactions != null) {
-//                    for (int i = 0; i < interactions.size(); i++) {
-//                        long days = ChronoUnit.DAYS.between(
-//                                interactions.get(i).getTimestamp().toLocalDate(),
-//                                LocalDate.now());
-//                        if (days <= 30) {
-//                            hasRecentInteraction = true;
-//                            break;
-//                        }
-//                    }
-//                }
-//                if (hasRecentInteraction) break;
-//            }
-//
-//            if (!hasRecentInteraction) {
-//                buildAndRoute(AlertType.INACTIVE_CLIENT, null, null, null, client);
-//            }
-//        }
-//    }
+    public void createAlertInactiveClient() {
+        for (Client client : clientService.getClients().values()) {
+            boolean hasRecentInteraction = false;
+
+            for (InteractionType type : InteractionType.values()) {
+                ArrayList<UserInteraction> interactions =
+                        client.getInteractionsByType(type);
+
+                if (interactions != null) {
+                    for (int i = 0; i < interactions.size(); i++) {
+                        long days = ChronoUnit.DAYS.between(
+                                interactions.get(i).getTimestamp().toLocalDate(),
+                                LocalDate.now());
+                        if (days <= 30) {
+                            hasRecentInteraction = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasRecentInteraction) break;
+            }
+
+            if (!hasRecentInteraction) {
+                buildAndRoute(AlertType.INACTIVE_CLIENT, null, null, null, client);
+            }
+        }
+    }
 
     // ─── Consultar colas ─────────────────────────────────────────────
 
