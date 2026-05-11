@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
+import co.edu.uniquindio.com.proptech.domain.model.PriceHistory;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAgentConfirmationException;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyAlreadyExists;
@@ -12,6 +13,7 @@ import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -53,7 +55,15 @@ public class PropertyService {
             Optional.ofNullable(property.getAddress()).ifPresent(existing::setAddress);
             Optional.ofNullable(property.getNeighborhood()).ifPresent(existing::setNeighborhood);
             Optional.ofNullable(property.getPurpose()).ifPresent(existing::setPurpose);
-            Optional.ofNullable(property.getPrice()).ifPresent(existing::setPrice);
+            Optional.ofNullable(property.getPrice()).ifPresent(newPrice -> {
+                PriceHistory record = PriceHistory.builder()
+                        .oldPrice(existing.getPrice())
+                        .newPrice(newPrice)
+                        .changedAt(LocalDateTime.now())
+                        .build();
+                existing.getPriceHistory().addLast(record);
+                existing.setPrice(newPrice);
+            });
             Optional.ofNullable(property.getArea()).ifPresent(existing::setArea);
             Optional.ofNullable(property.getNumBedrooms()).ifPresent(existing::setNumBedrooms);
             Optional.ofNullable(property.getNumBathrooms()).ifPresent(existing::setNumBathrooms);

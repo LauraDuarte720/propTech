@@ -4,6 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.enums.Purpose;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import lombok.*;
 
 
@@ -37,4 +38,7 @@ public class Property {
     private boolean available;
 
     private Agent agent;
+
+    @Builder.Default
+    private LinkedList<PriceHistory> priceHistory = new LinkedList<>();
 }
