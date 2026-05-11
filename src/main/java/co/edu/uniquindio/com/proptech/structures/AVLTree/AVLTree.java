@@ -1,7 +1,7 @@
 package co.edu.uniquindio.com.proptech.structures.AVLTree;
 
-import java.util.ArrayList;
-import java.util.List;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+
 
 public class AVLTree<T extends Comparable<T>> {
 
@@ -76,7 +76,7 @@ public class AVLTree<T extends Comparable<T>> {
             return rotateLeft(node);
         }
 
-        return node; // already balanced
+        return node;
     }
 
     public void insert(T data) {
@@ -91,7 +91,7 @@ public class AVLTree<T extends Comparable<T>> {
         int cmp = data.compareTo(node.data);
         if      (cmp < 0) node.left  = insert(node.left,  data);
         else if (cmp > 0) node.right = insert(node.right, data);
-        else { size--; return node; } // duplicate: skip
+        else { size--; return node; }
 
         return rebalance(node);
     }
@@ -113,16 +113,14 @@ public class AVLTree<T extends Comparable<T>> {
         } else if (cmp > 0) {
             node.right = delete(node.right, data);
         } else {
-            // Node found
             size--;
             if (node.left  == null) return node.right;
             if (node.right == null) return node.left;
 
-            // Replace with in-order successor (minimum of right subtree)
             AVLNode<T> successor = minNode(node.right);
             node.data  = successor.data;
             node.right = delete(node.right, successor.data);
-            size++; // compensate double decrement
+            size++;
         }
         return rebalance(node);
     }
@@ -133,23 +131,10 @@ public class AVLTree<T extends Comparable<T>> {
     }
 
 
-
-    /**
-     * Checks whether the tree contains a given value.
-     *
-     * @param data Value to search for
-     * @return true if found, false otherwise
-     */
     public boolean contains(T data) {
         return search(root, data) != null;
     }
 
-    /**
-     * Retrieves the stored value equal to the given data.
-     *
-     * @param data Value to search for
-     * @return The stored element, or null if not found
-     */
     public T get(T data) {
         AVLNode<T> result = search(root, data);
         return (result == null) ? null : result.data;
@@ -164,48 +149,35 @@ public class AVLTree<T extends Comparable<T>> {
     }
 
 
-
-
-    public List<T> rangeSearch(T min, T max) {
+    public ArrayList<T> rangeSearch(T min, T max) {
         if (min == null || max == null)
             throw new IllegalArgumentException("Range bounds cannot be null.");
         if (min.compareTo(max) > 0)
             throw new IllegalArgumentException("min cannot be greater than max.");
 
-        List<T> result = new ArrayList<>();
+        ArrayList<T> result = new ArrayList<>();
         rangeSearch(root, min, max, result);
         return result;
     }
 
-    private void rangeSearch(AVLNode<T> node, T min, T max, List<T> result) {
+    private void rangeSearch(AVLNode<T> node, T min, T max, ArrayList<T> result) {
         if (node == null) return;
 
         int cmpMin = min.compareTo(node.data);
         int cmpMax = max.compareTo(node.data);
 
-        // Explore left subtree only if it may contain values >= min
         if (cmpMin < 0) rangeSearch(node.left, min, max, result);
 
-        // Include current node if it falls within range
         if (cmpMin <= 0 && cmpMax >= 0) result.add(node.data);
 
-        // Explore right subtree only if it may contain values <= max
         if (cmpMax > 0) rangeSearch(node.right, min, max, result);
     }
 
-    /**
-     * Returns the smallest element in the tree.
-     * @throws IllegalStateException if the tree is empty
-     */
     public T minimum() {
         if (root == null) throw new IllegalStateException("Tree is empty.");
         return minNode(root).data;
     }
 
-    /**
-     * Returns the largest element in the tree.
-     * @throws IllegalStateException if the tree is empty
-     */
     public T maximum() {
         if (root == null) throw new IllegalStateException("Tree is empty.");
         AVLNode<T> node = root;
@@ -214,49 +186,44 @@ public class AVLTree<T extends Comparable<T>> {
     }
 
 
-
-    /** In-order traversal — returns elements sorted ascending */
-    public List<T> inOrder() {
-        List<T> list = new ArrayList<>();
+    public ArrayList<T> inOrder() {
+        ArrayList<T> list = new ArrayList<>();
         inOrder(root, list);
         return list;
     }
 
-    private void inOrder(AVLNode<T> node, List<T> list) {
+    private void inOrder(AVLNode<T> node, ArrayList<T> list) {
         if (node == null) return;
         inOrder(node.left,  list);
         list.add(node.data);
         inOrder(node.right, list);
     }
 
-    /** Pre-order traversal */
-    public List<T> preOrder() {
-        List<T> list = new ArrayList<>();
+    public ArrayList<T> preOrder() {
+        ArrayList<T> list = new ArrayList<>();
         preOrder(root, list);
         return list;
     }
 
-    private void preOrder(AVLNode<T> node, List<T> list) {
+    private void preOrder(AVLNode<T> node, ArrayList<T> list) {
         if (node == null) return;
         list.add(node.data);
         preOrder(node.left,  list);
         preOrder(node.right, list);
     }
 
-    /** Post-order traversal */
-    public List<T> postOrder() {
-        List<T> list = new ArrayList<>();
+    public ArrayList<T> postOrder() {
+        ArrayList<T> list = new ArrayList<>();
         postOrder(root, list);
         return list;
     }
 
-    private void postOrder(AVLNode<T> node, List<T> list) {
+    private void postOrder(AVLNode<T> node, ArrayList<T> list) {
         if (node == null) return;
         postOrder(node.left,  list);
         postOrder(node.right, list);
         list.add(node.data);
     }
-
 
 
     public boolean isEmpty() { return root == null; }

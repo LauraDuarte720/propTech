@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Property {
+public class Property implements Comparable<Property>{
     
     private String code;
     
@@ -41,4 +41,9 @@ public class Property {
 
     @Builder.Default
     private LinkedList<PriceHistory> priceHistory = new LinkedList<>();
+
+    @Override
+    public int compareTo(Property o) {
+        return Double.compare(price, o.getPrice());
+    }
 }

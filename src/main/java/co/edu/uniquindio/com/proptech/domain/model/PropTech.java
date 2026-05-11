@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
+import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
@@ -23,7 +24,7 @@ public class PropTech {
     private ArrayList<AbnormalAlert> abnormalAlerts = new ArrayList<>();
     private ArrayList<GeographicZone> geographicZones = new ArrayList<>();
     private ArrayList<Neighborhood> neighborhoods = new ArrayList<>();
-
+    private AVLTree<Property> propertiesTree = new AVLTree<>();
     public PropTech(String NIT) {
         this.NIT = NIT;
     }

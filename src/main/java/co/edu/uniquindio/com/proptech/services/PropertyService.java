@@ -9,6 +9,7 @@ import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyAlre
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
+import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
@@ -88,4 +89,10 @@ public class PropertyService {
         return propertyRepository.findByCode(code)
                 .orElseThrow(() -> new PropertyDoesNotExist("code", code));
     }
+
+    public AVLTree<Property> getPropertiesOrderedByPrice(){
+        return propertyRepository.getPropertiesOrderedByPrice();
+    }
+
+
 }

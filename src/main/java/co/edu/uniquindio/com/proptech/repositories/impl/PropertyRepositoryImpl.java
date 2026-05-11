@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
+import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -35,5 +36,10 @@ public class PropertyRepositoryImpl implements PropertyRepository {
     @Override
     public HashTable<String, Property> getProperties() {
         return propTech.getProperties();
+    }
+
+    @Override
+    public AVLTree<Property> getPropertiesOrderedByPrice() {
+        return propTech.getPropertiesTree();
     }
 }
