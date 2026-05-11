@@ -1,8 +1,12 @@
 package co.edu.uniquindio.com.proptech.utils;
 
+import co.edu.uniquindio.com.proptech.domain.enums.AlertAbnormalType;
 import co.edu.uniquindio.com.proptech.domain.enums.AlertType;
+import co.edu.uniquindio.com.proptech.domain.enums.EntityAlert;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import org.springframework.stereotype.Component;
+
+import static co.edu.uniquindio.com.proptech.domain.enums.AlertAbnormalType.*;
 
 @Component
 public class CodeGenerator {
@@ -15,6 +19,7 @@ public class CodeGenerator {
     private static int zoneCounter = 1;
     private static int alertCounter = 1;
     private static int neighborCounter = 1;
+    private static int alertAbnormalCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -83,4 +88,17 @@ public class CodeGenerator {
     }
 
 
+    private static String getAbnormalAlertPrefix(AlertAbnormalType type) {
+        return switch (type) {
+            case HIGH_VISITS_NO_CLOSING          -> "ALT-HVN";
+            case CLIENT_MULTIPLE_VISITS_NO_CONTINUITY         -> "ALT-CMV";
+            case AGENT_EXCESSIVE_OVERLOAD                -> "ALT-AEO";
+            case PROPERTY_PRICE_CHANGE -> "ALT-PPC";
+            case ZONE_INTEREST_CONCENTRATION         -> "ALT-ZIC";
+        };
+    }
+
+    public static String generateAbnormalAlertCode(AlertAbnormalType type) {
+        return getAbnormalAlertPrefix(type) + "-" + String.format("%04d", alertAbnormalCounter++);
+    }
 }
