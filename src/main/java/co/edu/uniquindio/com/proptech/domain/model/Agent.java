@@ -22,6 +22,8 @@ public class Agent extends User{
 
     private PriorityQueue<Visit> scheduledVisits;
 
+    private Queue<SupportRequest> supportRequests;
+
     private Integer closedDeals;
 
     public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, Integer closedDeals) {
@@ -30,6 +32,7 @@ public class Agent extends User{
         this.assignedZone = assignedZone;
         this.assignedProperties = new ArrayList<>();
         this.scheduledVisits = new PriorityQueue<>(Comparator.comparing(Visit::getDate));
+        this.supportRequests = new Queue<>();
         this.closedDeals = closedDeals;
     }
 
@@ -73,5 +76,18 @@ public class Agent extends User{
 
     public boolean hasVisits() {
         return !scheduledVisits.isEmpty();
+    }
+
+    public void enqueueSupportRequest(SupportRequest request) {
+        supportRequests.enqueue(request);
+    }
+    public SupportRequest dequeueSupportRequest() {
+        return supportRequests.dequeue();
+    }
+    public SupportRequest peekNextSupportRequest() {
+        return supportRequests.peekFront();
+    }
+    public boolean hasSupportRequests() {
+        return !supportRequests.isEmpty();
     }
 }
