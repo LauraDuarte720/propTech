@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.config.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
+import co.edu.uniquindio.com.proptech.domain.enums.SupportRequestStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
@@ -131,4 +132,25 @@ public class AgentService {
         return matching;
     }
 
+    public SupportRequest registerSupportRequest(SupportRequest request) {
+        Agent agent = request.getAgent();
+        agent.enqueueSupportRequest(request);
+        agentRepository.save(agent);
+        return request;
+    }
+
+    public SupportRequest getNextSupportRequest(String agentId) {
+        Agent agent = getAgentByCedula(agentId);
+        return agent.peekNextSupportRequest();
+    }
+
+    public SupportRequest attendSupportRequest(String agentId) {
+        Agent agent = getAgentByCedula(agentId);
+        SupportRequest request = agent.dequeueSupportRequest();
+        if (request != null) {
+        request.setStatus(SupportRequestStatus.ATTENDED);
+    }
+        agentRepository.save(agent);
+        return request;
+}
 }
