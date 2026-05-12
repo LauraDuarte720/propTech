@@ -6,6 +6,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.SupportRequestStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
+import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
@@ -152,5 +153,21 @@ public class AgentService {
     }
         agentRepository.save(agent);
         return request;
-}
+    }
+
+    public ArrayList<Agent> getAgentsOrderedByClosedDeals() {
+        AVLTree<Agent> tree = agentRepository.getAgentsOrderedByClosedDeals();
+
+        if (tree.isEmpty()) {
+            throw new RuntimeException("No hay asesores registrados.");
+        }
+
+
+        ArrayList<Agent> ordered = tree.inOrder();
+        ArrayList<Agent> result = new ArrayList<>();
+        for (int i = ordered.size() - 1; i >= 0; i--) {
+            result.add(ordered.get(i));
+        }
+        return result;
+    }
 }

@@ -29,5 +29,6 @@ public class PropTech {
     public PropTech(String NIT) {
         this.NIT = NIT;
     }
+    private AVLTree<Agent> agentsTree = new AVLTree<>();
 
 }

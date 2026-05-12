@@ -13,7 +13,7 @@ import java.util.Comparator;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public class Agent extends User{
+public class Agent extends User implements Comparable<Agent> {
     private String contact;
 
     private GeographicZone assignedZone;
@@ -89,5 +89,10 @@ public class Agent extends User{
     }
     public boolean hasSupportRequests() {
         return !supportRequests.isEmpty();
+    }
+
+    @Override
+    public int compareTo(Agent o) {
+        return Integer.compare(this.closedDeals, o.getClosedDeals());
     }
 }
