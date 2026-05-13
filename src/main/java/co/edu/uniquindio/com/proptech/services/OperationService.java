@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.config.mappers.impl.AgentMapper;
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
+import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NotNullOperationTypeException;
@@ -26,6 +27,11 @@ public class OperationService {
     }
 
     public Operation registerOperation(Operation operation) {
+        if (operation.getProcessStatus().equals(ProcessStatus.CLOSED)) {
+            Agent agent = operation.getAgent();
+            agent.setClosedDeals(agent.getClosedDeals() + 1);
+            agentService.updateAgent(agent, false);
+        }
         operation.setId(CodeGenerator.generateOperationCode());
         return operationRepository.save(operation);
     }
