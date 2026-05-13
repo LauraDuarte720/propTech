@@ -31,7 +31,7 @@ public class AgentController {
     @PostMapping
     public ResponseEntity<AgentDtoReturn> createAgent(@Validated @RequestBody AgentDtoCreate agentDtoCreate) {
         Agent agent = agentMapper.toEntity(agentDtoCreate);
-        Agent agentSaved = agentService.registerAgent(agentDto, idZona);
+        Agent agentSaved = agentService.registerAgent(agent);
         return ResponseEntity.ok(agentMapper.toDto(agentSaved));
     }
 
@@ -42,10 +42,13 @@ public class AgentController {
     }
 
     @PatchMapping("/{cedula}")
-    public ResponseEntity<AgentDtoReturn> updateAgent(@PathVariable String cedula, @Validated @RequestBody AgentDtoUpdate agentDtoUpdate) {
+    public ResponseEntity<AgentDtoReturn> updateAgent(
+            @PathVariable String cedula,
+            @RequestParam boolean confirm,
+            @Validated @RequestBody AgentDtoUpdate agentDtoUpdate) {
         Agent agent = agentMapper.toUpdate(agentDtoUpdate);
         agent.setCedula(cedula);
-        Agent agentSaved = agentService.updateAgent(agent);
+        Agent agentSaved = agentService.updateAgent(agent, confirm);
         return ResponseEntity.ok(agentMapper.toDto(agentSaved));
     }
 
