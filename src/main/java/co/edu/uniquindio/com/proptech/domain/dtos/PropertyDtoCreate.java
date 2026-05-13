@@ -3,8 +3,10 @@ package co.edu.uniquindio.com.proptech.domain.dtos;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.enums.Purpose;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
@@ -16,8 +18,8 @@ public class PropertyDtoCreate {
     @NotBlank(message = "Address is required")
     private String address;
 
-    @NotBlank(message = "Neighborhood ID is required")
-    private String neighborhoodId;
+    @Valid
+    private NeighborhoodDtoCreate neighborhood;
 
     @NotNull(message = "Property type is required")
     private PropertyType propertyType;

@@ -31,7 +31,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
     public Property toEntity(PropertyDtoCreate dto) {
         return Property.builder()
                 .address(dto.getAddress())
-                .neighborhood(neighborhoodService.getNeighborhoodById(dto.getNeighborhoodId()))
+                .neighborhood(neighborhoodMapper.toEntity(dto.getNeighborhood()))
                 .propertyType(dto.getPropertyType())
                 .purpose(dto.getPurpose())
                 .price(dto.getPrice())
@@ -66,7 +66,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
         return Property.builder()
                 .code(dto.getCode())
                 .address(dto.getAddress())
-                .neighborhood(dto.getNeighborhoodId() == null ? null : neighborhoodService.getNeighborhoodById(dto.getNeighborhoodId()))
+                .neighborhood(neighborhoodMapper.toEntity(dto.getNeighborhood()))
                 .propertyType(dto.getPropertyType())
                 .purpose(dto.getPurpose())
                 .price(dto.getPrice())
