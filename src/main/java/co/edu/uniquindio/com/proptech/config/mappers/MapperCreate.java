@@ -1,6 +1,3 @@
 package co.edu.uniquindio.com.proptech.config.mappers;
 
-public interface MapperCreate<E, C, R> {
-    E toEntity(C createDto);
-    R toDto(E entity);
-}
+public interface MapperCreate<E, C, R> extends MapperOnlyEntity<E, C>, MapperOnlyDto<E, R> {}
