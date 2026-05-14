@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.repositories.impl;
 
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
@@ -20,23 +21,7 @@ public class VisitRepositoryImpl implements VisitRepository {
     @Override
     public Visit save(Visit visit) {
         propTech.getVisits().addLast(visit);
-
-        // Frecuencia por inmueble
-        String propertyCode = visit.getProperty().getCode();
-        Integer freqProp = propTech.getVisitFrequencyByProperty().get(propertyCode);
-        propTech.getVisitFrequencyByProperty().put(
-                propertyCode,
-                freqProp == null ? 1 : freqProp + 1
-        );
-
-//        // Frecuencia por zona
-//        String zone = visit.getProperty().getNeighborhood().getZone().toString();
-//        Integer freqZone = propTech.getVisitFrequencyByZone().get(zone);
-//        propTech.getVisitFrequencyByZone().put(
-//                zone,
-//                freqZone == null ? 1 : freqZone + 1
-//        );
-
+        incrementFrequency(visit);
         return visit;
     }
 
@@ -52,7 +37,9 @@ public class VisitRepositoryImpl implements VisitRepository {
     @Override
     public boolean deleteById(String id) {
         for (int i = 0; i < propTech.getVisits().size(); i++) {
-            if (propTech.getVisits().get(i).getId().equals(id)) {
+            Visit visit = propTech.getVisits().get(i);
+            if (visit.getId().equals(id)) {
+                decrementFrequency(visit);
                 propTech.getVisits().removeAt(i);
                 return true;
             }
@@ -63,8 +50,14 @@ public class VisitRepositoryImpl implements VisitRepository {
     @Override
     public Visit update(Visit visit) {
         for (int i = 0; i < propTech.getVisits().size(); i++) {
-            if (propTech.getVisits().get(i).getId().equals(visit.getId())) {
+            Visit existing = propTech.getVisits().get(i);
+            if (existing.getId().equals(visit.getId())) {
+                if (!existing.getProperty().getCode().equals(visit.getProperty().getCode())) {
+                    decrementFrequency(existing);
+                    incrementFrequency(visit);
+                }
                 propTech.getVisits().set(i, visit);
+                return visit;
             }
         }
         return visit;
@@ -114,4 +107,30 @@ public class VisitRepositoryImpl implements VisitRepository {
 //    public HashTable<String, Integer> getVisitFrequencyByZone() {
 //        return propTech.getVisitFrequencyByZone();
 //    }
+
+    private void incrementFrequency(Visit visit) {
+        String propertyCode = visit.getProperty().getCode();
+        Integer freqProp = propTech.getVisitFrequencyByProperty().get(propertyCode);
+        propTech.getVisitFrequencyByProperty().put(propertyCode, freqProp == null ? 1 : freqProp + 1);
+
+//        Zone zone = visit.getProperty().getNeighborhood().getZone();
+//        Integer freqZone = propTech.getVisitFrequencyByZone().get(zone);
+//        propTech.getVisitFrequencyByZone().put(zone, freqZone == null ? 1 : freqZone + 1);
+    }
+
+    private void decrementFrequency(Visit visit) {
+        String propertyCode = visit.getProperty().getCode();
+        Integer freqProp = propTech.getVisitFrequencyByProperty().get(propertyCode);
+        if (freqProp != null) {
+            if (freqProp <= 1) propTech.getVisitFrequencyByProperty().remove(propertyCode);
+            else propTech.getVisitFrequencyByProperty().put(propertyCode, freqProp - 1);
+        }
+
+//        Zone zone = visit.getProperty().getNeighborhood().getZone();
+//        Integer freqZone = propTech.getVisitFrequencyByZone().get(zone);
+//        if (freqZone != null) {
+//            if (freqZone <= 1) propTech.getVisitFrequencyByZone().remove(zone);
+//            else propTech.getVisitFrequencyByZone().put(zone, freqZone - 1);
+//        }
+    }
 }
