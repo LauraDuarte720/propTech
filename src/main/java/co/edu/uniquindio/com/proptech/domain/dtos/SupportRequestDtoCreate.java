@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateSupportRequestDto {
+public class SupportRequestDtoCreate {
     private String clientId;
     private String propertyId;
     private String agentId;
