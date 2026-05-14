@@ -72,9 +72,7 @@ public class BasicAlertService {
 
         basicAlertRepository.save(alert);
 
-        if (type == AlertType.CONTRACT_EXPIRING
-                || type == AlertType.HIGH_DEMAND
-                || type == AlertType.INACTIVE_CLIENT) {
+        if (type == AlertType.CONTRACT_EXPIRING) {
             priorityAlerts.add(alert);
         } else {
             pendingAlerts.enqueue(alert);
