@@ -1,5 +1,8 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.PriceHistory;
@@ -123,5 +126,17 @@ public class PropertyService {
         }
 
         return result;
+    }
+
+    public HashTable<City, ArrayList<Property>> getPropertiesByCity() {
+        return propertyRepository.getPropertiesByCity();
+    }
+
+    public HashTable<PropertyType, ArrayList<Property>> getPropertiesByType() {
+        return propertyRepository.getPropertiesByType();
+    }
+
+    public HashTable<PropertyStatus, ArrayList<Property>> getPropertiesByStatus() {
+        return propertyRepository.getPropertiesByStatus();
     }
 }
