@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
+import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -19,6 +20,23 @@ public class VisitRepositoryImpl implements VisitRepository {
     @Override
     public Visit save(Visit visit) {
         propTech.getVisits().addLast(visit);
+
+        // Frecuencia por inmueble
+        String propertyCode = visit.getProperty().getCode();
+        Integer freqProp = propTech.getVisitFrequencyByProperty().get(propertyCode);
+        propTech.getVisitFrequencyByProperty().put(
+                propertyCode,
+                freqProp == null ? 1 : freqProp + 1
+        );
+
+//        // Frecuencia por zona
+//        String zone = visit.getProperty().getNeighborhood().getZone().toString();
+//        Integer freqZone = propTech.getVisitFrequencyByZone().get(zone);
+//        propTech.getVisitFrequencyByZone().put(
+//                zone,
+//                freqZone == null ? 1 : freqZone + 1
+//        );
+
         return visit;
     }
 
@@ -86,4 +104,14 @@ public class VisitRepositoryImpl implements VisitRepository {
         }
         return result;
     }
+
+    @Override
+    public HashTable<String, Integer> getVisitFrequencyByProperty() {
+        return propTech.getVisitFrequencyByProperty();
+    }
+
+//    @Override
+//    public HashTable<String, Integer> getVisitFrequencyByZone() {
+//        return propTech.getVisitFrequencyByZone();
+//    }
 }

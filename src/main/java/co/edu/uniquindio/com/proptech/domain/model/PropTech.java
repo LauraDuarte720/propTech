@@ -1,5 +1,9 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
+import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
@@ -30,5 +34,10 @@ public class PropTech {
         this.NIT = NIT;
     }
     private AVLTree<Agent> agentsTree = new AVLTree<>();
+    private HashTable<String, Integer> visitFrequencyByProperty = new HashTable<>();
+    private HashTable<Zone, Integer> visitFrequencyByZone = new HashTable<>();
+    private HashTable<City, ArrayList<Property>> propertiesByCity = new HashTable<>();
+    private HashTable<PropertyType, ArrayList<Property>> propertiesByType = new HashTable<>();
+    private HashTable<PropertyStatus, ArrayList<Property>> propertiesByStatus = new HashTable<>();
 
 }

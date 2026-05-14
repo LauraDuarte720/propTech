@@ -4,6 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
+import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
@@ -71,4 +72,20 @@ public class VisitService {
     public LinkedList<Visit> getVisitsByAgent(String agentCedula) {
         return visitRepository.getVisitsByAgent(agentCedula);
     }
+
+    public HashTable<String, Integer> getVisitFrequencyByProperty() {
+        HashTable<String, Integer> freq = visitRepository.getVisitFrequencyByProperty();
+        if (freq == null || freq.isEmpty()) {
+            throw new RuntimeException("No visit frequency data available by property.");
+        }
+        return freq;
+    }
+
+//    public HashTable<String, Integer> getVisitFrequencyByZone() {
+//        HashTable<String, Integer> freq = visitRepository.getVisitFrequencyByZone();
+//        if (freq == null || freq.isEmpty()) {
+//            throw new RuntimeException("No visit frequency data available by zone.");
+//        }
+//        return freq;
+//    }
 }
