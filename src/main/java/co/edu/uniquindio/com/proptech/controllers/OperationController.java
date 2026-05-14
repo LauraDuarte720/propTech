@@ -49,7 +49,7 @@ public class OperationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOperation(@PathVariable String id) {
-        operationService.deleteOperation(operationService.getOperationById(id));
+        operationService.deleteOperation(id);
         return ResponseEntity.noContent().build();
     }
 

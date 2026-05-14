@@ -26,11 +26,10 @@ public class PropertyController {
         this.agentMapper = agentMapper;
     }
 
-    @PostMapping
-    public ResponseEntity<PropertyDtoReturn> createProperty(@Validated @RequestBody PropertyDtoCreate propertyDtoCreate, @Validated @RequestBody AgentDtoCreate agentDtoCreate) {
+    @PostMapping("/{agentId}")
+    public ResponseEntity<PropertyDtoReturn> createProperty(@PathVariable String agentId, @Validated @RequestBody PropertyDtoCreate propertyDtoCreate, @Validated @RequestBody ConfirmDto confirmDto) {
         Property property = propertyMapper.toEntity(propertyDtoCreate);
-        Agent agent = agentMapper.toEntity(agentDtoCreate);
-        Property saved = propertyService.registerProperty(property, agent);
+        Property saved = propertyService.registerProperty(property, agentId, confirmDto.confirm());
         return ResponseEntity.ok(propertyMapper.toDto(saved));
     }
 
@@ -50,7 +49,7 @@ public class PropertyController {
 
     @DeleteMapping("/{code}")
     public ResponseEntity<Void> deleteProperty(@PathVariable String code) {
-        propertyService.deleteProperty(propertyService.getPropertyByCode(code));
+        propertyService.deleteProperty(code);
         return ResponseEntity.noContent().build();
     }
 

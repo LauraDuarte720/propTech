@@ -48,7 +48,7 @@ public class VisitController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVisit(@PathVariable String id) {
-        visitService.deleteVisit(visitService.getVisitById(id));
+        visitService.deleteVisit(id);
         return ResponseEntity.noContent().build();
     }
 
