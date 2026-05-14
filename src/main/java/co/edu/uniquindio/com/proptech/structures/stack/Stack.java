@@ -2,6 +2,8 @@ package co.edu.uniquindio.com.proptech.structures.stack;
 
 import co.edu.uniquindio.com.proptech.structures.Node;
 
+import java.util.List;
+
 
 public class Stack<T> {
 
@@ -86,5 +88,15 @@ public class Stack<T> {
             current = current.next;
         }
         return sb.append("]").toString();
+    }
+
+    public List<T> toJavaList() {
+        List<T> list = new java.util.ArrayList<>();
+        Node<T> current = top;
+        while (current != null) {
+            list.add(current.data);
+            current = current.next;
+        }
+        return list;
     }
 }

@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.structures.priorityQueue;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class PriorityQueue<T> {
 
@@ -101,5 +102,13 @@ public class PriorityQueue<T> {
             if (i < size - 1) sb.append(", ");
         }
         return sb.append("]").toString();
+    }
+
+    public List<T> toJavaList() {
+        List<T> list = new java.util.ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(heap[i].data);
+        }
+        return list;
     }
 }

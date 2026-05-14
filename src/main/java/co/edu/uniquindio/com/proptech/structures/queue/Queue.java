@@ -2,6 +2,8 @@ package co.edu.uniquindio.com.proptech.structures.queue;
 
 import co.edu.uniquindio.com.proptech.structures.Node;
 
+import java.util.List;
+
 
 public class Queue<T> {
 
@@ -103,5 +105,15 @@ public class Queue<T> {
             current = current.next;
         }
         return sb.append("] <- Rear").toString();
+    }
+
+    public java.util.List<T> toJavaList() {
+        List<T> list = new java.util.ArrayList<>();
+        Node<T> current = front;
+        while (current != null) {
+            list.add(current.data);
+            current = current.next;
+        }
+        return list;
     }
 }

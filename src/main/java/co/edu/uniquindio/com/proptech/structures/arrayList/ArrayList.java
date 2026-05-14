@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.structures.arrayList;
 
+import java.util.List;
+
 public class ArrayList<T> implements Iterable<T> {
 
     private Object[] data;
@@ -290,6 +292,16 @@ public class ArrayList<T> implements Iterable<T> {
             if (!hasNext()) throw new java.util.NoSuchElementException();
             return (T) data[cursor++];
         }
+    }
+
+    public List<T> toJavaList() {
+
+        List<T> list = new java.util.ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            list.add(get(i));
+        }
+        return list;
     }
 
     @FunctionalInterface

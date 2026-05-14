@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.structures.linkedList;
 import co.edu.uniquindio.com.proptech.structures.Node;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class LinkedList<T> implements Iterable<T>{
 
@@ -210,5 +211,14 @@ public class LinkedList<T> implements Iterable<T>{
                 return data;
             }
         };
+    }
+    public List<T> toJavaList() {
+        List<T> list = new java.util.ArrayList<>();
+        Node<T> current = head;
+        while (current != null) {
+            list.add(current.data);
+            current = current.next;
+        }
+        return list;
     }
 }

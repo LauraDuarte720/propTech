@@ -2,6 +2,8 @@ package co.edu.uniquindio.com.proptech.structures.AVLTree;
 
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 
+import java.util.List;
+
 
 public class AVLTree<T extends Comparable<T>> {
 
@@ -244,6 +246,21 @@ public class AVLTree<T extends Comparable<T>> {
         String newPrefix = prefix + (isLast ? "    " : "│   ");
         printTree(node.left,  newPrefix, false);
         printTree(node.right, newPrefix, true);
+    }
+
+
+
+    private void inOrderToJavaList(AVLNode<T> node, List<T> list) {
+        if (node == null) return;
+        inOrderToJavaList(node.left, list);
+        list.add(node.data);
+        inOrderToJavaList(node.right, list);
+    }
+
+    public List<T> toJavaList() {
+        List<T> list = new java.util.ArrayList<>();
+        inOrderToJavaList(root, list);
+        return list;
     }
 
 }

@@ -2,6 +2,8 @@ package co.edu.uniquindio.com.proptech.structures.hashTable;
 
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 
+import java.util.List;
+
 public class HashTable<K, V> {
 
     private EntryNode<K, V>[] table;
@@ -154,5 +156,31 @@ public class HashTable<K, V> {
             }
         }
         return sb.append("}").toString();
+    }
+
+    public List<K> keysToJavaList() {
+        List<K> list = new java.util.ArrayList<>();
+        for (int i = 0; i < capacity; i++) {
+            EntryNode<K, V> current = table[i];
+
+            while (current != null) {
+                list.add(current.key);
+                current = current.next;
+            }
+        }
+        return list;
+    }
+
+    public List<V> valuesToJavaList() {
+        List<V> list = new java.util.ArrayList<>();
+        for (int i = 0; i < capacity; i++) {
+            EntryNode<K, V> current = table[i];
+
+            while (current != null) {
+                list.add(current.value);
+                current = current.next;
+            }
+        }
+        return list;
     }
 }
