@@ -19,6 +19,7 @@ import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 
 @Service
@@ -28,12 +29,17 @@ public class PropertyService {
     AgentService agentService;
     NeighborhoodService neighborhoodService;
     PropertyAssignmentService propertyAssignmentService;
+    VisitService visitService;
 
-    public PropertyService(PropertyRepository propertyRepository, AgentService agentService, NeighborhoodService neighborhoodService, PropertyAssignmentService propertyAssignmentService) {
+    public PropertyService(PropertyRepository propertyRepository, AgentService agentService,
+                           NeighborhoodService neighborhoodService,
+                           PropertyAssignmentService propertyAssignmentService,
+                           VisitService visitService) {
         this.propertyRepository = propertyRepository;
         this.agentService = agentService;
         this.neighborhoodService = neighborhoodService;
         this.propertyAssignmentService = propertyAssignmentService;
+        this.visitService = visitService;
     }
 
     public Property registerProperty(Property property, String agentId, boolean confirm) {
@@ -138,5 +144,60 @@ public class PropertyService {
 
     public HashTable<PropertyStatus, ArrayList<Property>> getPropertiesByStatus() {
         return propertyRepository.getPropertiesByStatus();
+    }
+
+    public ArrayList<Property> getPropertiesOrderedByArea() {
+        ArrayList<Property> list = getAllPropertiesAsList();
+        mergeSort(list, Comparator.comparingDouble(Property::getArea));
+        return list;
+    }
+
+    public ArrayList<Property> getPropertiesOrderedByDemand() {
+        HashTable<String, Integer> frequency = visitService.getVisitFrequencyByProperty();
+        ArrayList<Property> list = getAllPropertiesAsList();
+        mergeSort(list, (a, b) -> {
+            Integer freqA = frequency.get(a.getCode());
+            Integer freqB = frequency.get(b.getCode());
+            int fa = freqA == null ? 0 : freqA;
+            int fb = freqB == null ? 0 : freqB;
+            return Integer.compare(fb, fa); // mayor demanda primero
+        });
+        return list;
+    }
+
+    private ArrayList<Property> getAllPropertiesAsList() {
+        ArrayList<Property> list = new ArrayList<>();
+        for (Property property : propertyRepository.getProperties().values()) {
+            list.add(property);
+        }
+        return list;
+    }
+
+    private void mergeSort(ArrayList<Property> list, Comparator<Property> comparator) {
+        if (list.size() <= 1) return;
+        int mid = list.size() / 2;
+
+        ArrayList<Property> left  = new ArrayList<>();
+        ArrayList<Property> right = new ArrayList<>();
+
+        for (int i = 0; i < mid; i++)        left.add(list.get(i));
+        for (int i = mid; i < list.size(); i++) right.add(list.get(i));
+
+        mergeSort(left,  comparator);
+        mergeSort(right, comparator);
+        merge(list, left, right, comparator);
+    }
+
+    private void merge(ArrayList<Property> list, ArrayList<Property> left, ArrayList<Property> right, Comparator<Property> comparator) {
+        int i = 0, j = 0, k = 0;
+        while (i < left.size() && j < right.size()) {
+            if (comparator.compare(left.get(i), right.get(j)) <= 0) {
+                list.set(k++, left.get(i++));
+            } else {
+                list.set(k++, right.get(j++));
+            }
+        }
+        while (i < left.size())  list.set(k++, left.get(i++));
+        while (j < right.size()) list.set(k++, right.get(j++));
     }
 }
