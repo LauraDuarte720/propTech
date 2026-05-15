@@ -1,14 +1,12 @@
-package co.edu.uniquindio.com.proptech.config.mappers.impl;
+package co.edu.uniquindio.com.proptech.mappers.impl;
 
-import co.edu.uniquindio.com.proptech.config.mappers.MapperCreate;
+import co.edu.uniquindio.com.proptech.mappers.MapperCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.UserInteractionDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.UserInteractionDtoReturn;
 import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
 import co.edu.uniquindio.com.proptech.services.ClientService;
 import co.edu.uniquindio.com.proptech.services.PropertyService;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class UserInteractionMapper implements MapperCreate<UserInteraction, UserInteractionDtoCreate, UserInteractionDtoReturn> {

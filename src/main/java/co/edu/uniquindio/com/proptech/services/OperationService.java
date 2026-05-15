@@ -1,6 +1,6 @@
 package co.edu.uniquindio.com.proptech.services;
 
-import co.edu.uniquindio.com.proptech.config.mappers.impl.AgentMapper;
+import co.edu.uniquindio.com.proptech.mappers.impl.AgentMapper;
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
 import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;

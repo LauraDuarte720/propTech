@@ -1,6 +1,6 @@
 package co.edu.uniquindio.com.proptech.controllers;
 
-import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
+import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.VisitDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.VisitDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.VisitDtoReturn;

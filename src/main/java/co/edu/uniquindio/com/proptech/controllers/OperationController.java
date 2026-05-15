@@ -1,10 +1,9 @@
 package co.edu.uniquindio.com.proptech.controllers;
 
-import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
+import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.OperationDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.OperationDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.OperationDtoReturn;
-import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.services.OperationService;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;

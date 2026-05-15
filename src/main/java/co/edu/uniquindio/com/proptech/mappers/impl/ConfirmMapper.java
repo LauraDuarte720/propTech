@@ -1,7 +1,6 @@
-package co.edu.uniquindio.com.proptech.config.mappers.impl;
+package co.edu.uniquindio.com.proptech.mappers.impl;
 
-import co.edu.uniquindio.com.proptech.config.mappers.MapperOnlyDto;
-import co.edu.uniquindio.com.proptech.config.mappers.MapperOnlyEntity;
+import co.edu.uniquindio.com.proptech.mappers.MapperOnlyEntity;
 import co.edu.uniquindio.com.proptech.domain.dtos.ConfirmDto;
 import org.springframework.stereotype.Component;
 

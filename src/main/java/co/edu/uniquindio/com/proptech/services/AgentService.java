@@ -1,6 +1,6 @@
 package co.edu.uniquindio.com.proptech.services;
 
-import co.edu.uniquindio.com.proptech.config.mappers.impl.PropertyMapper;
+import co.edu.uniquindio.com.proptech.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
 import co.edu.uniquindio.com.proptech.domain.enums.SupportRequestStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;

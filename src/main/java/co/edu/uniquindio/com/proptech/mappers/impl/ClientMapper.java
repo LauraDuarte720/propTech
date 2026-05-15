@@ -1,6 +1,6 @@
-package co.edu.uniquindio.com.proptech.config.mappers.impl;
+package co.edu.uniquindio.com.proptech.mappers.impl;
 
-import co.edu.uniquindio.com.proptech.config.mappers.MapperCrud;
+import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.domain.dtos.ClientDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.dtos.ClientDtoUpdate;
 import co.edu.uniquindio.com.proptech.domain.dtos.ClientDtoReturn;
