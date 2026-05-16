@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.AgentDoesNotExist;
@@ -12,11 +13,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PropertyAssignmentService {
-
+    private final ZoneMatcher zoneMatcher;
     private final PropertyRepository propertyRepository;
     private final AgentRepository agentRepository;
 
-    public PropertyAssignmentService(PropertyRepository propertyRepository, AgentRepository agentRepository) {
+    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository) {
+        this.zoneMatcher = zoneMatcher;
         this.propertyRepository = propertyRepository;
         this.agentRepository = agentRepository;
     }
@@ -27,7 +29,7 @@ public class PropertyAssignmentService {
         Agent agent = agentRepository.findByCedula(agentId)
                 .orElseThrow(() -> new AgentDoesNotExist("cedula", agentId));
 
-        if (!ZoneMatcher.match(agent.getAssignedZone(), property.getNeighborhood())) {
+        if (!zoneMatcher.match(agent.getAssignedZone(), property.getNeighborhood())) {
             throw new ZonesNotMatchingException("The zone of the agent does not match the neighborhood of the property");
         }
 

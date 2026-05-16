@@ -24,12 +24,14 @@ public class AgentService {
     VisitService visitService;
     PropertyMapper propertyMapper;
     PropertyAssignmentService propertyAssignmentService;
+    ZoneMatcher zoneMatcher;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
         this.propertyAssignmentService = propertyAssignmentService;
+        this.zoneMatcher = zoneMatcher;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -88,7 +90,7 @@ public class AgentService {
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
         ArrayList<Property> incompatibles = new ArrayList<>();
         for (Property property : agent.getAssignedProperties()) {
-            if (!ZoneMatcher.match(geographicZone, property.getNeighborhood())) {
+            if (!zoneMatcher.match(geographicZone, property.getNeighborhood())) {
                 incompatibles.add(property);
             }
         }
@@ -126,7 +128,7 @@ public class AgentService {
         LinkedList<Agent> matching = new LinkedList<>();
         HashTable<String, Agent> agents = agentRepository.getAgents();
         for (Agent agent : agents.values()) {
-            if (ZoneMatcher.match(agent.getAssignedZone(), neighborhood)) {
+            if (zoneMatcher.match(agent.getAssignedZone(), neighborhood)) {
                 matching.addLast(agent);
             }
         }
