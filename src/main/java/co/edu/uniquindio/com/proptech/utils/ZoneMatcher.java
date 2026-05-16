@@ -14,7 +14,7 @@ public class ZoneMatcher {
         if (zone == null) return true;
         if (!zone.getCity().equals(neighborhood.getCity())) return false;
         if (zone.getZone() != null && !zone.getZone().equals(neighborhood.getZone())) return false;
-        if (zone.getNeighborhood() != null && !zone.getNeighborhood().equals(neighborhood.getName())) return false;
+        if (zone.getNameNeighborhood() != null && !zone.getNameNeighborhood().equals(neighborhood.getName())) return false;
         return true;
     }
 }

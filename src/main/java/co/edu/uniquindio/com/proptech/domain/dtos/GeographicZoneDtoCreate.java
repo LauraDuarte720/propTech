@@ -16,7 +16,7 @@ public class GeographicZoneDtoCreate {
 
     private Zone zone;
 
-    private String neighborhoodId;
+    private String nameNeighborhood;
 
     @AssertTrue(message = "If zone is provided, city must also be provided")
     public boolean isZoneValid() {
@@ -26,7 +26,7 @@ public class GeographicZoneDtoCreate {
 
     @AssertTrue(message = "If neighborhood is provided, both city and zone must be provided")
     public boolean isNeighborhoodValid() {
-        if (neighborhoodId == null || neighborhoodId.isBlank()) return true;
+        if (nameNeighborhood == null || nameNeighborhood.isBlank()) return true;
         return city != null && zone != null;
     }
 }

@@ -22,7 +22,7 @@ public class GeographicZoneMapper implements MapperCrud<GeographicZone, Geograph
         return GeographicZone.builder()
                 .city(dto.getCity())
                 .zone(dto.getZone())
-                .neighborhood(dto.getNeighborhoodId() == null ? null : neighborhoodService.getNeighborhoodById(dto.getNeighborhoodId()))
+                .nameNeighborhood(dto.getNameNeighborhood())
                 .build();
     }
 
@@ -32,7 +32,7 @@ public class GeographicZoneMapper implements MapperCrud<GeographicZone, Geograph
                 .id(entity.getId())
                 .city(entity.getCity())
                 .zone(entity.getZone())
-                .neighborhood(neighborhoodMapper.toDto(entity.getNeighborhood()))
+                .nameNeighborhood(entity.getNameNeighborhood())
                 .build();
     }
 
@@ -41,7 +41,7 @@ public class GeographicZoneMapper implements MapperCrud<GeographicZone, Geograph
         return GeographicZone.builder()
                 .city(dto.getCity())
                 .zone(dto.getZone())
-                .neighborhood(dto.getNeighborhoodId() == null ? null : neighborhoodService.getNeighborhoodById(dto.getNeighborhoodId()))
+                .nameNeighborhood(dto.getNameNeighborhood())
                 .build();
     }
 }

@@ -19,5 +19,5 @@ public class GeographicZoneDtoReturn {
 
     private Zone zone;
 
-    private NeighborhoodDtoReturn neighborhood;
+    private String nameNeighborhood;
 }

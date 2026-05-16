@@ -17,5 +17,5 @@ public class GeographicZone {
 
     private Zone zone;
 
-    private Neighborhood neighborhood;
+    private String nameNeighborhood;
 }

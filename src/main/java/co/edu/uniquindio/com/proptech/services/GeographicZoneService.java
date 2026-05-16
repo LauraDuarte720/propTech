@@ -27,7 +27,7 @@ public class GeographicZoneService {
         return geographicZoneRepository.findById(geographicZone.getId()).map(existing -> {
             Optional.ofNullable(geographicZone.getCity()).ifPresent(existing::setCity);
             Optional.ofNullable(geographicZone.getZone()).ifPresent(existing::setZone);
-            Optional.ofNullable(geographicZone.getNeighborhood()).ifPresent(existing::setNeighborhood);
+            Optional.ofNullable(geographicZone.getNameNeighborhood()).ifPresent(existing::setNameNeighborhood);
             return geographicZoneRepository.update(existing);
         }).orElseThrow(() -> new RuntimeException("No existe una zona geográfica con ese ID: " + geographicZone.getId()));
     }

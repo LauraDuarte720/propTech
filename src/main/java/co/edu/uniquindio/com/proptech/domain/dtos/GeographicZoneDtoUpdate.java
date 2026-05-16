@@ -16,5 +16,5 @@ public class GeographicZoneDtoUpdate {
 
     private Zone zone;
 
-    private String neighborhoodId;
+    private String nameNeighborhood;
 }
