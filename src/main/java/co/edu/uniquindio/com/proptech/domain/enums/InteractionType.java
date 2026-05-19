@@ -7,7 +7,9 @@ public enum InteractionType {
     VISITED("Visited"),
     SAVED("Saved"),
     DISCARDED("Discarded"),
-    NEGOTIATED("Negotiated");
+    NEGOTIATED("Negotiated"),
+    BUYING_INTENTION("Buying Intention"),
+    RENTING_INTENTION("Renting Intention");
 
     private final String displayName;
 
