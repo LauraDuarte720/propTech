@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitDoesNotExist;
@@ -73,19 +75,23 @@ public class VisitService {
         return visitRepository.getVisitsByAgent(agentCedula);
     }
 
-    public HashTable<String, Integer> getVisitFrequencyByProperty() {
-        HashTable<String, Integer> freq = visitRepository.getVisitFrequencyByProperty();
-        if (freq == null || freq.isEmpty()) {
-            throw new RuntimeException("No visit frequency data available by property.");
-        }
-        return freq;
+    public HashTable<String, Integer> getFrequencyByProperty() {
+        return visitRepository.getVisitFrequencyByProperty();
     }
 
-//    public HashTable<String, Integer> getVisitFrequencyByZone() {
-//        HashTable<String, Integer> freq = visitRepository.getVisitFrequencyByZone();
-//        if (freq == null || freq.isEmpty()) {
-//            throw new RuntimeException("No visit frequency data available by zone.");
-//        }
-//        return freq;
-//    }
+    public HashTable<City, Integer> getFrequencyByCity() {
+        return visitRepository.getVisitFrequencyByCity();
+    }
+
+    public HashTable<Zone, Integer> getFrequencyByZone(City city) {
+        HashTable<Zone, Integer> result = visitRepository.getVisitFrequencyByCityZone().get(city);
+        return result == null ? new HashTable<>() : result;
+    }
+
+    public HashTable<String, Integer> getFrequencyByNeighborhood(City city, Zone zone) {
+        HashTable<Zone, HashTable<String, Integer>> byZone = visitRepository.getVisitsFrequenciesByCityZoneNeighbor().get(city);
+        if (byZone == null) return new HashTable<>();
+        HashTable<String, Integer> byNeighborhood = byZone.get(zone);
+        return byNeighborhood == null ? new HashTable<>() : byNeighborhood;
+    }
 }
