@@ -18,6 +18,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PropTech {
 
+    public PropTech(String NIT) {
+        this.NIT = NIT;
+    }
     private String NIT;
     private HashTable<String, Property> properties = new HashTable<>();
     private HashTable<String, Client> clients = new HashTable<>();
@@ -30,14 +33,12 @@ public class PropTech {
     private ArrayList<Neighborhood> neighborhoods = new ArrayList<>();
     private AVLTree<Property> propertiesTree = new AVLTree<>();
     private AVLTree<Client> clientsTree = new AVLTree<>();
-    public PropTech(String NIT) {
-        this.NIT = NIT;
-    }
     private AVLTree<Agent> agentsTree = new AVLTree<>();
     private HashTable<String, Integer> visitFrequencyByProperty = new HashTable<>();
-    private HashTable<Zone, Integer> visitFrequencyByZone = new HashTable<>();
+    private HashTable<City, Integer> visitFrequencyByCity = new HashTable<>();
+    private HashTable<City, HashTable<Zone, Integer>> visitFrequencyByCityZone = new HashTable<>();
+    private HashTable<City, HashTable<Zone, HashTable<String, Integer>>> visitsFrequenciesByCityZoneNeighbor = new HashTable<>();
     private HashTable<City, ArrayList<Property>> propertiesByCity = new HashTable<>();
     private HashTable<PropertyType, ArrayList<Property>> propertiesByType = new HashTable<>();
     private HashTable<PropertyStatus, ArrayList<Property>> propertiesByStatus = new HashTable<>();
-
 }

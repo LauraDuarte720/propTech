@@ -1,12 +1,13 @@
 package co.edu.uniquindio.com.proptech.repositories.impl;
 
+import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
-import co.edu.uniquindio.com.proptech.domain.model.Visit;
-import co.edu.uniquindio.com.proptech.domain.model.PropTech;
+import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
 @Repository
@@ -103,20 +104,62 @@ public class VisitRepositoryImpl implements VisitRepository {
         return propTech.getVisitFrequencyByProperty();
     }
 
-//    @Override
-//    public HashTable<String, Integer> getVisitFrequencyByZone() {
-//        return propTech.getVisitFrequencyByZone();
-//    }
+    @Override
+    public HashTable<City, Integer> getVisitFrequencyByCity() {
+        return propTech.getVisitFrequencyByCity();
+    }
+
+    @Override
+    public HashTable<City, HashTable<Zone, Integer>> getVisitFrequencyByCityZone() {
+        return propTech.getVisitFrequencyByCityZone();
+    }
+
+    @Override
+    public HashTable<City, HashTable<Zone, HashTable<String, Integer>>> getVisitsFrequenciesByCityZoneNeighbor() {
+        return propTech.getVisitsFrequenciesByCityZoneNeighbor();
+    }
+
+
+    public HashTable<City, HashTable<Zone, HashTable<String, Integer>>> getVisitsFrequenciesByZone() {
+        return propTech.getVisitsFrequenciesByCityZoneNeighbor();
+    }
 
     private void incrementFrequency(Visit visit) {
         String propertyCode = visit.getProperty().getCode();
         Integer freqProp = propTech.getVisitFrequencyByProperty().get(propertyCode);
         propTech.getVisitFrequencyByProperty().put(propertyCode, freqProp == null ? 1 : freqProp + 1);
+        Neighborhood neighborhood = visit.getProperty().getNeighborhood();
+        City city = neighborhood.getCity();
+        Zone zone = neighborhood.getZone();
+        String neighborhoodName = neighborhood.getName();
 
-//        Zone zone = visit.getProperty().getNeighborhood().getZone();
-//        Integer freqZone = propTech.getVisitFrequencyByZone().get(zone);
-//        propTech.getVisitFrequencyByZone().put(zone, freqZone == null ? 1 : freqZone + 1);
+        HashTable<Zone, HashTable<String, Integer>> byZone = propTech.getVisitsFrequenciesByCityZoneNeighbor().get(city);
+        if (byZone == null) {
+            byZone = new HashTable<>();
+            propTech.getVisitsFrequenciesByCityZoneNeighbor().put(city, byZone);
+        }
+        HashTable<String, Integer> byNeighborhood = byZone.get(zone);
+        if (byNeighborhood == null) {
+            byNeighborhood = new HashTable<>();
+            byZone.put(zone, byNeighborhood);
+        }
+        Integer freqNeighborhood = byNeighborhood.get(neighborhoodName);
+        byNeighborhood.put(neighborhoodName, freqNeighborhood == null ? 1 : freqNeighborhood + 1);
+
+
+        Integer freqCity = propTech.getVisitFrequencyByCity().get(city);
+        propTech.getVisitFrequencyByCity().put(city, freqCity == null ? 1 : freqCity + 1);
+
+
+        HashTable<Zone, Integer> zoneMap = propTech.getVisitFrequencyByCityZone().get(city);
+        if (zoneMap == null) {
+            zoneMap = new HashTable<>();
+            propTech.getVisitFrequencyByCityZone().put(city, zoneMap);
+        }
+        Integer freqZone = zoneMap.get(zone);
+        zoneMap.put(zone, freqZone == null ? 1 : freqZone + 1);
     }
+
 
     private void decrementFrequency(Visit visit) {
         String propertyCode = visit.getProperty().getCode();
@@ -126,11 +169,37 @@ public class VisitRepositoryImpl implements VisitRepository {
             else propTech.getVisitFrequencyByProperty().put(propertyCode, freqProp - 1);
         }
 
-//        Zone zone = visit.getProperty().getNeighborhood().getZone();
-//        Integer freqZone = propTech.getVisitFrequencyByZone().get(zone);
-//        if (freqZone != null) {
-//            if (freqZone <= 1) propTech.getVisitFrequencyByZone().remove(zone);
-//            else propTech.getVisitFrequencyByZone().put(zone, freqZone - 1);
-//        }
+        Neighborhood neighborhood = visit.getProperty().getNeighborhood();
+        City city = neighborhood.getCity();
+        Zone zone = neighborhood.getZone();
+        String neighborhoodName = neighborhood.getName();
+
+
+        HashTable<Zone, HashTable<String, Integer>> byZone = propTech.getVisitsFrequenciesByCityZoneNeighbor().get(city);
+        if (byZone != null) {
+            HashTable<String, Integer> byNeighborhood = byZone.get(zone);
+            if (byNeighborhood != null) {
+                Integer freqNeighborhood = byNeighborhood.get(neighborhoodName);
+                if (freqNeighborhood != null) {
+                    if (freqNeighborhood <= 1) byNeighborhood.remove(neighborhoodName);
+                    else byNeighborhood.put(neighborhoodName, freqNeighborhood - 1);
+                }
+            }
+        }
+
+        Integer freqCity = propTech.getVisitFrequencyByCity().get(city);
+        if (freqCity != null) {
+            if (freqCity <= 1) propTech.getVisitFrequencyByCity().remove(city);
+            else propTech.getVisitFrequencyByCity().put(city, freqCity - 1);
+        }
+
+        HashTable<Zone, Integer> zoneMap = propTech.getVisitFrequencyByCityZone().get(city);
+        if (zoneMap != null) {
+            Integer freqZone = zoneMap.get(zone);
+            if (freqZone != null) {
+                if (freqZone <= 1) zoneMap.remove(zone);
+                else zoneMap.put(zone, freqZone - 1);
+            }
+        }
     }
 }
