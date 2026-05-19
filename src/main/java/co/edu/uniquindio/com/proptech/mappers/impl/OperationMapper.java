@@ -41,7 +41,6 @@ public class OperationMapper implements MapperCrud<Operation, OperationDtoCreate
                 .operationType(dto.getOperationType())
                 .value(dto.getValue())
                 .commission(dto.getCommission())
-                .processStatus(dto.getProcessStatus())
                 .build();
     }
 

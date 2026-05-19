@@ -42,10 +42,6 @@ public class OperationDtoCreate {
     @Max(value = 1_000_000_000L, message = "Commission exceeds realistic limit")
     private double commission;
 
-    @NotNull(message = "Process status is required")
-    private ProcessStatus processStatus;
-
-
     @AssertTrue(message = "Initial and final dates are required when operation type is CONTRACT_RENEWAL")
     public boolean isDatesRequiredForContract() {
         if (operationType == null) return true;

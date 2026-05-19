@@ -46,5 +46,4 @@ public class PropertyDtoCreate {
     @NotNull(message = "Property status is required")
     private PropertyStatus status;
 
-    private boolean available;
 }
