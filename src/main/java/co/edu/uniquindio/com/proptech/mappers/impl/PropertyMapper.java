@@ -38,7 +38,6 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
                 .numBedrooms(dto.getNumBedrooms())
                 .numBathrooms(dto.getNumBathrooms())
                 .status(dto.getStatus())
-                .available(dto.isAvailable())
                 .build();
     }
 
@@ -73,7 +72,6 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
                 .numBedrooms(dto.getNumBedrooms())
                 .numBathrooms(dto.getNumBathrooms())
                 .status(dto.getStatus())
-                .available(dto.getAvailable())
                 .agent(dto.getAgentId() == null ? null : agentService.getAgentByCedula(dto.getAgentId()))
                 .build();
     }

@@ -91,11 +91,6 @@ public class ClientService {
 
     public ArrayList<Client> getClientsOrderedByBudget() {
         AVLTree<Client> tree = clientRepository.getClientsOrderedByBudget();
-
-        if (tree.isEmpty()) {
-            throw new ClientDoesNotExist("presupuesto", "árbol vacío");
-        }
-
         return tree.inOrder();
     }
 

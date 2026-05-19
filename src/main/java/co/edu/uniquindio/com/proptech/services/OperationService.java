@@ -27,12 +27,9 @@ public class OperationService {
     }
 
     public Operation registerOperation(Operation operation) {
-        if (operation.getProcessStatus().equals(ProcessStatus.CLOSED)) {
-            Agent agent = operation.getAgent();
-            agent.setClosedDeals(agent.getClosedDeals() + 1);
-            agentService.updateAgent(agent, false);
-        }
         operation.setId(CodeGenerator.generateOperationCode());
+        operation.setProcessStatus(ProcessStatus.CREATED);
+        operation.getProperty().setAvailable(!operation.getOperationType().equals(OperationType.DEAL_CANCELLATION));
         return operationRepository.save(operation);
     }
 
@@ -46,10 +43,22 @@ public class OperationService {
             Optional.ofNullable(operation.getOperationType()).ifPresent(existing::setOperationType);
             Optional.ofNullable(operation.getValue()).ifPresent(existing::setValue);
             Optional.ofNullable(operation.getCommission()).ifPresent(existing::setCommission);
-            Optional.ofNullable(operation.getProcessStatus()).ifPresent(existing::setProcessStatus);
+            Optional.ofNullable(operation.getProcessStatus()).ifPresent(
+                    processStatus -> {
+                        if (processStatus.equals(ProcessStatus.CLOSED)
+                                && !existing.getProcessStatus().equals(ProcessStatus.CLOSED)) {
+                            Agent agent = existing.getAgent();
+                            agent.setClosedDeals(agent.getClosedDeals() + 1);
+                            agentService.updateAgent(agent, false);
+                        }
+                        existing.setProcessStatus(processStatus);
+                    }
+            );
             return operationRepository.update(existing);
         }).orElseThrow(() -> new OperationDoesNotExist("id", operation.getId()));
     }
+
+
 
     public void deleteOperation(String operationId) {
         if (operationRepository.findById(operationId).isEmpty()) {

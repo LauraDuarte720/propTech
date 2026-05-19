@@ -42,7 +42,5 @@ public class PropertyDtoUpdate {
 
     private PropertyStatus status;
 
-    private Boolean available;
-
     private String agentId;
 }
