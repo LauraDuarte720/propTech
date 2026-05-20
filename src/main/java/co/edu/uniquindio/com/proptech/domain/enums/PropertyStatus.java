@@ -6,7 +6,6 @@ public enum PropertyStatus {
     NEW("New"),
     ACTIVE("Active"),
     RESERVED("Reserved"),
-    UNDER_NEGOTIATION("Under Negotiation"),
     SOLD("Sold"),
     RENTED("Rented"),
     INACTIVE("Inactive");
