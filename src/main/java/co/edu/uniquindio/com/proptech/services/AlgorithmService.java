@@ -2,6 +2,8 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.enums.InteractionWeight;
+import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.SearchStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.ClientRepository;
@@ -11,6 +13,9 @@ import co.edu.uniquindio.com.proptech.structures.graph.GraphNode;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class AlgorithmService {
@@ -50,7 +55,9 @@ public class AlgorithmService {
         }
 
         // Agregar/actualizar arista con el peso de la interacción
-        propTech.getClientPropertyGraph().addEdge(clientId, propertyId, weight);
+        Client client = (Client) propTech.getClientPropertyGraph()
+                .getNode(interaction.getClient().getCedula()).getData();
+        updateSearchStatus(client);
     }
 
     // Llamar desde AgentService cuando se registra una operación entre zonas
@@ -259,6 +266,52 @@ public class AlgorithmService {
         ScoredProperty(Property property, double score) {
             this.property = property;
             this.score = score;
+        }
+    }
+
+    private void updateSearchStatus(Client client) {
+        // 1. Check for active operation (CREATED = in progress)
+        for (Operation operation : propTech.getOperations()) {
+            if (!operation.getClient().getCedula().equals(client.getCedula())) continue;
+
+            if (operation.getProcessStatus() == ProcessStatus.CREATED) {
+                client.setSearchStatus(SearchStatus.NEGOTIATING);
+                return;
+            }
+            if (operation.getProcessStatus() == ProcessStatus.CLOSED) {
+                client.setSearchStatus(SearchStatus.CLOSED);
+                return;
+            }
+        }
+
+        // 2. Check interaction recency
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime mostRecent = null;
+
+        for (InteractionType type : InteractionType.values()) {
+            ArrayList<UserInteraction> list = client.getInteractionsByType(type);
+            if (list == null) continue;
+            for (int i = 0; i < list.size(); i++) {
+                LocalDateTime ts = list.get(i).getTimestamp();
+                if (mostRecent == null || ts.isAfter(mostRecent)) {
+                    mostRecent = ts;
+                }
+            }
+        }
+
+        if (mostRecent == null) {
+            client.setSearchStatus(SearchStatus.INACTIVE);
+            return;
+        }
+
+        long daysSinceLast = ChronoUnit.DAYS.between(mostRecent, now);
+
+        if (daysSinceLast <= 30) {
+            client.setSearchStatus(SearchStatus.ACTIVE);
+        } else if (daysSinceLast <= 90) {
+            client.setSearchStatus(SearchStatus.PAUSED);
+        } else {
+            client.setSearchStatus(SearchStatus.INACTIVE);
         }
     }
 }
