@@ -1,6 +1,9 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.enums.InteractionWeight;
+import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.SearchStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.AlgorithmRepository;
@@ -12,6 +15,9 @@ import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 @Service
 public class AlgorithmService {
 
@@ -19,21 +25,25 @@ public class AlgorithmService {
     private final ClientRepository clientRepository;
     private final PropertyService propertyService;
     private final ZoneMatcher zoneMatcher;
+    private final OperationService operationService;
 
     public AlgorithmService(AlgorithmRepository graphRepository,
                             ClientRepository clientRepository,
                             PropertyService propertyService,
-                            ZoneMatcher zoneMatcher) {
+                            ZoneMatcher zoneMatcher,
+                            OperationService operationService) {
         this.graphRepository = graphRepository;
         this.clientRepository = clientRepository;
         this.propertyService = propertyService;
         this.zoneMatcher = zoneMatcher;
+        this.operationService = operationService;
     }
 
     // ══════════════════════════════════════════════
     // SINCRONIZACIÓN DEL GRAFO
     // ══════════════════════════════════════════════
 
+    // Llamar desde ClientService.registerUserInteraction()
     public void registerInteractionInGraph(UserInteraction interaction) {
         String clientId   = interaction.getClient().getCedula();
         String propertyId = interaction.getProperty().getCode();
@@ -51,8 +61,13 @@ public class AlgorithmService {
         }
 
         graphRepository.getClientPropertyGraph().addEdge(clientId, propertyId, weight);
+        // Agregar/actualizar arista con el peso de la interacción
+        Client client = (Client) graphRepository.getClientPropertyGraph()
+                .getNode(interaction.getClient().getCedula()).getData();
+        updateSearchStatus(client);
     }
 
+    // Llamar desde AgentService cuando se registra una operación entre zonas
     public void registerZoneConnection(GeographicZone zoneA, GeographicZone zoneB, double weight) {
         if (!graphRepository.getZoneGraph().containsNode(zoneA.getId())) {
             graphRepository.getZoneGraph().addNode(new GraphNode<>(zoneA.getId(), zoneA));
@@ -72,33 +87,48 @@ public class AlgorithmService {
                 .orElseThrow(() -> new ClientDoesNotExist("cedula", clientId));
         HashTable<String, Property> allProperties = propertyService.getAllProperties();
 
+        // Paso 1 — obtener peso del grafo para cada propiedad (historial del cliente)
         HashTable<String, Double> graphWeights = getClientGraphWeights(clientId);
+
+        // Paso 2 — obtener propiedades visitadas por clientes similares
         HashTable<String, Integer> similarClientsBonus = getSimilarClientsBonus(clientId);
 
+        // Paso 3 — calcular puntaje para cada propiedad
         ArrayList<ScoredProperty> scored = new ArrayList<>();
         for (Property property : allProperties.values()) {
             if (!property.isAvailable()) continue;
 
             double score = 0;
 
-            if (property.getPrice() <= client.getBudget())                          score += 3;
-            if (matchesInterestZone(client, property))                              score += 2;
+            // Presupuesto (+3 si está dentro del presupuesto)
+            if (property.getPrice() <= client.getBudget()) score += 3;
+
+            // Zona de interés (+2 si coincide con alguna zona de interés)
+            if (matchesInterestZone(client,property)) score += 2;
+
+            // Tipo de inmueble (+2 si coincide)
             if (client.getDesiredPropertyType() != null &&
                     client.getDesiredPropertyType().equals(property.getPropertyType())) score += 2;
-            if (client.getMinBedrooms() != null && property.getNumBedrooms() != null &&
-                    property.getNumBedrooms() >= client.getMinBedrooms())              score += 2;
 
+            // Habitaciones (+2 si cumple el mínimo)
+            if (client.getMinBedrooms() != null && property.getNumBedrooms() != null &&
+                    property.getNumBedrooms() >= client.getMinBedrooms()) score += 2;
+
+            // Historial del cliente en el grafo (peso acumulado de interacciones)
             Double graphWeight = graphWeights.get(property.getCode());
             if (graphWeight != null) score += graphWeight;
 
+            // Bonus por clientes similares que la visitaron
             Integer bonus = similarClientsBonus.get(property.getCode());
             if (bonus != null) score += bonus;
 
             scored.add(new ScoredProperty(property, score));
         }
 
+        // Paso 4 — ordenar por puntaje de mayor a menor (insertion sort)
         insertionSort(scored);
 
+        // Paso 5 — retornar solo las propiedades ordenadas
         ArrayList<Property> result = new ArrayList<>();
         for (int i = 0; i < scored.size(); i++) {
             result.add(scored.get(i).property);
@@ -110,6 +140,7 @@ public class AlgorithmService {
     // ANÁLISIS ESTRUCTURAL DEL GRAFO
     // ══════════════════════════════════════════════
 
+    // Requisito 12: consultar relaciones cliente ↔ inmueble
     public ArrayList<Property> getPropertiesRelatedToClient(String clientId) {
         ArrayList<GraphEdge<Object>> edges =
                 graphRepository.getClientPropertyGraph().getNeighbors(clientId);
@@ -123,6 +154,7 @@ public class AlgorithmService {
         return result;
     }
 
+    // Detectar propiedades similares consultadas por múltiples clientes
     public ArrayList<Client> getClientsWithSharedProperties(String clientId) {
         ArrayList<GraphEdge<Object>> clientEdges =
                 graphRepository.getClientPropertyGraph().getNeighbors(clientId);
@@ -150,6 +182,7 @@ public class AlgorithmService {
         return result;
     }
 
+    // Zona más activa comercialmente
     public GeographicZone getMostActiveZone() {
         GeographicZone mostActive = null;
         int maxConnections = -1;
@@ -228,6 +261,7 @@ public class AlgorithmService {
         }
     }
 
+    // Clase interna de apoyo para el scoring
     private static class ScoredProperty {
         Property property;
         double score;
@@ -235,6 +269,52 @@ public class AlgorithmService {
         ScoredProperty(Property property, double score) {
             this.property = property;
             this.score = score;
+        }
+    }
+
+    private void updateSearchStatus(Client client) {
+        // 1. Check for active operation (CREATED = in progress)
+        for (Operation operation : operationService.getAllOperations()) {
+            if (!operation.getClient().getCedula().equals(client.getCedula())) continue;
+
+            if (operation.getProcessStatus() == ProcessStatus.CREATED) {
+                client.setSearchStatus(SearchStatus.NEGOTIATING);
+                return;
+            }
+            if (operation.getProcessStatus() == ProcessStatus.CLOSED) {
+                client.setSearchStatus(SearchStatus.CLOSED);
+                return;
+            }
+        }
+
+        // 2. Check interaction recency
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime mostRecent = null;
+
+        for (InteractionType type : InteractionType.values()) {
+            ArrayList<UserInteraction> list = client.getInteractionsByType(type);
+            if (list == null) continue;
+            for (int i = 0; i < list.size(); i++) {
+                LocalDateTime ts = list.get(i).getTimestamp();
+                if (mostRecent == null || ts.isAfter(mostRecent)) {
+                    mostRecent = ts;
+                }
+            }
+        }
+
+        if (mostRecent == null) {
+            client.setSearchStatus(SearchStatus.INACTIVE);
+            return;
+        }
+
+        long daysSinceLast = ChronoUnit.DAYS.between(mostRecent, now);
+
+        if (daysSinceLast <= 30) {
+            client.setSearchStatus(SearchStatus.ACTIVE);
+        } else if (daysSinceLast <= 90) {
+            client.setSearchStatus(SearchStatus.PAUSED);
+        } else {
+            client.setSearchStatus(SearchStatus.INACTIVE);
         }
     }
 }

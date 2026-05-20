@@ -43,6 +43,7 @@ public class SupportRequestMapper  implements MapperCreate<SupportRequest, Suppo
     @Override
     public SupportRequestDtoReturn toDto(SupportRequest entity) {
         return SupportRequestDtoReturn.builder()
+                .id(entity.getId())
                 .client(clientMapper.toDto(entity.getClient()))
                 .property(propertyMapper.toDto(entity.getProperty()))
                 .agent(agentMapper.toDto(entity.getAgent()))

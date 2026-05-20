@@ -1,9 +1,10 @@
 package co.edu.uniquindio.com.proptech.services;
 
-import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.*;
+import co.edu.uniquindio.com.proptech.domain.model.Property;
+import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PurposeMismatchException;
 import co.edu.uniquindio.com.proptech.mappers.impl.AgentMapper;
-import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
-import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Operation;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NotNullOperationTypeException;
@@ -18,58 +19,95 @@ import java.util.Optional;
 @Service
 public class OperationService {
 
-
     private final AgentService agentService;
+    private final ClientService clientService;
     OperationRepository operationRepository;
 
-    public OperationService(OperationRepository operationRepository, AgentMapper agentMapper, AgentService agentService) {
+    public OperationService(OperationRepository operationRepository, AgentMapper agentMapper,
+                            AgentService agentService, ClientService clientService) {
         this.operationRepository = operationRepository;
         this.agentService = agentService;
+        this.clientService = clientService;
     }
 
     public Operation registerOperation(Operation operation) {
+        validatePurposeMatchesOperation(operation.getOperationType(), operation.getProperty());
         operation.setId(CodeGenerator.generateOperationCode());
         operation.setProcessStatus(ProcessStatus.CREATED);
-        switch (operation.getOperationType()) {
-            case RENT, CONTRACT_RENEWAL -> operation.getProperty().setStatus(PropertyStatus.RENTED);
-            case SALE -> operation.getProperty().setStatus(PropertyStatus.SOLD);
-            case DEAL_CANCELLATION -> operation.getProperty().setStatus(PropertyStatus.ACTIVE);
-        }
-
+        applyPropertyStatus(operation.getOperationType(), operation.getProperty());
         return operationRepository.save(operation);
     }
 
     public Operation updateOperation(Operation operation) {
-        return operationRepository.findById(operation.getId()).map(existing -> {
-            Optional.ofNullable(operation.getProperty()).ifPresent(existing::setProperty);
-            Optional.ofNullable(operation.getClient()).ifPresent(existing::setClient);
-            Optional.ofNullable(operation.getAgent()).ifPresent(existing::setAgent);
-            Optional.ofNullable(operation.getDateInitial()).ifPresent(existing::setDateInitial);
-            Optional.ofNullable(operation.getDateFinal()).ifPresent(existing::setDateFinal);
-            Optional.ofNullable(operation.getOperationType()).ifPresent(existing::setOperationType);
-            Optional.ofNullable(operation.getValue()).ifPresent(existing::setValue);
-            Optional.ofNullable(operation.getCommission()).ifPresent(existing::setCommission);
-
-
-            Optional.ofNullable(operation.getProcessStatus()).ifPresent(processStatus -> {
-                if (processStatus.equals(ProcessStatus.CLOSED) && !existing.getProcessStatus().equals(ProcessStatus.CLOSED)) {
-                    Agent agent = existing.getAgent();
-                    agent.setClosedDeals(agent.getClosedDeals() + 1);
-                    switch (existing.getOperationType()) {
-                        case RENT, CONTRACT_RENEWAL -> existing.getProperty().setStatus(PropertyStatus.RENTED);
-                        case SALE -> existing.getProperty().setStatus(PropertyStatus.SOLD);
-                        case DEAL_CANCELLATION -> existing.getProperty().setStatus(PropertyStatus.ACTIVE);
-                    }
-                }
-                if (processStatus.equals(ProcessStatus.CANCELLED)) {
-                    existing.getProperty().setStatus(PropertyStatus.ACTIVE);
-                }
-                existing.setProcessStatus(processStatus);
-            });
-            return operationRepository.update(existing);
-        }).orElseThrow(() -> new OperationDoesNotExist("id", operation.getId()));
+        return operationRepository.findById(operation.getId())
+                .map(existing -> applyUpdates(existing, operation))
+                .orElseThrow(() -> new OperationDoesNotExist("id", operation.getId()));
     }
 
+    private Operation applyUpdates(Operation existing, Operation incoming) {
+        applyFieldUpdates(existing, incoming);
+        Optional.ofNullable(incoming.getProcessStatus())
+                .ifPresent(status -> applyStatusChange(existing, status));
+        return operationRepository.update(existing);
+    }
+
+    private void applyFieldUpdates(Operation existing, Operation incoming) {
+        Optional.ofNullable(incoming.getProperty()).ifPresent(existing::setProperty);
+        Optional.ofNullable(incoming.getClient()).ifPresent(existing::setClient);
+        Optional.ofNullable(incoming.getAgent()).ifPresent(existing::setAgent);
+        Optional.ofNullable(incoming.getDateInitial()).ifPresent(existing::setDateInitial);
+        Optional.ofNullable(incoming.getDateFinal()).ifPresent(existing::setDateFinal);
+        Optional.ofNullable(incoming.getOperationType()).ifPresent(existing::setOperationType);
+        Optional.ofNullable(incoming.getValue()).ifPresent(existing::setValue);
+        Optional.ofNullable(incoming.getCommission()).ifPresent(existing::setCommission);
+        validatePurposeMatchesOperation(existing.getOperationType(), existing.getProperty());
+    }
+
+    private void applyStatusChange(Operation existing, ProcessStatus newStatus) {
+        if (newStatus.equals(ProcessStatus.CLOSED) && !existing.getProcessStatus().equals(ProcessStatus.CLOSED)) {
+            handleClosed(existing);
+        }
+        if (newStatus.equals(ProcessStatus.CANCELLED)) {
+            existing.getProperty().setStatus(PropertyStatus.ACTIVE);
+        }
+        existing.setProcessStatus(newStatus);
+    }
+
+    private void handleClosed(Operation existing) {
+        existing.getAgent().setClosedDeals(existing.getAgent().getClosedDeals() + 1);
+        applyPropertyStatus(existing.getOperationType(), existing.getProperty());
+        registerNegotiatedInteractionIfApplicable(existing);
+    }
+
+    private void registerNegotiatedInteractionIfApplicable(Operation existing) {
+        if (existing.getOperationType() == OperationType.RENT
+                || existing.getOperationType() == OperationType.SALE) {
+            UserInteraction interaction = UserInteraction.builder()
+                    .client(existing.getClient())
+                    .property(existing.getProperty())
+                    .interactionType(InteractionType.NEGOTIATED)
+                    .build();
+            clientService.registerUserInteraction(interaction);
+        }
+    }
+
+    private void applyPropertyStatus(OperationType type, Property property) {
+        switch (type) {
+            case RENT, CONTRACT_RENEWAL -> property.setStatus(PropertyStatus.RENTED);
+            case SALE -> property.setStatus(PropertyStatus.SOLD);
+            case DEAL_CANCELLATION -> property.setStatus(PropertyStatus.ACTIVE);
+        }
+    }
+
+    private void validatePurposeMatchesOperation(OperationType operationType, Property property) {
+        Purpose purpose = property.getPurpose();
+        if (operationType == OperationType.RENT && purpose != Purpose.RENT) {
+            throw new PurposeMismatchException("La propiedad no está disponible para arriendo");
+        }
+        if (operationType == OperationType.SALE && purpose != Purpose.SALE) {
+            throw new PurposeMismatchException("La propiedad no está disponible para venta");
+        }
+    }
 
     public void deleteOperation(String operationId) {
         if (operationRepository.findById(operationId).isEmpty()) {

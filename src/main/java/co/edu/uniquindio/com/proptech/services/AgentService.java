@@ -13,6 +13,7 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
+import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
@@ -137,6 +138,8 @@ public class AgentService {
 
     public SupportRequest registerSupportRequest(SupportRequest request) {
         Agent agent = request.getAgent();
+        request.setId(CodeGenerator.generateSupportRequestCode());
+        request.setStatus(SupportRequestStatus.PENDING);
         agent.enqueueSupportRequest(request);
         agentRepository.save(agent);
         return request;
@@ -157,14 +160,24 @@ public class AgentService {
         return request;
     }
 
+    public void cancelSupportRequest(String agentCedula, String requestId) {
+        Agent agent = getAgentByCedula(agentCedula);
+        SupportRequest request = agent.findSupportRequest(requestId)
+                .orElseThrow(() -> new SupportRequestDoesNotExist("id", requestId));
+        if (request.getStatus() != SupportRequestStatus.PENDING) {
+            throw new SupportRequestNotCancellableException("id", requestId);
+        }
+        request.setStatus(SupportRequestStatus.CANCELLED);
+        agentRepository.save(agent);
+    }
+
+
     public ArrayList<Agent> getAgentsOrderedByClosedDeals() {
         AVLTree<Agent> tree = agentRepository.getAgentsOrderedByClosedDeals();
 
         if (tree.isEmpty()) {
             throw new RuntimeException("No hay asesores registrados.");
         }
-
-
         ArrayList<Agent> ordered = tree.inOrder();
         ArrayList<Agent> result = new ArrayList<>();
         for (int i = ordered.size() - 1; i >= 0; i--) {

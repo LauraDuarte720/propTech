@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class SupportRequestDtoReturn {
+    private String id;
     private ClientDtoReturn client;
     private PropertyDtoReturn property;
     private AgentDtoReturn agent;
