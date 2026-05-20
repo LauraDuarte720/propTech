@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
@@ -46,6 +47,7 @@ public class PropertyAssignmentService {
 
         agent.removeProperty(property);
         property.setAgent(null);
+        property.setStatus(PropertyStatus.INACTIVE);
         return propertyRepository.save(property);
     }
 

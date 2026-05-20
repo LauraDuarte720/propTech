@@ -47,19 +47,44 @@ public class PropertyService {
         if (exists) {
             throw new PropertyAlreadyExists("code", property.getCode());
         }
+
         Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
         property.setNeighborhood(resolved);
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
+
         if (agentId == null && !confirm) {
             throw new NoAgentConfirmationException();
         }
-        Property saved = propertyRepository.save(property);
 
         if (agentId != null) {
+            property.setStatus(PropertyStatus.NEW);
+            Property saved = propertyRepository.save(property);
             propertyAssignmentService.assignAgent(saved.getCode(), agentId);
+            return saved;
+        } else {
+            property.setStatus(PropertyStatus.INACTIVE);
+            return propertyRepository.save(property);
         }
-        return saved;
     }
+
+    public Property publishProperty(String propertyCode) {
+        Property property = propertyRepository.findByCode(propertyCode)
+                .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
+
+        if (property.getAgent() == null) {
+            throw new NoAgentConfirmationException();
+        }
+
+        property.setStatus(PropertyStatus.ACTIVE);
+        return propertyRepository.save(property);
+    }
+
+    public Property registerAndPublishProperty(Property property, String agentId) {
+        Property saved = registerProperty(property, agentId, false);
+        return publishProperty(saved.getCode());
+    }
+
+
 
     public Property updateProperty(Property property) {
         return propertyRepository.findByCode(property.getCode()).map(existing -> {
@@ -153,7 +178,7 @@ public class PropertyService {
     }
 
     public ArrayList<Property> getPropertiesOrderedByDemand() {
-        HashTable<String, Integer> frequency = visitService.getVisitFrequencyByProperty();
+        HashTable<String, Integer> frequency = visitService.getFrequencyByProperty();
         ArrayList<Property> list = getAllPropertiesAsList();
         mergeSort(list, (a, b) -> {
             Integer freqA = frequency.get(a.getCode());

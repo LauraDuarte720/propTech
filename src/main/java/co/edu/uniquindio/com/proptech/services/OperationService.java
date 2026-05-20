@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.mappers.impl.AgentMapper;
 import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
 import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
@@ -29,7 +30,12 @@ public class OperationService {
     public Operation registerOperation(Operation operation) {
         operation.setId(CodeGenerator.generateOperationCode());
         operation.setProcessStatus(ProcessStatus.CREATED);
-        operation.getProperty().setAvailable(!operation.getOperationType().equals(OperationType.DEAL_CANCELLATION));
+        switch (operation.getOperationType()) {
+            case RENT, CONTRACT_RENEWAL -> operation.getProperty().setStatus(PropertyStatus.RENTED);
+            case SALE -> operation.getProperty().setStatus(PropertyStatus.SOLD);
+            case DEAL_CANCELLATION -> operation.getProperty().setStatus(PropertyStatus.ACTIVE);
+        }
+
         return operationRepository.save(operation);
     }
 
@@ -43,28 +49,32 @@ public class OperationService {
             Optional.ofNullable(operation.getOperationType()).ifPresent(existing::setOperationType);
             Optional.ofNullable(operation.getValue()).ifPresent(existing::setValue);
             Optional.ofNullable(operation.getCommission()).ifPresent(existing::setCommission);
-            Optional.ofNullable(operation.getProcessStatus()).ifPresent(
-                    processStatus -> {
-                        if (processStatus.equals(ProcessStatus.CLOSED)
-                                && !existing.getProcessStatus().equals(ProcessStatus.CLOSED)) {
-                            Agent agent = existing.getAgent();
-                            agent.setClosedDeals(agent.getClosedDeals() + 1);
-                            agentService.updateAgent(agent, false);
-                        }
-                        existing.setProcessStatus(processStatus);
+
+
+            Optional.ofNullable(operation.getProcessStatus()).ifPresent(processStatus -> {
+                if (processStatus.equals(ProcessStatus.CLOSED) && !existing.getProcessStatus().equals(ProcessStatus.CLOSED)) {
+                    Agent agent = existing.getAgent();
+                    agent.setClosedDeals(agent.getClosedDeals() + 1);
+                    switch (existing.getOperationType()) {
+                        case RENT, CONTRACT_RENEWAL -> existing.getProperty().setStatus(PropertyStatus.RENTED);
+                        case SALE -> existing.getProperty().setStatus(PropertyStatus.SOLD);
+                        case DEAL_CANCELLATION -> existing.getProperty().setStatus(PropertyStatus.ACTIVE);
                     }
-            );
+                }
+                if (processStatus.equals(ProcessStatus.CANCELLED)) {
+                    existing.getProperty().setStatus(PropertyStatus.ACTIVE);
+                }
+                existing.setProcessStatus(processStatus);
+            });
             return operationRepository.update(existing);
         }).orElseThrow(() -> new OperationDoesNotExist("id", operation.getId()));
     }
-
 
 
     public void deleteOperation(String operationId) {
         if (operationRepository.findById(operationId).isEmpty()) {
             throw new OperationDoesNotExist("id", operationId);
         }
-
         operationRepository.deleteById(operationId);
     }
 
@@ -87,8 +97,6 @@ public class OperationService {
     public LinkedList<Operation> getOperationsByAgent(String agentId) {
         Agent agent = agentService.getAgentByCedula(agentId);
         return operationRepository.getOperationsByAgent(agent);
-
-
     }
 
     public LinkedList<Operation> getOperationsByProperty(String propertyCode) {

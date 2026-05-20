@@ -1,10 +1,12 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
 import co.edu.uniquindio.com.proptech.domain.enums.SupportRequestStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
+import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
@@ -25,13 +27,15 @@ public class AgentService {
     PropertyMapper propertyMapper;
     PropertyAssignmentService propertyAssignmentService;
     ZoneMatcher zoneMatcher;
+    StructuresMappers structuresMappers;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
         this.propertyAssignmentService = propertyAssignmentService;
         this.zoneMatcher = zoneMatcher;
+        this.structuresMappers = structuresMappers;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -104,25 +108,21 @@ public class AgentService {
         ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, newGeographicZone);
 
         if (!confirm && !incompatibleProperties.isEmpty()) {
-            ArrayList<AffectedPropertyDto> affectedProperties = new ArrayList<>();
-            for (Property property : incompatibleProperties) {
-                affectedProperties.add(
-                        propertyMapper.toSimpleDto(property)
-                );
-            }
             throw new ZoneChangeConflictException(
-                    "If you make this change, the following properties will not have an assigned agent anymore", (List) affectedProperties);
+                    "If you make this change, the following properties will not have an assigned agent anymore",
+                    structuresMappers.fromArrayList(incompatibleProperties, propertyMapper::toSimpleDto)
+            );
         }
+
         agent.setAssignedZone(newGeographicZone);
         if (confirm) {
             for (Property property : incompatibleProperties) {
                 property.setAgent(null);
+                property.setStatus(PropertyStatus.INACTIVE);
             }
         }
         agentRepository.save(agent);
     }
-
-
 
     public LinkedList<Agent> getAgentsMatchingNeighbor(Neighborhood neighborhood) {
         LinkedList<Agent> matching = new LinkedList<>();
