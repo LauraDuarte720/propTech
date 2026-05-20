@@ -42,8 +42,4 @@ public class PropertyDtoCreate {
     @Min(value = 0, message = "Number of bathrooms cannot be negative")
     @Max(value =100, message = "Number of bathrooms exceeds realistic limit")
     private int numBathrooms;
-
-    @NotNull(message = "Property status is required")
-    private PropertyStatus status;
-
 }

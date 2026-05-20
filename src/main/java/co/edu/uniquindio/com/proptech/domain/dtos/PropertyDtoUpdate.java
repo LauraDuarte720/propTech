@@ -40,7 +40,5 @@ public class PropertyDtoUpdate {
     @Max(value = 100, message = "Number of bathrooms exceeds realistic limit")
     private Integer numBathrooms;
 
-    private PropertyStatus status;
-
     private String agentId;
 }
