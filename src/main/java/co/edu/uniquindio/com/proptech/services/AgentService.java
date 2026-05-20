@@ -160,14 +160,24 @@ public class AgentService {
         return request;
     }
 
+    public void cancelSupportRequest(String agentCedula, String requestId) {
+        Agent agent = getAgentByCedula(agentCedula);
+        SupportRequest request = agent.findSupportRequest(requestId)
+                .orElseThrow(() -> new SupportRequestDoesNotExist("id", requestId));
+        if (request.getStatus() != SupportRequestStatus.PENDING) {
+            throw new SupportRequestNotCancellableException("id", requestId);
+        }
+        request.setStatus(SupportRequestStatus.CANCELLED);
+        agentRepository.save(agent);
+    }
+
+
     public ArrayList<Agent> getAgentsOrderedByClosedDeals() {
         AVLTree<Agent> tree = agentRepository.getAgentsOrderedByClosedDeals();
 
         if (tree.isEmpty()) {
             throw new RuntimeException("No hay asesores registrados.");
         }
-
-
         ArrayList<Agent> ordered = tree.inOrder();
         ArrayList<Agent> result = new ArrayList<>();
         for (int i = ordered.size() - 1; i >= 0; i--) {

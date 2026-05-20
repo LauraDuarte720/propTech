@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 
 @Getter
@@ -89,6 +90,15 @@ public class Agent extends User implements Comparable<Agent> {
     }
     public boolean hasSupportRequests() {
         return !supportRequests.isEmpty();
+    }
+
+    public Optional<SupportRequest> findSupportRequest(String requestId) {
+        for (SupportRequest sr : supportRequests) {
+            if (sr.getId().equals(requestId)) {
+                return Optional.of(sr);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
