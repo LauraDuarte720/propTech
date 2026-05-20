@@ -19,6 +19,7 @@ import java.util.Optional;
 public class ClientService {
 
     ClientRepository clientRepository;
+    AlgorithmService algorithmService;
 
     public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
@@ -70,6 +71,7 @@ public class ClientService {
         userInteraction.setTimestamp(LocalDateTime.now());
         userInteraction.setClient(client);
         client.addInteraction(userInteraction);
+        algorithmService.registerInteractionInGraph(userInteraction); // ← sincroniza el grafo
         return userInteraction;
     }
 
