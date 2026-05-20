@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class SupportRequest {
+    private String id;
     private Client client;
     private Property property;
     private Agent agent;

@@ -13,6 +13,7 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
+import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
@@ -137,6 +138,8 @@ public class AgentService {
 
     public SupportRequest registerSupportRequest(SupportRequest request) {
         Agent agent = request.getAgent();
+        request.setId(CodeGenerator.generateSupportRequestCode());
+        request.setStatus(SupportRequestStatus.PENDING);
         agent.enqueueSupportRequest(request);
         agentRepository.save(agent);
         return request;

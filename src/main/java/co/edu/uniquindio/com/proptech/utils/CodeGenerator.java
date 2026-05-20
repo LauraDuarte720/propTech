@@ -20,6 +20,7 @@ public class CodeGenerator {
     private static int alertCounter = 1;
     private static int neighborCounter = 1;
     private static int alertAbnormalCounter = 1;
+    private static int supportRequestCounter = 1;
 
     static {
         for (int i = 0; i < propertyCounters.length; i++) {
@@ -70,6 +71,7 @@ public class CodeGenerator {
     public static String generateNeighborCode() {
         return "NGB-" + String.format("%04d", neighborCounter++);
     }
+    public static String generateSupportRequestCode() {return "SPR-" + String.format("%04d", supportRequestCounter++);}
 
 
     private static String getAlertPrefix(AlertType type) {
