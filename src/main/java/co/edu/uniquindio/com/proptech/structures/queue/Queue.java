@@ -5,7 +5,7 @@ import co.edu.uniquindio.com.proptech.structures.Node;
 import java.util.List;
 
 
-public class Queue<T> {
+public class Queue<T> implements Iterable<T>{
 
 
     private Node<T> front;
@@ -115,5 +115,24 @@ public class Queue<T> {
             current = current.next;
         }
         return list;
+    }
+
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return new java.util.Iterator<T>() {
+            private Node<T> current = front;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public T next() {
+                T data = current.data;
+                current = current.next;
+                return data;
+            }
+        };
     }
 }
