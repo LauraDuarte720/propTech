@@ -38,7 +38,7 @@ public class VisitService {
             validateNoSchedulingConflict(visit);
             visit.setStatus(VisitStatus.PENDING);
         } catch (VipVisitDisplacementException e) {
-            visit.setStatus(VisitStatus.PENDING); // VIP entra directo como confirmada
+            visit.setStatus(VisitStatus.PENDING);
             visitRepository.save(visit);
             throw e;
         }
