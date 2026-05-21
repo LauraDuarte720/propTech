@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.VisitType;
 import lombok.*;
 
 import java.time.*;
@@ -27,4 +28,6 @@ public class Visit {
     private String postVisitNotes;
 
     private LocalDateTime createdAt;
+
+    private VisitType visitType;
 }

@@ -7,7 +7,8 @@ public enum VisitStatus {
     CONFIRMED("Confirmed"),
     COMPLETED("Completed"),
     CANCELED("Canceled"),
-    RESCHEDULED("Rescheduled");
+    RESCHEDULED("Rescheduled"),
+    PENDINGRESCHEDULE("Pending Reschedule");
 
     private final String displayName;
 

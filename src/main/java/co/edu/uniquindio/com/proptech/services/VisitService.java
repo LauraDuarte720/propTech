@@ -2,12 +2,10 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.VisitType;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.InvalidVisitTransitionException;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitDoesNotExist;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitSchedulingConflictException;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
@@ -32,22 +30,43 @@ public class VisitService {
         if (exists) {
             throw new VisitAlreadyExists("id", visit.getId());
         }
-        validateNoSchedulingConflict(visit);
+
         visit.setId(CodeGenerator.generateVisitCode());
-        visit.setStatus(VisitStatus.PENDING);
         visit.setCreatedAt(LocalDateTime.now());
+
+        try {
+            validateNoSchedulingConflict(visit);
+            visit.setStatus(VisitStatus.PENDING);
+        } catch (VipVisitDisplacementException e) {
+            visit.setStatus(VisitStatus.PENDING); // VIP entra directo como confirmada
+            visitRepository.save(visit);
+            throw e;
+        }
+
         return visitRepository.save(visit);
     }
 
     private void validateNoSchedulingConflict(Visit visit) {
         LinkedList<Visit> agentVisits = visitRepository.getVisitsByAgent(visit.getAgent().getCedula());
+
         for (Visit v : agentVisits) {
-            if (v.getStatus() != VisitStatus.CANCELED
-                    && v.getStatus() != VisitStatus.COMPLETED) {
-                long diff = Math.abs(Duration.between(v.getDate(), visit.getDate()).toMinutes());
-                if (diff < 60) {
-                    throw new VisitSchedulingConflictException(visit.getAgent().getCedula(), visit.getDate());
+            if (v.getStatus() == VisitStatus.CANCELED ||
+                    v.getStatus() == VisitStatus.COMPLETED) continue;
+
+            long diff = Math.abs(Duration.between(v.getDate(), visit.getDate()).toMinutes());
+            if (diff < 60) {
+                if (visit.getVisitType() == VisitType.VIP) {
+                    v.setStatus(VisitStatus.PENDINGRESCHEDULE);
+                    visitRepository.update(v);
+                    throw new VipVisitDisplacementException(
+                            visit.getAgent().getCedula(),
+                            v.getId()
+                    );
                 }
+                throw new VisitSchedulingConflictException(
+                        visit.getAgent().getCedula(),
+                        visit.getDate()
+                );
             }
         }
     }
