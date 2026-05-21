@@ -9,6 +9,7 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.graph.Graph;
+import co.edu.uniquindio.com.proptech.structures.stack.Stack;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -44,4 +45,5 @@ public class PropTech {
     private HashTable<PropertyStatus, ArrayList<Property>> propertiesByStatus = new HashTable<>();
     private Graph<Object> clientPropertyGraph = new Graph<>();
     private Graph<GeographicZone> zoneGraph = new Graph<>();
+    private Stack<AdminActionLog> adminHistory = new Stack<>();
 }
