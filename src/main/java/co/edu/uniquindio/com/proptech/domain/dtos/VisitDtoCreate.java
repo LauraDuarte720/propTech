@@ -25,9 +25,6 @@ public class VisitDtoCreate {
     @NotBlank(message = "Agent ID is required")
     private String agentId;
 
-    @NotNull(message = "Visit status is required")
-    private VisitStatus status;
-
     @Size(max = 500, message = "Post visit notes must not exceed 500 characters")
     private String postVisitNotes;
 }

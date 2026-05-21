@@ -12,7 +12,6 @@ public class VisitMapper implements MapperCrud<Visit, VisitDtoCreate, VisitDtoUp
     public Visit toEntity(VisitDtoCreate dto) {
         return Visit.builder()
                 .date(dto.getDate())
-                .status(dto.getStatus())
                 .postVisitNotes(dto.getPostVisitNotes())
                 .build();
     }
