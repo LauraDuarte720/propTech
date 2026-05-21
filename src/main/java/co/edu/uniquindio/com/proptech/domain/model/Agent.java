@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import lombok.*;
@@ -25,6 +26,8 @@ public class Agent extends User implements Comparable<Agent> {
 
     private Queue<SupportRequest> supportRequests;
 
+    private LinkedList<SupportRequest> supportHistory;
+
     private Integer closedDeals;
 
     public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, Integer closedDeals) {
@@ -35,6 +38,7 @@ public class Agent extends User implements Comparable<Agent> {
         this.scheduledVisits = new PriorityQueue<>(Comparator.comparing(Visit::getDate));
         this.supportRequests = new Queue<>();
         this.closedDeals = closedDeals;
+        this.supportHistory = new LinkedList<>();
     }
 
 
@@ -94,11 +98,16 @@ public class Agent extends User implements Comparable<Agent> {
 
     public Optional<SupportRequest> findSupportRequest(String requestId) {
         for (SupportRequest sr : supportRequests) {
-            if (sr.getId().equals(requestId)) {
-                return Optional.of(sr);
-            }
+            if (sr.getId().equals(requestId)) return Optional.of(sr);
+        }
+        for (SupportRequest sr : supportHistory) {
+            if (sr.getId().equals(requestId)) return Optional.of(sr);
         }
         return Optional.empty();
+    }
+
+    public void addToSupportHistory(SupportRequest request) {
+        supportHistory.addLast(request);
     }
 
     @Override

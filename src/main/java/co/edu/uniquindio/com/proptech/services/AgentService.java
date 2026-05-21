@@ -152,12 +152,26 @@ public class AgentService {
 
     public SupportRequest attendSupportRequest(String agentId) {
         Agent agent = getAgentByCedula(agentId);
+
         SupportRequest request = agent.dequeueSupportRequest();
+
+        while (request != null && request.getStatus() == SupportRequestStatus.CANCELLED) {
+            agent.addToSupportHistory(request);
+            request = agent.dequeueSupportRequest();
+        }
+
         if (request != null) {
-        request.setStatus(SupportRequestStatus.ATTENDED);
-    }
+            request.setStatus(SupportRequestStatus.ATTENDED);
+            agent.addToSupportHistory(request);
+        }
+
         agentRepository.save(agent);
         return request;
+    }
+
+    public LinkedList<SupportRequest> getSupportHistory(String agentId) {
+        Agent agent = getAgentByCedula(agentId);
+        return agent.getSupportHistory();
     }
 
     public void cancelSupportRequest(String agentCedula, String requestId) {
