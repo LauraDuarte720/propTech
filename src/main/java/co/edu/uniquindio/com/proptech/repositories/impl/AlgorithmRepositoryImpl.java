@@ -20,14 +20,4 @@ public class AlgorithmRepositoryImpl implements AlgorithmRepository {
     public Graph<Object> getClientPropertyGraph() {
         return propTech.getClientPropertyGraph();
     }
-
-    @Override
-    public Graph<GeographicZone> getZoneGraph() {
-        return propTech.getZoneGraph();
-    }
-
-    @Override
-    public HashTable<String, Integer> getVisitFrequencyByProperty() {
-        return propTech.getVisitFrequencyByProperty();
-    }
 }

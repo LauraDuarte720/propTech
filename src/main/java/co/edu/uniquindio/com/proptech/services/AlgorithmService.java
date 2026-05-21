@@ -67,17 +67,6 @@ public class AlgorithmService {
         updateSearchStatus(client);
     }
 
-    // Llamar desde AgentService cuando se registra una operación entre zonas
-    public void registerZoneConnection(GeographicZone zoneA, GeographicZone zoneB, double weight) {
-        if (!graphRepository.getZoneGraph().containsNode(zoneA.getId())) {
-            graphRepository.getZoneGraph().addNode(new GraphNode<>(zoneA.getId(), zoneA));
-        }
-        if (!graphRepository.getZoneGraph().containsNode(zoneB.getId())) {
-            graphRepository.getZoneGraph().addNode(new GraphNode<>(zoneB.getId(), zoneB));
-        }
-        graphRepository.getZoneGraph().addEdge(zoneA.getId(), zoneB.getId(), weight);
-    }
-
     // ══════════════════════════════════════════════
     // ALGORITMO DE RECOMENDACIÓN CON SCORING
     // ══════════════════════════════════════════════
@@ -182,22 +171,6 @@ public class AlgorithmService {
         return result;
     }
 
-    // Zona más activa comercialmente
-    public GeographicZone getMostActiveZone() {
-        GeographicZone mostActive = null;
-        int maxConnections = -1;
-
-        for (GraphNode<GeographicZone> node : graphRepository.getZoneGraph().getNodes().values()) {
-            ArrayList<GraphEdge<GeographicZone>> edges =
-                    graphRepository.getZoneGraph().getNeighbors(node.getId());
-            int connections = edges == null ? 0 : edges.size();
-            if (connections > maxConnections) {
-                maxConnections = connections;
-                mostActive = node.getData();
-            }
-        }
-        return mostActive;
-    }
 
     // ══════════════════════════════════════════════
     // MÉTODOS PRIVADOS DE APOYO

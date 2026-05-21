@@ -43,5 +43,4 @@ public class PropTech {
     private HashTable<PropertyType, ArrayList<Property>> propertiesByType = new HashTable<>();
     private HashTable<PropertyStatus, ArrayList<Property>> propertiesByStatus = new HashTable<>();
     private Graph<Object> clientPropertyGraph = new Graph<>();
-    private Graph<GeographicZone> zoneGraph = new Graph<>();
 }
