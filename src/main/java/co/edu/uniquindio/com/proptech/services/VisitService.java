@@ -7,12 +7,14 @@ import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.InvalidVisitTransitionException;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitDoesNotExist;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitSchedulingConflictException;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -27,14 +29,27 @@ public class VisitService {
 
     public Visit registerVisit(Visit visit) {
         boolean exists = visitRepository.findById(visit.getId()).isPresent();
-
         if (exists) {
             throw new VisitAlreadyExists("id", visit.getId());
         }
-
+        validateNoSchedulingConflict(visit);
         visit.setId(CodeGenerator.generateVisitCode());
+        visit.setStatus(VisitStatus.PENDING);
         visit.setCreatedAt(LocalDateTime.now());
         return visitRepository.save(visit);
+    }
+
+    private void validateNoSchedulingConflict(Visit visit) {
+        LinkedList<Visit> agentVisits = visitRepository.getVisitsByAgent(visit.getAgent().getCedula());
+        for (Visit v : agentVisits) {
+            if (v.getStatus() != VisitStatus.CANCELED
+                    && v.getStatus() != VisitStatus.COMPLETED) {
+                long diff = Math.abs(Duration.between(v.getDate(), visit.getDate()).toMinutes());
+                if (diff < 60) {
+                    throw new VisitSchedulingConflictException(visit.getAgent().getCedula(), visit.getDate());
+                }
+            }
+        }
     }
 
     public Visit updateVisit(Visit visit) {
