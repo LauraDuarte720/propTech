@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.AdminActionType;
+import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
@@ -29,14 +31,16 @@ public class AgentService {
     PropertyAssignmentService propertyAssignmentService;
     ZoneMatcher zoneMatcher;
     StructuresMappers structuresMappers;
+    AdminActionService  adminActionService;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers, AdminActionService adminActionService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
         this.propertyAssignmentService = propertyAssignmentService;
         this.zoneMatcher = zoneMatcher;
         this.structuresMappers = structuresMappers;
+        this.adminActionService = adminActionService;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -44,6 +48,12 @@ public class AgentService {
         if (exists) {
             throw new AgentAlreadyExists("cedula", agent.getCedula());
         }
+        adminActionService.log(
+                AdminActionType.CREATE,
+                AdminEntityType.AGENT,
+                "Agent created: " + agent.getCedula(),
+                "Admin"
+        );
         return agentRepository.save(agent);
     }
 
