@@ -53,7 +53,6 @@ public class Property implements Comparable<Property> {
                 .numBedrooms(numBedrooms)
                 .numBathrooms(numBathrooms)
                 .status(status)
-                .agent(agent)
                 .build();
     }
 
@@ -66,7 +65,6 @@ public class Property implements Comparable<Property> {
         this.numBedrooms = snapshot.getNumBedrooms();
         this.numBathrooms = snapshot.getNumBathrooms();
         this.status = snapshot.getStatus();
-        this.agent = snapshot.getAgent();
     }
 
     public void saveSnapshot() {

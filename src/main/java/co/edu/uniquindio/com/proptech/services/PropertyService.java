@@ -108,7 +108,7 @@ public class PropertyService {
     public Property updateProperty(Property property) {
         return propertyRepository.findByCode(property.getCode()).map(existing -> {
 
-            existing.getHistory().push(existing.createSnapshot());
+            existing.saveSnapshot();
 
             Optional.ofNullable(property.getAddress()).ifPresent(existing::setAddress);
             Optional.ofNullable(property.getNeighborhood()).ifPresent(existing::setNeighborhood);
@@ -128,7 +128,9 @@ public class PropertyService {
             Optional.ofNullable(property.getNumBedrooms()).ifPresent(existing::setNumBedrooms);
             Optional.ofNullable(property.getNumBathrooms()).ifPresent(existing::setNumBathrooms);
             Optional.ofNullable(property.getStatus()).ifPresent(existing::setStatus);
-            Optional.ofNullable(property.getAgent()).ifPresent(existing::setAgent);
+            Optional.ofNullable(property.getAgent()).ifPresent(newAgent ->
+                    propertyAssignmentService.assignAgent(existing.getCode(), newAgent.getCedula())
+            );
 
             Property saved = propertyRepository.save(existing);
 
