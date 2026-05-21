@@ -12,16 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class AdminActionLog {
-
     private String id;
-
     private AdminEntityType entity;
-
     private AdminActionType action;
-
     private String description;
-
     private LocalDateTime timestamp;
-
     private String performedBy;
+    private String entityId;
+    private String secondaryEntityId;
 }
