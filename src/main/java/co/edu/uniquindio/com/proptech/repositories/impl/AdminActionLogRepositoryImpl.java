@@ -31,4 +31,9 @@ public class AdminActionLogRepositoryImpl implements AdminActionLogRepository {
     public boolean isEmpty() {
         return propTech.getAdminHistory().isEmpty();
     }
+
+    @Override
+    public AdminActionLog pop() {
+        return propTech.getAdminHistory().pop();
+    }
 }
