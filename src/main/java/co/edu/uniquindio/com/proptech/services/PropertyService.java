@@ -61,22 +61,16 @@ public class PropertyService {
             property.setStatus(PropertyStatus.NEW);
             saved = propertyRepository.save(property);
             propertyAssignmentService.assignAgent(saved.getCode(), agentId);
-            adminActionService.log(
-                    AdminActionType.CREATE,
-                    AdminEntityType.PROPERTY,
+            adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created and assigned to agent " + agentId + " -> " + saved.getCode(),
-                    "Admin"
-            );
+                    "Admin", saved.getCode());
             return saved;
         } else {
             property.setStatus(PropertyStatus.INACTIVE);
             saved = propertyRepository.save(property);
-            adminActionService.log(
-                    AdminActionType.CREATE,
-                    AdminEntityType.PROPERTY,
+            adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created without agent -> " + saved.getCode(),
-                    "Admin"
-            );
+                    "Admin", saved.getCode());
             return saved;
         }
     }
@@ -91,13 +85,17 @@ public class PropertyService {
         property.setStatus(PropertyStatus.ACTIVE);
         Property saved = propertyRepository.save(property);
 
-        adminActionService.log(
-                AdminActionType.UPDATE,
-                AdminEntityType.PROPERTY,
+        adminActionService.log(AdminActionType.PUBLISH, AdminEntityType.PROPERTY,
                 "Property published: " + propertyCode,
-                "Admin"
-        );
+                "Admin", propertyCode);
         return saved;
+    }
+
+    public Property unpublishProperty(String propertyCode) {
+        Property property = propertyRepository.findByCode(propertyCode)
+                .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
+        property.setStatus(PropertyStatus.NEW);
+        return propertyRepository.save(property);
     }
 
     public Property registerAndPublishProperty(Property property, String agentId) {
@@ -134,12 +132,9 @@ public class PropertyService {
 
             Property saved = propertyRepository.save(existing);
 
-            adminActionService.log(
-                    AdminActionType.UPDATE,
-                    AdminEntityType.PROPERTY,
+            adminActionService.log(AdminActionType.UPDATE, AdminEntityType.PROPERTY,
                     "Property updated: " + existing.getCode(),
-                    "Admin"
-            );
+                    "Admin", existing.getCode());
 
             return saved;
 
@@ -152,12 +147,9 @@ public class PropertyService {
 
         propertyRepository.deleteById(propertyId);
 
-        adminActionService.log(
-                AdminActionType.DELETE,
-                AdminEntityType.PROPERTY,
+        adminActionService.log(AdminActionType.DELETE, AdminEntityType.PROPERTY,
                 "Property deleted: " + propertyId,
-                "Admin"
-        );
+                "Admin", propertyId);
     }
 
     public HashTable<String, Property> getAllProperties() {

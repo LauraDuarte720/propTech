@@ -48,12 +48,9 @@ public class AgentService {
         if (exists) {
             throw new AgentAlreadyExists("cedula", agent.getCedula());
         }
-        adminActionService.log(
-                AdminActionType.CREATE,
-                AdminEntityType.AGENT,
+        adminActionService.log(AdminActionType.CREATE, AdminEntityType.AGENT,
                 "Agent created: " + agent.getCedula(),
-                "Admin"
-        );
+                "Admin", agent.getCedula());
         return agentRepository.save(agent);
     }
 
@@ -89,6 +86,12 @@ public class AgentService {
         return saved;
     }
 
+    public void deleteAgent(String cedula) {
+        agentRepository.findByCedula(cedula)
+                .orElseThrow(() -> new AgentDoesNotExist("cedula", cedula));
+        agentRepository.deleteByCedula(cedula);
+    }
+
     public PriorityQueue<Visit> getVisitsAgent(String idAgent) {
         Agent agent = getAgentByCedula(idAgent);
         return agent.getScheduledVisits();
@@ -99,7 +102,7 @@ public class AgentService {
     }
 
     public Property removePropertyFromAgent(String propertyCode, String agentId) {
-        return propertyAssignmentService.removeAgent(propertyCode, agentId);
+        return propertyAssignmentService.removeAgentFromProperty(propertyCode, agentId);
     }
 
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {

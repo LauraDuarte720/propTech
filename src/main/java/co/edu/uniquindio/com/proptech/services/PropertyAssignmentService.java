@@ -17,11 +17,13 @@ public class PropertyAssignmentService {
     private final ZoneMatcher zoneMatcher;
     private final PropertyRepository propertyRepository;
     private final AgentRepository agentRepository;
+    private  final AdminActionService adminActionService;
 
-    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository) {
+    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository, AdminActionService adminActionService) {
         this.zoneMatcher = zoneMatcher;
         this.propertyRepository = propertyRepository;
         this.agentRepository = agentRepository;
+        this.adminActionService = adminActionService;
     }
 
     public Property assignAgent(String propertyCode, String agentId) {
@@ -36,10 +38,13 @@ public class PropertyAssignmentService {
 
         property.setAgent(agent);
         agent.addProperty(property);
+        adminActionService.logAssign(
+                "Agent " + agentId + " assigned to property " + propertyCode,
+                "Admin", propertyCode, agentId);
         return propertyRepository.save(property);
     }
 
-    public Property removeAgent(String propertyCode, String agentId) {
+    public Property removeAgentFromProperty(String propertyCode, String agentId) {
         Property property = propertyRepository.findByCode(propertyCode)
                 .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
         Agent agent = agentRepository.findByCedula(agentId)
@@ -48,6 +53,9 @@ public class PropertyAssignmentService {
         agent.removeProperty(property);
         property.setAgent(null);
         property.setStatus(PropertyStatus.INACTIVE);
+        adminActionService.logUnassign(
+                "Agent " + agentId + " removed from property " + propertyCode,
+                "Admin", propertyCode, agentId);
         return propertyRepository.save(property);
     }
 
