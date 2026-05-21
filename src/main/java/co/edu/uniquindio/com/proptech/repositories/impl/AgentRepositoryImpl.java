@@ -51,4 +51,9 @@ public class AgentRepositoryImpl implements AgentRepository {
     public AVLTree<Agent> getAgentsOrderedByClosedDeals() {
         return propTech.getAgentsTree();
     }
+
+    @Override
+    public void deleteByCedula(String cedula) {
+        propTech.getAgents().remove(cedula);
+    }
 }

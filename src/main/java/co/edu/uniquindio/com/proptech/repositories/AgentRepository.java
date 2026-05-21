@@ -12,4 +12,5 @@ public interface AgentRepository {
     boolean deleteById(String cedula);
     HashTable<String, Agent> getAgents();
     AVLTree<Agent> getAgentsOrderedByClosedDeals();
+    void deleteByCedula(String cedula);
 }
