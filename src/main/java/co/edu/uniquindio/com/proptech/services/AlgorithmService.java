@@ -144,7 +144,7 @@ public class AlgorithmService {
     }
 
     // Detectar propiedades similares consultadas por múltiples clientes
-    public ArrayList<Client> getClientsWithSharedProperties(String clientId) {
+    private ArrayList<Client> getClientsWithSharedProperties(String clientId) {
         ArrayList<GraphEdge<Object>> clientEdges =
                 graphRepository.getClientPropertyGraph().getNeighbors(clientId);
         if (clientEdges == null) return new ArrayList<>();
@@ -168,6 +168,122 @@ public class AlgorithmService {
                 }
             }
         }
+        return result;
+    }
+
+    // Detectar propiedades similares consultadas por múltiples clientes
+    public ArrayList<Property> getSimilarProperties(String propertyCode) {
+
+        HashTable<String, Integer> frequency = calculateSimilarPropertyFrequency(propertyCode);
+        ArrayList<ScoredProperty> scored = buildScoredProperties(frequency);
+        insertionSort(scored);
+
+        return extractProperties(scored);
+    }
+
+    private HashTable<String, Integer> calculateSimilarPropertyFrequency(String propertyCode) {
+
+        HashTable<String, Integer> frequency = new HashTable<>();
+
+        ArrayList<GraphEdge<Object>> propertyEdges =
+                graphRepository.getClientPropertyGraph()
+                        .getNeighbors(propertyCode);
+
+        if (propertyEdges == null) return frequency;
+
+        for (int i = 0; i < propertyEdges.size(); i++) {
+
+            Object clientData =
+                    propertyEdges.get(i).getTarget().getData();
+
+            if (!(clientData instanceof Client)) continue;
+
+            Client client = (Client) clientData;
+
+            addClientRelatedProperties(
+                    client,
+                    propertyCode,
+                    frequency
+            );
+        }
+
+        return frequency;
+    }
+
+    private void addClientRelatedProperties(
+            Client client,
+            String originalPropertyCode,
+            HashTable<String, Integer> frequency) {
+
+        ArrayList<GraphEdge<Object>> clientEdges =
+                graphRepository.getClientPropertyGraph()
+                        .getNeighbors(client.getCedula());
+
+        if (clientEdges == null) return;
+
+        for (int i = 0; i < clientEdges.size(); i++) {
+
+            Object propertyData =
+                    clientEdges.get(i).getTarget().getData();
+
+            if (!(propertyData instanceof Property)) continue;
+
+            Property property = (Property) propertyData;
+
+            // No contar la misma propiedad
+            if (property.getCode().equals(originalPropertyCode)) continue;
+
+            incrementPropertyFrequency(
+                    property.getCode(),
+                    frequency
+            );
+        }
+    }
+
+    private void incrementPropertyFrequency(
+            String propertyCode,
+            HashTable<String, Integer> frequency) {
+
+        Integer current = frequency.get(propertyCode);
+
+        frequency.put(
+                propertyCode,
+                current == null ? 1 : current + 1
+        );
+    }
+
+    private ArrayList<ScoredProperty> buildScoredProperties(
+            HashTable<String, Integer> frequency) {
+
+        ArrayList<ScoredProperty> scored = new ArrayList<>();
+
+        for (String code : frequency.keys()) {
+
+            Property property = propertyService.getPropertyByCode(code);
+
+            if (property != null) {
+
+                scored.add(
+                        new ScoredProperty(
+                                property,
+                                frequency.get(code)
+                        )
+                );
+            }
+        }
+
+        return scored;
+    }
+
+    private ArrayList<Property> extractProperties(
+            ArrayList<ScoredProperty> scored) {
+
+        ArrayList<Property> result = new ArrayList<>();
+
+        for (int i = 0; i < scored.size(); i++) {
+            result.add(scored.get(i).property);
+        }
+
         return result;
     }
 
