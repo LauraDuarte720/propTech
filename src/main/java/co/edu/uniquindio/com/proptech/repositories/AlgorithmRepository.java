@@ -6,4 +6,5 @@ import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 
 public interface AlgorithmRepository {
     Graph<Object> getClientPropertyGraph();
+    Graph<GeographicZone> getZoneGraph();
 }
