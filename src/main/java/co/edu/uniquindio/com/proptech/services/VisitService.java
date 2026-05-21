@@ -1,8 +1,10 @@
 package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.InvalidVisitTransitionException;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitAlreadyExists;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.VisitDoesNotExist;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
@@ -40,7 +42,10 @@ public class VisitService {
             Optional.ofNullable(visit.getDate()).ifPresent(existing::setDate);
             Optional.ofNullable(visit.getClient()).ifPresent(existing::setClient);
             Optional.ofNullable(visit.getProperty()).ifPresent(existing::setProperty);
-            Optional.ofNullable(visit.getStatus()).ifPresent(existing::setStatus);
+            Optional.ofNullable(visit.getStatus()).ifPresent(newStatus -> {
+                validateTransition(existing.getStatus(), newStatus);
+                existing.setStatus(newStatus);
+            });
             Optional.ofNullable(visit.getPostVisitNotes()).ifPresent(existing::setPostVisitNotes);
             return visitRepository.update(existing);
         }).orElseThrow(() -> new VisitDoesNotExist("id", visit.getId()));
@@ -93,5 +98,21 @@ public class VisitService {
         if (byZone == null) return new HashTable<>();
         HashTable<String, Integer> byNeighborhood = byZone.get(zone);
         return byNeighborhood == null ? new HashTable<>() : byNeighborhood;
+    }
+
+    public Visit updateVisitStatus(String visitId, VisitStatus newStatus) {
+        Visit visit = getVisitById(visitId);
+        validateTransition(visit.getStatus(), newStatus);
+        visit.setStatus(newStatus);
+        return visit;
+    }
+
+    private void validateTransition(VisitStatus current, VisitStatus next) {
+        if (current == VisitStatus.COMPLETED || current == VisitStatus.CANCELED) {
+            throw new InvalidVisitTransitionException(current, next, "Terminal state, cannot be modified");
+        }
+        if (next == VisitStatus.PENDING) {
+            throw new InvalidVisitTransitionException(current, next, "Cannot return to pending");
+        }
     }
 }
