@@ -3,10 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
-import co.edu.uniquindio.com.proptech.domain.model.Agent;
-import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
-import co.edu.uniquindio.com.proptech.domain.model.PriceHistory;
-import co.edu.uniquindio.com.proptech.domain.model.Property;
+import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAgentConfirmationException;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyAlreadyExists;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoesNotExist;
@@ -84,10 +81,9 @@ public class PropertyService {
         return publishProperty(saved.getCode());
     }
 
-
-
     public Property updateProperty(Property property) {
         return propertyRepository.findByCode(property.getCode()).map(existing -> {
+            existing.getHistory().push(existing.createSnapshot());
             Optional.ofNullable(property.getAddress()).ifPresent(existing::setAddress);
             Optional.ofNullable(property.getNeighborhood()).ifPresent(existing::setNeighborhood);
             Optional.ofNullable(property.getPurpose()).ifPresent(existing::setPurpose);
@@ -123,6 +119,15 @@ public class PropertyService {
     public Property getPropertyByCode(String code) {
         return propertyRepository.findByCode(code)
                 .orElseThrow(() -> new PropertyDoesNotExist("code", code));
+    }
+
+    public Property undoLastChange(String propertyCode) {
+        Property property = propertyRepository.findByCode(propertyCode)
+                .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
+
+        PropertySnapshot snapshot = property.getLastSnapshot();
+        property.restoreSnapshot(snapshot);
+        return property;
     }
 
     public AVLTree<Property> getPropertiesOrderedByPrice(){
