@@ -11,18 +11,26 @@ import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 public class ClientService {
 
-    ClientRepository clientRepository;
-    AlgorithmService algorithmService;
+    private final ClientRepository clientRepository;
+    private final GraphSyncService graphSyncService;
 
-    public ClientService(ClientRepository clientRepository) {
+    /**
+     * @Lazy en GraphSyncService rompe el ciclo:
+     *   ClientService → GraphSyncService → OperationService → ClientService
+     */
+    public ClientService(ClientRepository clientRepository,
+                         @Lazy GraphSyncService graphSyncService) {
         this.clientRepository = clientRepository;
+        this.graphSyncService = graphSyncService;
     }
 
     public Client registerClient(Client client) {
@@ -62,7 +70,7 @@ public class ClientService {
 
     public Client getClientByCedula(String cedula) {
         return clientRepository.findByCedula(cedula)
-                .orElseThrow(() -> new ClientDoesNotExist("cedula",cedula));
+                .orElseThrow(() -> new ClientDoesNotExist("cedula", cedula));
     }
 
     public UserInteraction registerUserInteraction(UserInteraction userInteraction) {
@@ -71,7 +79,7 @@ public class ClientService {
         userInteraction.setTimestamp(LocalDateTime.now());
         userInteraction.setClient(client);
         client.addInteraction(userInteraction);
-        algorithmService.registerInteractionInGraph(userInteraction); // ← sincroniza el grafo
+        graphSyncService.registerInteractionInGraph(userInteraction); // ← sincroniza el grafo
         return userInteraction;
     }
 
@@ -84,7 +92,6 @@ public class ClientService {
         }
         return favorites;
     }
-
 
     public HashTable<InteractionType, ArrayList<UserInteraction>> getUserInteractions(String clientId) {
         Client client = getClientByCedula(clientId);
