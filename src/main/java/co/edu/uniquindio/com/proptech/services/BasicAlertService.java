@@ -25,11 +25,11 @@ public class BasicAlertService {
     private final ClientService clientService;
 
     // Cola normal: todas las alertas pendientes de revisión
-    private final Queue<Alert> pendingAlerts = new Queue<>();
+    private final Queue<BasicAlert> pendingAlerts = new Queue<>();
 
     // Cola de prioridad: alertas urgentes ordenadas por timestamp (más reciente primero)
     private final PriorityQueue<BasicAlert> priorityAlerts = new PriorityQueue<>(
-            Comparator.comparing(BasicAlert::getTimestamp).reversed()
+            Comparator.comparing(alert -> alert.getOperation().getDateFinal())
     );
 
     public BasicAlertService(BasicAlertRepository basicAlertRepository,
@@ -227,11 +227,11 @@ public class BasicAlertService {
         return alert;
     }
 
-    public Alert getNextPendingAlert() {
+    public BasicAlert getNextPendingAlert() {
         if (pendingAlerts.isEmpty()) {
             throw new RuntimeException("No hay alertas pendientes");
         }
-        Alert alert = pendingAlerts.dequeue();
+        BasicAlert alert = pendingAlerts.dequeue();
         alert.setReviewed(true);
         return alert;
     }
