@@ -40,7 +40,6 @@ public class PropertyService {
     }
 
     public Property registerProperty(Property property, String agentId, boolean confirm) {
-
         boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
         if (exists) {
             throw new PropertyAlreadyExists("code", property.getCode());
@@ -48,26 +47,23 @@ public class PropertyService {
 
         Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
         property.setNeighborhood(resolved);
-
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
 
         if (agentId == null && !confirm) {
             throw new NoAgentConfirmationException();
         }
 
-        Property saved;
-
         if (agentId != null) {
             property.setStatus(PropertyStatus.NEW);
-            saved = propertyRepository.save(property);
-            propertyAssignmentService.assignAgent(saved.getCode(), agentId);
+            Property saved = propertyRepository.save(property);
             adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created and assigned to agent " + agentId + " -> " + saved.getCode(),
                     "Admin", saved.getCode());
+            propertyAssignmentService.assignAgentWithLog(saved.getCode(), agentId);
             return saved;
         } else {
             property.setStatus(PropertyStatus.INACTIVE);
-            saved = propertyRepository.save(property);
+            Property saved = propertyRepository.save(property);
             adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created without agent -> " + saved.getCode(),
                     "Admin", saved.getCode());
@@ -83,12 +79,15 @@ public class PropertyService {
             throw new NoAgentConfirmationException();
         }
         property.setStatus(PropertyStatus.ACTIVE);
-        Property saved = propertyRepository.save(property);
+        return propertyRepository.save(property);
+    }
 
+    public Property publishPropertyWithLog(String propertyCode) {
+        Property property = publishProperty(propertyCode);
         adminActionService.log(AdminActionType.PUBLISH, AdminEntityType.PROPERTY,
                 "Property published: " + propertyCode,
                 "Admin", propertyCode);
-        return saved;
+        return property;
     }
 
     public Property unpublishProperty(String propertyCode) {
@@ -98,9 +97,12 @@ public class PropertyService {
         return propertyRepository.save(property);
     }
 
-    public Property registerAndPublishProperty(Property property, String agentId) {
-        Property saved = registerProperty(property, agentId, false);
-        return publishProperty(saved.getCode());
+    public Property unpublishPropertyWithLog(String propertyCode) {
+        Property property = unpublishProperty(propertyCode);
+        adminActionService.log(AdminActionType.UNPUBLISH, AdminEntityType.PROPERTY,
+                "Property unpublished: " + propertyCode,
+                "Admin", propertyCode);
+        return property;
     }
 
     public Property updateProperty(Property property) {
@@ -127,7 +129,7 @@ public class PropertyService {
             Optional.ofNullable(property.getNumBathrooms()).ifPresent(existing::setNumBathrooms);
             Optional.ofNullable(property.getStatus()).ifPresent(existing::setStatus);
             Optional.ofNullable(property.getAgent()).ifPresent(newAgent ->
-                    propertyAssignmentService.assignAgent(existing.getCode(), newAgent.getCedula())
+                    propertyAssignmentService.assignAgentWithLog(existing.getCode(), newAgent.getCedula())
             );
 
             Property saved = propertyRepository.save(existing);
@@ -141,15 +143,17 @@ public class PropertyService {
         }).orElseThrow(() -> new PropertyDoesNotExist("code", property.getCode()));
     }
 
-    public void deleteProperty(String propertyId) {
-        Property property = propertyRepository.findByCode(propertyId)
-                .orElseThrow(() -> new PropertyDoesNotExist("code", propertyId));
+    public void deleteProperty(String propertyCode) {
+        Property property = propertyRepository.findByCode(propertyCode)
+                .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
+        propertyRepository.deleteById(propertyCode);
+    }
 
-        propertyRepository.deleteById(propertyId);
-
+    public void deletePropertyWithLog(String propertyCode) {
+        deleteProperty(propertyCode);
         adminActionService.log(AdminActionType.DELETE, AdminEntityType.PROPERTY,
-                "Property deleted: " + propertyId,
-                "Admin", propertyId);
+                "Property deleted: " + propertyCode,
+                "Admin", propertyCode);
     }
 
     public HashTable<String, Property> getAllProperties() {
