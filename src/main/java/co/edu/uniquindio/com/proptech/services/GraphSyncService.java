@@ -9,6 +9,7 @@ import co.edu.uniquindio.com.proptech.repositories.AlgorithmRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.graph.Graph;
 import co.edu.uniquindio.com.proptech.structures.graph.GraphNode;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ public class GraphSyncService {
     private final OperationService operationService;
 
     public GraphSyncService(AlgorithmRepository algorithmRepository,
-                            OperationService operationService) {
+                            @Lazy OperationService operationService) {
         this.algorithmRepository = algorithmRepository;
         this.operationService = operationService;
     }

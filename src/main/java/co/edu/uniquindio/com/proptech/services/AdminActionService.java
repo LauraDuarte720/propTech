@@ -4,6 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
 import co.edu.uniquindio.com.proptech.domain.model.AdminActionLog;
 import co.edu.uniquindio.com.proptech.repositories.AdminActionLogRepository;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,10 @@ public class AdminActionService {
     private final AgentService agentService;
     private final PropertyAssignmentService propertyAssignmentService;
 
-    public AdminActionService(AdminActionLogRepository repository, PropertyService propertyService,
-                              AgentService agentService, PropertyAssignmentService propertyAssignmentService) {
+    public AdminActionService(AdminActionLogRepository repository,
+                              @Lazy PropertyService propertyService,
+                              @Lazy AgentService agentService,
+                              PropertyAssignmentService propertyAssignmentService) {
         this.repository = repository;
         this.propertyService = propertyService;
         this.agentService = agentService;
