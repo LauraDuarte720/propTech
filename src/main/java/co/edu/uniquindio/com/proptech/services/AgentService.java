@@ -48,10 +48,11 @@ public class AgentService {
         if (exists) {
             throw new AgentAlreadyExists("cedula", agent.getCedula());
         }
+        Agent saved = agentRepository.save(agent);
         adminActionService.log(AdminActionType.CREATE, AdminEntityType.AGENT,
-                "Agent created: " + agent.getCedula(),
-                "Admin", agent.getCedula());
-        return agentRepository.save(agent);
+                "Agent created: " + saved.getCedula(),
+                "Admin", saved.getCedula());
+        return saved;
     }
 
     public Agent updateAgent(Agent agent, boolean confirm) {
