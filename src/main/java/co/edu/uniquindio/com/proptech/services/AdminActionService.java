@@ -2,12 +2,16 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.enums.AdminActionType;
 import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
 import co.edu.uniquindio.com.proptech.domain.model.AdminActionLog;
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
+import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.repositories.AdminActionLogRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,15 +21,17 @@ public class AdminActionService {
     private final PropertyService propertyService;
     private final AgentService agentService;
     private final PropertyAssignmentService propertyAssignmentService;
+    private final GeographicZoneService geographicZoneService;
 
     public AdminActionService(AdminActionLogRepository repository,
                               @Lazy PropertyService propertyService,
                               @Lazy AgentService agentService,
-                              PropertyAssignmentService propertyAssignmentService) {
+                              PropertyAssignmentService propertyAssignmentService, GeographicZoneService geographicZoneService) {
         this.repository = repository;
         this.propertyService = propertyService;
         this.agentService = agentService;
         this.propertyAssignmentService = propertyAssignmentService;
+        this.geographicZoneService = geographicZoneService;
     }
 
     public void log(AdminActionType action, AdminEntityType entity, String description,
@@ -70,6 +76,22 @@ public class AdminActionService {
         repository.save(log);
     }
 
+
+    public void logUpdateZone(String agentCedula, String previousZoneId, ArrayList<String> affectedPropertyCodes) {
+        AdminActionLog log = AdminActionLog.builder()
+                .id(UUID.randomUUID().toString())
+                .action(AdminActionType.UPDATE_ZONE)
+                .entity(AdminEntityType.AGENT)
+                .description("Agent zone updated: " + agentCedula)
+                .performedBy("Admin")
+                .timestamp(LocalDateTime.now())
+                .entityId(agentCedula)
+                .secondaryEntityId(previousZoneId)
+                .affectedEntityIds(affectedPropertyCodes)
+                .build();
+        repository.save(log);
+    }
+
     public Object getEntityById(AdminEntityType entityType, String entityId) {
         return switch (entityType) {
             case PROPERTY -> propertyService.getPropertyByCode(entityId);
@@ -96,6 +118,16 @@ public class AdminActionService {
             case AGENT -> {
                 switch (log.getAction()) {
                     case CREATE -> agentService.deleteAgent(log.getEntityId());
+                    case UPDATE_ZONE -> {
+                        Agent agent = agentService.getAgentByCedula(log.getEntityId());
+                        GeographicZone previousZone = log.getSecondaryEntityId() != null
+                                ? geographicZoneService.getGeographicZoneById(log.getSecondaryEntityId())
+                                : null;
+                        ArrayList<String> affected = log.getAffectedEntityIds() != null
+                                ? log.getAffectedEntityIds()
+                                : new ArrayList<>();
+                        agentService.restoreGeographicZone(previousZone, agent, affected);
+                    }
                 }
             }
         }

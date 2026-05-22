@@ -60,8 +60,6 @@ public class AgentService {
             Optional.ofNullable(agent.getUsername()).ifPresent(existing::setUsername);
             Optional.ofNullable(agent.getContact()).ifPresent(existing::setContact);
             Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);
-            Optional.ofNullable(agent.getAssignedZone())
-                    .ifPresent(zone -> updateGeographicZone(zone, existing, confirm));
             return agentRepository.save(existing);
         }).orElseThrow(() -> new AgentDoesNotExist("cedula", agent.getCedula()));
     }
@@ -87,8 +85,13 @@ public class AgentService {
     }
 
     public void deleteAgent(String cedula) {
-        agentRepository.findByCedula(cedula)
+        Agent agent = agentRepository.findByCedula(cedula)
                 .orElseThrow(() -> new AgentDoesNotExist("cedula", cedula));
+
+        if (agent.hasVisits()) {
+            throw new AgentHasPendingVisitsException(cedula);
+        }
+
         agentRepository.deleteByCedula(cedula);
     }
 
@@ -116,8 +119,12 @@ public class AgentService {
     }
 
     public void updateGeographicZone(GeographicZone newGeographicZone, Agent agent, boolean confirm) {
+        String previousZoneId = agent.getAssignedZone() != null ? agent.getAssignedZone().getId() : null;
         if (agent.hasVisits()) {
             throw new AgentHasPendingVisitsException(agent.getCedula());
+        }
+        if(agent.hasSupportRequests()){
+            throw new AgentHasPendingSupportRequestsException(agent.getCedula());
         }
         ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, newGeographicZone);
 
@@ -135,6 +142,21 @@ public class AgentService {
                 property.setStatus(PropertyStatus.INACTIVE);
             }
         }
+        agentRepository.save(agent);
+        ArrayList<String> affectedCodes = new ArrayList<>();
+        if (confirm) {
+            for (Property property : incompatibleProperties) {
+                affectedCodes.add(property.getCode());
+                propertyAssignmentService.removeAgentFromProperty(property.getCode(), agent.getCedula());
+            }
+        }
+        agentRepository.save(agent);
+        adminActionService.logUpdateZone(agent.getCedula(), previousZoneId, affectedCodes);
+    }
+
+    public void restoreGeographicZone(GeographicZone previousZone, Agent agent, ArrayList<String> affectedPropertyCodes) {
+        propertyAssignmentService.restorePropertiesAfterZoneUndo(agent, affectedPropertyCodes);
+        agent.setAssignedZone(previousZone);
         agentRepository.save(agent);
     }
 

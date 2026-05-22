@@ -2,6 +2,7 @@ package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.domain.enums.AdminActionType;
 import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,4 +21,5 @@ public class AdminActionLog {
     private String performedBy;
     private String entityId;
     private String secondaryEntityId;
+    private ArrayList<String> affectedEntityIds;;
 }
