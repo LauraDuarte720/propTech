@@ -3,6 +3,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.AdminActionType;
 import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
 import co.edu.uniquindio.com.proptech.domain.model.AdminActionLog;
 import co.edu.uniquindio.com.proptech.repositories.AdminActionLogRepository;
+import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -95,5 +96,9 @@ public class AdminActionService {
                 }
             }
         }
+    }
+
+    public Queue<AdminActionLog> getHistory(AdminEntityType entityType) {
+        return repository.getHistory();
     }
 }
