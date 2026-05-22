@@ -226,6 +226,11 @@ public class PropertyService {
         return list;
     }
 
+    public Property registerAndPublishProperty(Property property, String agentId) {
+        Property saved = registerProperty(property, agentId, false);
+        return publishProperty(saved.getCode());
+    }
+
     public ArrayList<Property> getPropertiesOrderedByDemand() {
         HashTable<String, Integer> frequency = visitService.getFrequencyByProperty();
         ArrayList<Property> list = getAllPropertiesAsList();
