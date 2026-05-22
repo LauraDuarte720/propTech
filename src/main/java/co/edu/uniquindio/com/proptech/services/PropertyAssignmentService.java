@@ -9,6 +9,7 @@ import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoes
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ZonesNotMatchingException;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
@@ -53,10 +54,28 @@ public class PropertyAssignmentService {
         agent.removeProperty(property);
         property.setAgent(null);
         property.setStatus(PropertyStatus.INACTIVE);
+        propertyRepository.save(property);
+        return property;
+    }
+
+    public Property removeAgentFromPropertyWithLog(String propertyCode, String agentId) {
+        Property property = removeAgentFromProperty(propertyCode, agentId);
         adminActionService.logUnassign(
                 "Agent " + agentId + " removed from property " + propertyCode,
                 "Admin", propertyCode, agentId);
-        return propertyRepository.save(property);
+        return property;
+    }
+
+    // restore — sin log, usando la misma lógica pura al revés
+    public void restorePropertiesAfterZoneUndo(Agent agent, ArrayList<String> propertyCodes) {
+        for (String code : propertyCodes) {
+            propertyRepository.findByCode(code).ifPresent(property -> {
+                property.setAgent(agent);
+                property.setStatus(PropertyStatus.ACTIVE);
+                agent.addProperty(property);
+                propertyRepository.save(property);
+            });
+        }
     }
 
 }
