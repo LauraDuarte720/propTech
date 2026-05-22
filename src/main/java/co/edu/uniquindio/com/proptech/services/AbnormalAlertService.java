@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.enums.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.repositories.AbnormalAlertRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
@@ -304,5 +305,42 @@ public class AbnormalAlertService {
 
     private LinkedList<Visit> safeGetVisitsByAgent(String cedula) {
         return visitService.getVisitsByAgent(cedula);
+    }
+
+    public ArrayList<AbnormalAlert> getAllAlerts() {
+        ArrayList<AbnormalAlert> alerts = abnormalAlertRepository.getAll();
+        if (alerts.isEmpty()) throw new RuntimeException("No abnormal alerts registered.");
+        return alerts;
+    }
+
+    public ArrayList<AbnormalAlert> getAlertsByType(String type) {
+        try {
+            AlertAbnormalType alertType = AlertAbnormalType.valueOf(type.toUpperCase());
+            ArrayList<AbnormalAlert> alerts = abnormalAlertRepository.getByType(alertType);
+            if (alerts.isEmpty())
+                throw new RuntimeException("No alerts found for type: " + type);
+            return alerts;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid alert type: " + type);
+        }
+    }
+
+    public ArrayList<AbnormalAlert> getAlertsByLevel(String level) {
+        try {
+            AttentionLevel attentionLevel = AttentionLevel.valueOf(level.toUpperCase());
+            ArrayList<AbnormalAlert> alerts = abnormalAlertRepository.getByLevel(attentionLevel);
+            if (alerts.isEmpty())
+                throw new RuntimeException("No alerts found for level: " + level);
+            return alerts;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid attention level: " + level);
+        }
+    }
+
+    public void markAsReviewed(String id) {
+        AbnormalAlert alert = abnormalAlertRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Alert not found: " + id));
+        alert.setReviewed(true);
+        abnormalAlertRepository.update(alert);
     }
 }
