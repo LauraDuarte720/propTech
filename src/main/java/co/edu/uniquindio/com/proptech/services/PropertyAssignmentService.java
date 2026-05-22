@@ -39,10 +39,15 @@ public class PropertyAssignmentService {
 
         property.setAgent(agent);
         agent.addProperty(property);
+        return propertyRepository.save(property);
+    }
+
+    public Property assignAgentWithLog(String propertyCode, String agentId) {
+        Property property = assignAgent(propertyCode, agentId);
         adminActionService.logAssign(
                 "Agent " + agentId + " assigned to property " + propertyCode,
                 "Admin", propertyCode, agentId);
-        return propertyRepository.save(property);
+        return property;
     }
 
     public Property removeAgentFromProperty(String propertyCode, String agentId) {

@@ -101,11 +101,11 @@ public class AgentService {
     }
 
     public Property addPropertyToAgent(String propertyCode, String agentId) {
-        return propertyAssignmentService.assignAgent(propertyCode, agentId);
+        return propertyAssignmentService.assignAgentWithLog(propertyCode, agentId);
     }
 
     public Property removePropertyFromAgent(String propertyCode, String agentId) {
-        return propertyAssignmentService.removeAgentFromProperty(propertyCode, agentId);
+        return propertyAssignmentService.removeAgentFromPropertyWithLog(propertyCode, agentId);
     }
 
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
@@ -123,7 +123,7 @@ public class AgentService {
         if (agent.hasVisits()) {
             throw new AgentHasPendingVisitsException(agent.getCedula());
         }
-        if(agent.hasSupportRequests()){
+        if (agent.hasSupportRequests()) {
             throw new AgentHasPendingSupportRequestsException(agent.getCedula());
         }
         ArrayList<Property> incompatibleProperties = getIncompatibleProperties(agent, newGeographicZone);
@@ -135,15 +135,8 @@ public class AgentService {
             );
         }
 
-        agent.setAssignedZone(newGeographicZone);
-        if (confirm) {
-            for (Property property : incompatibleProperties) {
-                property.setAgent(null);
-                property.setStatus(PropertyStatus.INACTIVE);
-            }
-        }
-        agentRepository.save(agent);
         ArrayList<String> affectedCodes = new ArrayList<>();
+        agent.setAssignedZone(newGeographicZone);
         if (confirm) {
             for (Property property : incompatibleProperties) {
                 affectedCodes.add(property.getCode());
