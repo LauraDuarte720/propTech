@@ -35,7 +35,7 @@ public class Property implements Comparable<Property> {
     private LinkedList<PriceHistory> priceHistory = new LinkedList<>();
 
     public boolean isAvailable() {
-        return this.status == PropertyStatus.NEW || this.status == PropertyStatus.ACTIVE;
+        return this.status == PropertyStatus.ACTIVE;
     }
 
     @Override
