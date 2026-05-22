@@ -4,6 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
 import co.edu.uniquindio.com.proptech.domain.model.AdminActionLog;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAdminActionsToUndo;
 import co.edu.uniquindio.com.proptech.repositories.AdminActionLogRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
@@ -101,7 +102,7 @@ public class AdminActionService {
 
     public void undoLastAction() {
         if (repository.isEmpty()) {
-            throw new RuntimeException("No admin actions to undo");
+            throw new NoAdminActionsToUndo("No admin actions to undo");
         }
         AdminActionLog log = repository.pop();
 
