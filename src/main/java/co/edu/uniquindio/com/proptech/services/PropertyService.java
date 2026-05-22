@@ -154,13 +154,6 @@ public class PropertyService {
         propertyRepository.deleteById(propertyCode);
     }
 
-    public void deletePropertyWithLog(String propertyCode) {
-        deleteProperty(propertyCode);
-        adminActionService.log(AdminActionType.DELETE, AdminEntityType.PROPERTY,
-                "Property deleted: " + propertyCode,
-                "Admin", propertyCode);
-    }
-
     public HashTable<String, Property> getAllProperties() {
         return propertyRepository.getProperties();
     }
