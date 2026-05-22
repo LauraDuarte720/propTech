@@ -8,4 +8,5 @@ public enum AdminActionType {
     UNASSIGN,
     PUBLISH,
     UNPUBLISH,
+    UPDATE_ZONE
 }
