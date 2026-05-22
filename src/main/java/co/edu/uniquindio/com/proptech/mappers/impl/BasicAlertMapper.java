@@ -31,11 +31,11 @@ public class BasicAlertMapper implements MapperOnlyDto<BasicAlert, BasicAlertDto
                 .timestamp(entity.getTimestamp())
                 .reviewed(entity.isReviewed())
                 .alertType(entity.getAlertType())
-                .agent(agentMapper.toDto(entity.getAgent()))
-                .client(clientMapper.toDto(entity.getClient()))
-                .operation(operationMapper.toDto(entity.getOperation()))
-                .property(propertyMapper.toDto(entity.getProperty()))
-                .visit(visitMapper.toDto(entity.getVisit()))
+                .agent(entity.getAgent() != null ? agentMapper.toDto(entity.getAgent()) : null)
+                .client(entity.getClient() != null ? clientMapper.toDto(entity.getClient()) : null)
+                .operation(entity.getOperation() != null ? operationMapper.toDto(entity.getOperation()) : null)
+                .property(entity.getProperty() != null ? propertyMapper.toDto(entity.getProperty()) : null)
+                .visit(entity.getVisit() != null ? visitMapper.toDto(entity.getVisit()) : null)
                 .build();
     }
 }
