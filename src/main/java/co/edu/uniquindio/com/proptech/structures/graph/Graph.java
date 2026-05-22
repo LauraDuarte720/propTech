@@ -31,6 +31,13 @@ public class Graph<T> {
         addDirectedEdge(toId, from, weight);
     }
 
+    // En Graph.java — agregar este método público
+    public void addDirectedEdge(String fromId, String toId, double weight) {
+        GraphNode<T> to = nodes.get(toId);
+        if (nodes.get(fromId) == null || to == null) return;
+        addDirectedEdge(fromId, to, weight);
+    }
+
     private void addDirectedEdge(String fromId, GraphNode<T> to, double weight) {
         ArrayList<GraphEdge<T>> edges = adjacencyList.get(fromId);
         for (int i = 0; i < edges.size(); i++) {
