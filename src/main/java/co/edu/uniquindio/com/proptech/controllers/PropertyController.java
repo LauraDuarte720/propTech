@@ -27,9 +27,13 @@ public class PropertyController {
     }
 
     @PostMapping("/{agentId}")
-    public ResponseEntity<PropertyDtoReturn> createProperty(@PathVariable String agentId, @Validated @RequestBody PropertyDtoCreate propertyDtoCreate, @Validated @RequestBody ConfirmDto confirmDto) {
+    public ResponseEntity<PropertyDtoReturn> createProperty(
+            @PathVariable String agentId,
+            @Validated @RequestBody PropertyDtoCreate propertyDtoCreate,
+            @RequestParam(defaultValue = "false") boolean confirm) {
+
         Property property = propertyMapper.toEntity(propertyDtoCreate);
-        Property saved = propertyService.registerProperty(property, agentId, confirmDto.confirm());
+        Property saved = propertyService.registerProperty(property, agentId, confirm);
         return ResponseEntity.ok(propertyMapper.toDto(saved));
     }
 
