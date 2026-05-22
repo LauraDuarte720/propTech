@@ -99,7 +99,7 @@ public class VisitService {
 
     public Visit getVisitById(String id) {
         return visitRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No visit found with this ID: " + id));
+                .orElseThrow(() -> new VisitDoesNotExist("id", id));
     }
 
     public LinkedList<Visit> getVisitsByProperty(String propertyCode) {
