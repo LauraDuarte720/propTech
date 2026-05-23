@@ -53,4 +53,11 @@ public class GeographicZoneController {
         }
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/find-or-create")
+    public ResponseEntity<GeographicZoneDtoReturn> findOrCreate(@Validated @RequestBody GeographicZoneDtoCreate geographicZoneDtoCreate) {
+        GeographicZone geographicZone = geographicZoneMapper.toEntity(geographicZoneDtoCreate);
+        GeographicZone result = geographicZoneService.findOrCreate(geographicZone);
+        return ResponseEntity.ok(geographicZoneMapper.toDto(result));
+    }
 }

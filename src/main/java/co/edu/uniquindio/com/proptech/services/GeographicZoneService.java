@@ -47,4 +47,13 @@ public class GeographicZoneService {
         return geographicZoneRepository.findById(id)
                 .orElseThrow(() -> new GeographicZoneDoesNotExist("id", id));
     }
+
+    public GeographicZone findOrCreate(GeographicZone geographicZone) {
+        return geographicZoneRepository
+                .findByCityZoneNeighborhood(geographicZone.getCity(), geographicZone.getZone(), geographicZone.getNameNeighborhood())
+                .orElseGet(() -> {
+                    geographicZone.setId(CodeGenerator.generateZoneCode());
+                    return geographicZoneRepository.save(geographicZone);
+                });
+    }
 }

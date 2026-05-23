@@ -58,6 +58,9 @@ public class NeighborhoodService {
     public Neighborhood findOrCreate(Neighborhood neighborhood) {
         return neighborhoodRepository
                 .findByNameCityZone(neighborhood.getName(), neighborhood.getCity(), neighborhood.getZone())
-                .orElseGet(() -> neighborhoodRepository.save(neighborhood));
+                .orElseGet(() -> {
+                    neighborhood.setId(CodeGenerator.generateNeighborCode());
+                    return neighborhoodRepository.save(neighborhood);
+                });
     }
 }

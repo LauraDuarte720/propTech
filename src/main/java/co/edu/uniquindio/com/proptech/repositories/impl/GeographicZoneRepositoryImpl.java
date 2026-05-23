@@ -1,5 +1,7 @@
 package co.edu.uniquindio.com.proptech.repositories.impl;
 
+import co.edu.uniquindio.com.proptech.domain.enums.City;
+import co.edu.uniquindio.com.proptech.domain.enums.Zone;
 import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.GeographicZoneRepository;
@@ -55,5 +57,15 @@ public class GeographicZoneRepositoryImpl implements GeographicZoneRepository {
     @Override
     public ArrayList<GeographicZone> getGeographicZones() {
         return propTech.getGeographicZones();
+    }
+
+    @Override
+    public Optional<GeographicZone> findByCityZoneNeighborhood(City city, Zone zone, String nameNeighborhood) {
+        for (int i = 0; i < propTech.getGeographicZones().size(); i++) {
+            GeographicZone gz = propTech.getGeographicZones().get(i);
+            if (gz.getCity().equals(city) && gz.getZone().equals(zone) && gz.getNameNeighborhood().equals(nameNeighborhood))
+                return Optional.of(gz);
+        }
+        return Optional.empty();
     }
 }
