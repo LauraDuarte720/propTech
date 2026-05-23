@@ -18,13 +18,11 @@ public class PropertyAssignmentService {
     private final ZoneMatcher zoneMatcher;
     private final PropertyRepository propertyRepository;
     private final AgentRepository agentRepository;
-    private  final AdminActionService adminActionService;
 
-    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository, AdminActionService adminActionService) {
+    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository) {
         this.zoneMatcher = zoneMatcher;
         this.propertyRepository = propertyRepository;
         this.agentRepository = agentRepository;
-        this.adminActionService = adminActionService;
     }
 
     public Property assignAgent(String propertyCode, String agentId) {
@@ -42,13 +40,6 @@ public class PropertyAssignmentService {
         return propertyRepository.save(property);
     }
 
-    public Property assignAgentWithLog(String propertyCode, String agentId) {
-        Property property = assignAgent(propertyCode, agentId);
-        adminActionService.logAssign(
-                "Agent " + agentId + " assigned to property " + propertyCode,
-                "Admin", propertyCode, agentId);
-        return property;
-    }
 
     public Property removeAgentFromProperty(String propertyCode, String agentId) {
         Property property = propertyRepository.findByCode(propertyCode)
@@ -61,26 +52,6 @@ public class PropertyAssignmentService {
         property.setStatus(PropertyStatus.INACTIVE);
         propertyRepository.save(property);
         return property;
-    }
-
-    public Property removeAgentFromPropertyWithLog(String propertyCode, String agentId) {
-        Property property = removeAgentFromProperty(propertyCode, agentId);
-        adminActionService.logUnassign(
-                "Agent " + agentId + " removed from property " + propertyCode,
-                "Admin", propertyCode, agentId);
-        return property;
-    }
-
-    // restore — sin log, usando la misma lógica pura al revés
-    public void restorePropertiesAfterZoneUndo(Agent agent, ArrayList<String> propertyCodes) {
-        for (String code : propertyCodes) {
-            propertyRepository.findByCode(code).ifPresent(property -> {
-                property.setAgent(agent);
-                property.setStatus(PropertyStatus.ACTIVE);
-                agent.addProperty(property);
-                propertyRepository.save(property);
-            });
-        }
     }
 
 }

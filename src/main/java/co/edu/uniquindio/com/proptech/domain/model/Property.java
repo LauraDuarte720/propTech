@@ -65,6 +65,9 @@ public class Property implements Comparable<Property> {
         this.numBedrooms = snapshot.getNumBedrooms();
         this.numBathrooms = snapshot.getNumBathrooms();
         this.status = snapshot.getStatus();
+        while (priceHistory.size() > snapshot.getPriceHistorySize()) {
+            priceHistory.removeLast();
+        }
     }
 
     public void saveSnapshot() {

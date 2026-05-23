@@ -9,20 +9,18 @@ import co.edu.uniquindio.com.proptech.repositories.AlgorithmRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.graph.Graph;
 import co.edu.uniquindio.com.proptech.structures.graph.GraphNode;
+import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Responsabilidad única: mantener sincronizados los dos grafos
- * (cliente↔propiedad y zonas) a partir de las interacciones del usuario.
- *
- * Se invoca desde ClientService.registerUserInteraction().
- */
 @Service
 public class GraphSyncService {
+
+    private static final int DOMINANCE_WINDOW_DAYS = 7;
+    private static final int DOMINANCE_MIN_COUNT   = 3;
 
     private final AlgorithmRepository algorithmRepository;
     private final OperationService operationService;
@@ -37,12 +35,6 @@ public class GraphSyncService {
     // PUNTO DE ENTRADA PRINCIPAL
     // ══════════════════════════════════════════════
 
-    /**
-     * Registra una interacción en el grafo cliente↔propiedad,
-     * actualiza el SearchStatus del cliente y registra la transición de zona.
-     *
-     * Llamar desde ClientService.registerUserInteraction().
-     */
     public void registerInteractionInGraph(UserInteraction interaction) {
         String clientId   = interaction.getClient().getCedula();
         String propertyId = interaction.getProperty().getCode();
@@ -69,7 +61,6 @@ public class GraphSyncService {
     // ══════════════════════════════════════════════
 
     private void updateSearchStatus(Client client) {
-        // 1. Verificar operación activa o cerrada
         for (Operation operation : operationService.getAllOperations()) {
             if (!operation.getClient().getCedula().equals(client.getCedula())) continue;
 
@@ -83,7 +74,6 @@ public class GraphSyncService {
             }
         }
 
-        // 2. Verificar recencia de interacciones
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime mostRecent = null;
 
@@ -122,38 +112,23 @@ public class GraphSyncService {
         Neighborhood to = neighborhoodOf(current);
         if (to == null) return;
 
-        UserInteraction previous = findMostRecentInteractionBefore(
-                current.getClient(), current.getTimestamp());
-        if (previous == null) return;
-
-        Neighborhood from = neighborhoodOf(previous);
+        Neighborhood from = findDominantZone(current.getClient(), current.getTimestamp());
         if (from == null) return;
 
-        // Nivel CITY — solo si las ciudades difieren
-        if (from.getCity() != null && to.getCity() != null
-                && !from.getCity().equals(to.getCity())) {
-            registerZoneEdge(
-                    cityKey(from), buildCityNode(from),
-                    cityKey(to),   buildCityNode(to)
-            );
-        }
+        if (sameZone(from, to)) return;
 
-        // Nivel ZONE — si la combinación ciudad+zona difiere
-        if (from.getZone() != null && to.getZone() != null
-                && !zoneKey(from).equals(zoneKey(to))) {
+        if (from.getZone() != null && to.getZone() != null) {
             registerZoneEdge(
                     zoneKey(from), buildZoneNode(from),
                     zoneKey(to),   buildZoneNode(to)
             );
         }
 
-        // Nivel NEIGHBORHOOD — solo si ciudad y zona coinciden pero el barrio difiere
-        if (sameZone(from, to)
-                && from.getName() != null && to.getName() != null
-                && !from.getName().equalsIgnoreCase(to.getName())) {
+        if (from.getCity() != null && to.getCity() != null
+                && !from.getCity().equals(to.getCity())) {
             registerZoneEdge(
-                    neighborhoodKey(from), buildNeighborhoodNode(from),
-                    neighborhoodKey(to),   buildNeighborhoodNode(to)
+                    cityKey(from), buildCityNode(from),
+                    cityKey(to),   buildCityNode(to)
             );
         }
     }
@@ -172,37 +147,66 @@ public class GraphSyncService {
         g.addDirectedEdge(fromKey, toKey, 1.0);
     }
 
-    // ── helpers privados ──────────────────────────────────────────────────────
+    // ══════════════════════════════════════════════
+    // ZONA DOMINANTE
+    // ══════════════════════════════════════════════
+
+    private Neighborhood findDominantZone(Client client, LocalDateTime reference) {
+        LocalDateTime windowStart = reference.minusDays(DOMINANCE_WINDOW_DAYS);
+
+        HashTable<String, Integer>      counts          = new HashTable<>();
+        HashTable<String, Neighborhood> representatives = new HashTable<>();
+
+        for (InteractionType type : InteractionType.values()) {
+            ArrayList<UserInteraction> list = client.getInteractionsByType(type);
+            if (list == null) continue;
+
+            for (int i = 0; i < list.size(); i++) {
+                UserInteraction ui = list.get(i);
+                if (ui.getTimestamp() == null) continue;
+                if (!ui.getTimestamp().isBefore(reference)) continue;
+                if (ui.getTimestamp().isBefore(windowStart)) continue;
+
+                Neighborhood n = neighborhoodOf(ui);
+                if (n == null || n.getCity() == null || n.getZone() == null) continue;
+
+                String key = n.getCity().name() + "|" + n.getZone().name();
+                Integer current = counts.get(key);
+                counts.put(key, current == null ? 1 : current + 1);
+
+                if (!representatives.containsKey(key)) {
+                    representatives.put(key, n);
+                }
+            }
+        }
+
+        String bestKey   = null;
+        int    bestCount = DOMINANCE_MIN_COUNT - 1;
+
+        for (String key : counts.keys()) {
+            int c = counts.get(key);
+            if (c > bestCount) {
+                bestCount = c;
+                bestKey   = key;
+            }
+        }
+
+        return bestKey != null ? representatives.get(bestKey) : null;
+    }
+
+    // ══════════════════════════════════════════════
+    // HELPERS PRIVADOS
+    // ══════════════════════════════════════════════
 
     private Neighborhood neighborhoodOf(UserInteraction i) {
         if (i == null || i.getProperty() == null) return null;
         return i.getProperty().getNeighborhood();
     }
 
-    private UserInteraction findMostRecentInteractionBefore(Client client,
-                                                            LocalDateTime reference) {
-        UserInteraction best = null;
-        for (InteractionType type : InteractionType.values()) {
-            ArrayList<UserInteraction> list = client.getInteractionsByType(type);
-            if (list == null) continue;
-            for (int i = 0; i < list.size(); i++) {
-                UserInteraction ui = list.get(i);
-                if (ui.getTimestamp() == null) continue;
-                if (!ui.getTimestamp().isBefore(reference)) continue;
-                if (best == null || ui.getTimestamp().isAfter(best.getTimestamp())) {
-                    best = ui;
-                }
-            }
-        }
-        return best;
-    }
-
     private boolean sameZone(Neighborhood a, Neighborhood b) {
         return a.getCity() != null && a.getCity().equals(b.getCity())
                 && a.getZone() != null && a.getZone().equals(b.getZone());
     }
-
-    // ── claves de nodo ────────────────────────────────────────────────────────
 
     private String cityKey(Neighborhood n) {
         return "CITY|" + n.getCity().name();
@@ -216,8 +220,6 @@ public class GraphSyncService {
         return "NBH|" + n.getCity().name() + "|" + n.getZone().name()
                 + "|" + n.getName().toUpperCase();
     }
-
-    // ── construcción de nodos ─────────────────────────────────────────────────
 
     private ZoneNode buildCityNode(Neighborhood n) {
         return ZoneNode.builder()
