@@ -138,7 +138,10 @@ public class GraphSyncService {
             g.addNode(new GraphNode<>(toKey, toGeographicZone(toData)));
         }
 
-        g.addDirectedEdge(fromKey, toKey, 1.0);
+        double weight = g.getEdgeWeight(fromKey, toKey) == 0
+                ? DOMINANCE_MIN_COUNT
+                : 1.0;
+        g.addDirectedEdge(fromKey, toKey, weight);
     }
 
     // ══════════════════════════════════════════════
