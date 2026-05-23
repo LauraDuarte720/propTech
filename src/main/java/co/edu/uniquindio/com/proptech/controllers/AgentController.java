@@ -67,12 +67,6 @@ public class AgentController {
         return ResponseEntity.ok(agentMapper.toDto(agentService.updateAgent(agent, confirm)));
     }
 
-    @DeleteMapping("/{cedula}")
-    public ResponseEntity<Void> deleteAgent(@PathVariable String cedula) {
-        agentService.deleteAgent(cedula);
-        return ResponseEntity.noContent().build();
-    }
-
     // ══════════════════════════════════════════════
     // VISITAS
     // ══════════════════════════════════════════════
