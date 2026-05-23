@@ -55,7 +55,7 @@
     .td-actions{display:flex;gap:6px;}
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
-    .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:520px;max-height:85vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
+    .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:560px;max-height:85vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .modal-title{font-size:17px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
     .modal-title button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;}
@@ -66,11 +66,13 @@
     input[type=text],input[type=password],input[type=number],select.form-select{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
     input:focus,select.form-select:focus{border-color:var(--accent);}
     select.form-select option{background:var(--navy);}
+    select.form-select:disabled{opacity:0.4;cursor:not-allowed;}
     .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
     .agent-initials{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
     .td-agent{display:flex;align-items:center;gap:10px;}
     .deals-bar{width:80px;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;margin-top:4px;}
     .deals-fill{height:4px;border-radius:99px;background:var(--accent);}
+    .section-divider{grid-column:1/-1;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding-top:6px;border-top:1px solid var(--border);}
   </style>
 </head>
 <body>
@@ -147,14 +149,16 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal registrar asesor -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-title">
-      <span id="modal-title-txt">Registrar asesor</span>
+      <span>Registrar asesor</span>
       <button onclick="closeModal()">×</button>
     </div>
     <div class="form-grid">
+
+      <!-- Datos personales -->
       <div class="form-group">
         <label>Cédula</label>
         <input type="text" id="f-cedula" placeholder="Número de cédula">
@@ -168,23 +172,37 @@
         <input type="text" id="f-username" placeholder="nombre.usuario">
       </div>
       <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="f-password" placeholder="Mínimo 8 caracteres">
+        <label>Contraseña (May + min + número)</label>
+        <input type="password" id="f-password" placeholder="Ej: Admin123">
       </div>
-      <div class="form-group">
+      <div class="form-group full">
         <label>Contacto / Teléfono</label>
         <input type="text" id="f-contact" placeholder="+57 300 000 0000">
       </div>
-      <div class="form-group">
-        <label>Cierres iniciales</label>
-        <input type="number" id="f-deals" value="0" min="0">
-      </div>
+
+      <!-- Zona geográfica -->
+      <div class="section-divider">Zona geográfica</div>
+
       <div class="form-group full">
-        <label>Zona geográfica (ID)</label>
-        <select class="form-select" id="f-zone">
-          <option value="">Cargando zonas...</option>
+        <label>Ciudad <span style="color:#FF7B7B">*</span></label>
+        <!-- Poblado dinámicamente desde CITY en proptech_utils.js -->
+        <select class="form-select" id="f-city" onchange="onCityChange()">
+          <option value="">— Selecciona una ciudad —</option>
         </select>
       </div>
+      <div class="form-group">
+        <label>Zona</label>
+        <!-- Habilitado solo si hay ciudad -->
+        <select class="form-select" id="f-zone" onchange="onZoneChange()" disabled>
+          <option value="">— Selecciona una zona —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Barrio (opcional)</label>
+        <!-- Habilitado solo si hay ciudad + zona -->
+        <input type="text" id="f-neighborhood" placeholder="Ej: Laureles" disabled>
+      </div>
+
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
@@ -203,20 +221,50 @@
   const colors = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(107,138,255,0.2)'];
   const tcolors = ['#6B8AFF','#3DD68C','#EF9F27','#FF7B7B','#B8AFFE'];
 
-  async function loadZones() {
-    const res = await fetch(`${API}/geographic-zones`).catch(()=>null);
+  // ── Poblar selects desde enums ──────────────────────────────
+  function populateCitySelect() {
+    const sel = document.getElementById('f-city');
+    sel.innerHTML = '<option value="">— Selecciona una ciudad —</option>' +
+            Object.entries(CITY).map(([key, val]) => `<option value="${key}">${val}</option>`).join('');
+  }
+
+  function populateZoneSelect() {
     const sel = document.getElementById('f-zone');
-    if (res && res.ok) {
-      const zones = await res.json();
-      sel.innerHTML = zones.map(z => `<option value="${z.id}">${z.city} — ${z.zone} (${z.neighborhood?.name||''})</option>`).join('');
+    sel.innerHTML = '<option value="">— Selecciona una zona —</option>' +
+            Object.entries(ZONE).map(([key, val]) => `<option value="${key}">${val}</option>`).join('');
+  }
+
+  // ── Lógica de dependencias ciudad → zona → barrio ───────────
+  function onCityChange() {
+    const city = document.getElementById('f-city').value;
+    const zoneEl = document.getElementById('f-zone');
+    const neighEl = document.getElementById('f-neighborhood');
+
+    if (city) {
+      zoneEl.disabled = false;
     } else {
-      sel.innerHTML = '<option value="default-zone-id">Zona por defecto</option>';
+      zoneEl.value = '';
+      zoneEl.disabled = true;
+      neighEl.value = '';
+      neighEl.disabled = true;
     }
   }
 
+  function onZoneChange() {
+    const zone = document.getElementById('f-zone').value;
+    const neighEl = document.getElementById('f-neighborhood');
+    neighEl.disabled = !zone;
+    if (!zone) neighEl.value = '';
+  }
+
+  // ── Cargar agentes ──────────────────────────────────────────
   async function loadAgents() {
-    const res = await fetch(`${API}/agents`);
-    if (!res.ok) return;
+    const res = await fetch(`${API}/agents`).catch(() => null);
+    if (!res || !res.ok) {
+      document.getElementById('agents-tbody').innerHTML =
+              '<tr><td colspan="6" style="color:var(--text-muted);text-align:center;padding:32px;">Sin asesores registrados</td></tr>';
+      return;
+    }
     allAgents = await res.json();
     renderAgents(allAgents);
   }
@@ -227,11 +275,15 @@
       tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-muted);text-align:center;padding:32px;">Sin asesores registrados</td></tr>';
       return;
     }
-    const maxDeals = Math.max(...agents.map(a => a.closedDeals||0), 1);
+    const maxDeals = Math.max(...agents.map(a => a.closedDeals || 0), 1);
     tbody.innerHTML = agents.map((a, i) => {
       const ci = i % colors.length;
-      const initials = (a.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      const pct = Math.round(((a.closedDeals||0)/maxDeals)*100);
+      const initials = (a.name || '??').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const pct = Math.round(((a.closedDeals || 0) / maxDeals) * 100);
+      const zone = a.assignedZone;
+      const zoneLabel = zone
+              ? [label(CITY, zone.city), label(ZONE, zone.zone), zone.neighborhood?.name].filter(Boolean).join(' / ')
+              : '—';
       return `<tr>
         <td>
           <div class="td-agent">
@@ -240,10 +292,10 @@
           </div>
         </td>
         <td style="color:var(--text-muted)">${a.cedula}</td>
-        <td style="color:var(--text-muted)">${a.contact||'—'}</td>
-        <td style="color:var(--text-muted)">${a.assignedZone?.city||'—'} / ${a.assignedZone?.zone||'—'}</td>
+        <td style="color:var(--text-muted)">${a.contact || '—'}</td>
+        <td style="color:var(--text-muted)">${zoneLabel}</td>
         <td>
-          <div>${a.closedDeals||0}</div>
+          <div>${a.closedDeals || 0}</div>
           <div class="deals-bar"><div class="deals-fill" style="width:${pct}%"></div></div>
         </td>
         <td>
@@ -257,39 +309,91 @@
 
   function filterAgents(q) {
     const filtered = allAgents.filter(a =>
-            (a.name||'').toLowerCase().includes(q.toLowerCase()) ||
-            (a.cedula||'').includes(q)
+            (a.name || '').toLowerCase().includes(q.toLowerCase()) ||
+            (a.cedula || '').includes(q)
     );
     renderAgents(filtered);
   }
 
-  function openModal() { document.getElementById('modal').classList.add('open'); }
+  function openModal() {
+    // Reset form
+    ['f-cedula','f-name','f-username','f-password','f-contact','f-neighborhood'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('f-city').value = '';
+    document.getElementById('f-zone').value = '';
+    document.getElementById('f-zone').disabled = true;
+    document.getElementById('f-neighborhood').disabled = true;
+    document.getElementById('modal').classList.add('open');
+  }
+
   function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
   async function saveAgent() {
-    const zoneId = document.getElementById('f-zone').value;
-    const body = {
+    const city = document.getElementById('f-city').value;
+    if (!city) {
+      alert('La ciudad es obligatoria.');
+      return;
+    }
+
+    const zone = document.getElementById('f-zone').value || null;
+    const neighborhood = document.getElementById('f-neighborhood').value.trim() || null;
+
+    // Paso 1: crear la GeographicZone y obtener su ID
+    const zoneBody = { city };
+    if (zone) zoneBody.zone = zone;
+    if (neighborhood) zoneBody.nameNeighborhood = neighborhood;
+
+    const zoneRes = await fetch(`${API}/geo-zones/find-or-create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(zoneBody)
+    });
+
+    if (!zoneRes.ok) {
+      const e = await zoneRes.json();
+      alert(e.message || 'Error al crear la zona geográfica');
+      return;
+    }
+
+    const createdZone = await zoneRes.json();
+
+    // Paso 2: crear el agente con el ID de la zona
+    const agentBody = {
       cedula: document.getElementById('f-cedula').value,
       name: document.getElementById('f-name').value,
       username: document.getElementById('f-username').value,
       password: document.getElementById('f-password').value,
       contact: document.getElementById('f-contact').value,
-      closedDeals: Number(document.getElementById('f-deals').value),
-      assignedZoneId: zoneId
+      assignedZoneId: createdZone.id
     };
-    const res = await fetch(`${API}/agents`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-    if (res.ok) { closeModal(); loadAgents(); }
-    else { const e = await res.json(); alert(e.message || 'Error al guardar'); }
+
+    const agentRes = await fetch(`${API}/agents`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(agentBody)
+    });
+
+    if (agentRes.ok) {
+      closeModal();
+      loadAgents();
+    } else {
+      const e = await agentRes.json();
+      alert(e.message || 'Error al guardar el asesor');
+    }
   }
 
   async function deleteAgent(cedula) {
     if (!confirm('¿Eliminar este asesor?')) return;
-    const res = await fetch(`${API}/agents/${cedula}`, { method:'DELETE' });
+    const res = await fetch(`${API}/agents/${cedula}`, { method: 'DELETE' });
     if (res.ok) loadAgents();
+    else { const e = await res.json(); alert(e.message || 'Error al eliminar'); }
   }
 
+  // Init
+  populateCitySelect();
+  populateZoneSelect();
   loadAgents();
-  loadZones();
 </script>
 </body>
 </html>
