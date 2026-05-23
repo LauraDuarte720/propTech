@@ -3,514 +3,394 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PropTech — Iniciar sesión</title>
+  <title>PropTech Admin — Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --navy:   #131936;
-      --slate:  #585E63;
-      --black:  #05060F;
-      --white:  #FFFFFF;
-      --accent: #4A6FE3;
-      --accent-light: #6B8AFF;
-      --surface: #1C2240;
-      --surface2: #222847;
-      --border: rgba(255,255,255,0.08);
-      --border-hover: rgba(255,255,255,0.18);
-      --text-muted: #8A90A0;
+      --navy: #131936; --slate: #585E63; --black: #05060F;
+      --white: #FFFFFF; --accent: #4A6FE3; --accent-light: #6B8AFF;
+      --surface: #1C2240; --surface2: #222847;
+      --border: rgba(255,255,255,0.08); --border-hover: rgba(255,255,255,0.15);
+      --text-muted: #8A90A0; --sidebar-w: 220px;
     }
+    html, body { height: 100%; font-family: 'Outfit', sans-serif; background: #0A0C1B; color: var(--white); }
 
-    html, body {
-      height: 100%;
-      font-family: 'Outfit', sans-serif;
-      background: var(--black);
-      color: var(--white);
-      overflow: hidden;
+    /* Layout */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--navy); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
     }
-
-    /* Background geometric pattern */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-              radial-gradient(ellipse 80% 60% at 70% 20%, rgba(74,111,227,0.12) 0%, transparent 60%),
-              radial-gradient(ellipse 50% 40% at 10% 80%, rgba(19,25,54,0.8) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
+    .sidebar-logo {
+      padding: 24px 20px 20px; display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
     }
+    .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon svg { width: 18px; height: 18px; fill: white; }
+    .logo-name { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
 
-    /* Subtle grid lines */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-              linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-      z-index: 0;
+    .sidebar-section { padding: 16px 12px 8px; }
+    .sidebar-label { font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); padding: 0 8px; margin-bottom: 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px;
+      font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 400; color: var(--text-muted);
+      cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px;
     }
+    .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+    .nav-item.active { background: rgba(74,111,227,0.15); color: var(--white); font-weight: 500; }
+    .nav-item .badge { margin-left: auto; background: #E24B4A; color: white; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 99px; }
 
-    .page {
-      position: relative;
-      z-index: 1;
-      height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 480px;
+    .sidebar-footer { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border); }
+    .user-card { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+    .user-card:hover { background: rgba(255,255,255,0.05); }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-family: 'Jost', sans-serif; font-size: 11px; color: var(--text-muted); }
+
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar {
+      padding: 16px 28px; border-bottom: 1px solid var(--border); background: rgba(19,25,54,0.4);
+      backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
     }
+    .page-title { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .btn { padding: 8px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; display: flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-light); }
+    .btn-ghost { background: rgba(255,255,255,0.06); color: var(--white); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+    .btn svg { width: 15px; height: 15px; }
 
-    /* Left panel — brand */
-    .brand-panel {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 48px 56px;
-      border-right: 1px solid var(--border);
+    .content { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* Metric cards */
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .metric-card {
+      background: var(--navy); border: 1px solid var(--border); border-radius: 12px; padding: 18px;
+      display: flex; flex-direction: column; gap: 10px;
     }
+    .metric-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .metric-icon svg { width: 19px; height: 19px; }
+    .metric-val { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
+    .metric-label { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); font-weight: 400; }
+    .metric-delta { font-family: 'Jost', sans-serif; font-size: 11px; color: #1D9E75; margin-top: 2px; }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 24px; }
 
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--accent);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .card { background: var(--navy); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 14px; font-weight: 500; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .card-title a { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--accent-light); text-decoration: none; font-weight: 400; }
 
-    .logo-icon svg { width: 20px; height: 20px; fill: white; }
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); padding: 0 0 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    td { padding: 11px 0; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
 
-    .logo-name {
-      font-family: 'Outfit', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-      color: var(--white);
-    }
+    .badge-status { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-family: 'Jost', sans-serif; font-weight: 500; display: inline-block; }
+    .s-active  { background: rgba(29,158,117,0.15); color: #3DD68C; }
+    .s-new     { background: rgba(74,111,227,0.15); color: var(--accent-light); }
+    .s-reserved{ background: rgba(239,159,39,0.15); color: #EF9F27; }
+    .s-sold    { background: rgba(88,94,99,0.2);    color: var(--text-muted); }
+    .s-inactive{ background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
-    .brand-center {
-      max-width: 480px;
-    }
+    /* Alert list */
+    .alert-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .alert-item:last-child { border-bottom: none; }
+    .alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .a-high   { background: #E24B4A; }
+    .a-medium { background: #EF9F27; }
+    .a-low    { background: #3DD68C; }
+    .alert-text { font-size: 13px; line-height: 1.4; }
+    .alert-meta { font-family: 'Jost', sans-serif; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-    .brand-tag {
-      display: inline-block;
-      font-family: 'Jost', sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent-light);
-      margin-bottom: 20px;
-    }
+    /* Agent list */
+    .agent-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .agent-row:last-child { border-bottom: none; }
+    .agent-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+    .agent-name { font-size: 13px; flex: 1; }
+    .agent-deals { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); }
 
-    .brand-headline {
-      font-family: 'Outfit', sans-serif;
-      font-size: 48px;
-      font-weight: 300;
-      line-height: 1.15;
-      color: var(--white);
-      margin-bottom: 20px;
-      letter-spacing: -1px;
-    }
-
-    .brand-headline strong {
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    .brand-sub {
-      font-family: 'Jost', sans-serif;
-      font-size: 15px;
-      font-weight: 300;
-      color: var(--text-muted);
-      line-height: 1.7;
-      max-width: 380px;
-    }
-
-    .brand-stats {
-      display: flex;
-      gap: 40px;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .stat-num {
-      font-family: 'Outfit', sans-serif;
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--white);
-      letter-spacing: -0.5px;
-    }
-
-    .stat-label {
-      font-family: 'Jost', sans-serif;
-      font-size: 12px;
-      font-weight: 400;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-    }
-
-    /* Right panel — form */
-    .form-panel {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 48px 56px;
-      background: rgba(19, 25, 54, 0.5);
-      backdrop-filter: blur(20px);
-    }
-
-    .form-header {
-      margin-bottom: 40px;
-    }
-
-    .form-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 26px;
-      font-weight: 500;
-      color: var(--white);
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
-    }
-
-    .form-subtitle {
-      font-family: 'Jost', sans-serif;
-      font-size: 14px;
-      font-weight: 300;
-      color: var(--text-muted);
-    }
-
-    /* Role selector */
-    .role-selector {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 28px;
-    }
-
-    .role-btn {
-      padding: 10px 8px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: transparent;
-      color: var(--text-muted);
-      font-family: 'Jost', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .role-btn svg { width: 18px; height: 18px; opacity: 0.5; transition: opacity 0.2s; }
-
-    .role-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--white);
-    }
-
-    .role-btn:hover svg { opacity: 0.8; }
-
-    .role-btn.active {
-      border-color: var(--accent);
-      background: rgba(74,111,227,0.12);
-      color: var(--white);
-    }
-
-    .role-btn.active svg { opacity: 1; }
-
-    /* Form fields */
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .field label {
-      display: block;
-      font-family: 'Jost', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 13px 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--white);
-      font-family: 'Outfit', sans-serif;
-      font-size: 15px;
-      font-weight: 400;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .field input::placeholder { color: rgba(255,255,255,0.2); }
-
-    .field input:focus {
-      border-color: var(--accent);
-      background: rgba(74,111,227,0.06);
-    }
-
-    .field-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .field-row label {
-      margin-bottom: 0;
-    }
-
-    .forgot {
-      font-family: 'Jost', sans-serif;
-      font-size: 12px;
-      color: var(--accent-light);
-      text-decoration: none;
-      font-weight: 400;
-      transition: opacity 0.2s;
-    }
-
-    .forgot:hover { opacity: 0.7; }
-
-    /* Submit button */
-    .btn-submit {
-      width: 100%;
-      padding: 14px;
-      margin-top: 24px;
-      background: var(--accent);
-      border: none;
-      border-radius: 10px;
-      color: var(--white);
-      font-family: 'Outfit', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      letter-spacing: 0.2px;
-    }
-
-    .btn-submit:hover {
-      background: var(--accent-light);
-      transform: translateY(-1px);
-    }
-
-    .btn-submit:active { transform: translateY(0); }
-
-    .btn-submit.loading {
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    /* Error message */
-    .error-msg {
-      display: none;
-      padding: 10px 14px;
-      background: rgba(220,60,60,0.12);
-      border: 1px solid rgba(220,60,60,0.25);
-      border-radius: 8px;
-      color: #FF7B7B;
-      font-family: 'Jost', sans-serif;
-      font-size: 13px;
-      margin-top: 12px;
-    }
-
-    .error-msg.visible { display: block; }
-
-    /* Bottom note */
-    .form-footer {
-      margin-top: 28px;
-      font-family: 'Jost', sans-serif;
-      font-size: 12px;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    /* Animations */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .brand-tag    { animation: fadeUp 0.5s ease both; }
-    .brand-headline { animation: fadeUp 0.5s 0.1s ease both; }
-    .brand-sub    { animation: fadeUp 0.5s 0.2s ease both; }
-    .brand-stats  { animation: fadeUp 0.5s 0.3s ease both; }
-    .form-header  { animation: fadeUp 0.5s 0.15s ease both; }
-    .role-selector { animation: fadeUp 0.5s 0.25s ease both; }
-    .field        { animation: fadeUp 0.5s 0.3s ease both; }
-    .btn-submit   { animation: fadeUp 0.5s 0.4s ease both; }
+    /* Bar mini */
+    .bar-wrap { margin-top: 4px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 99px; }
+    .bar-fill { height: 3px; border-radius: 99px; background: var(--accent); }
   </style>
 </head>
 <body>
+<div class="app">
 
-<div class="page">
-
-  <!-- Left: brand -->
-  <div class="brand-panel">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
-      </div>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
       <span class="logo-name">PropTech</span>
     </div>
 
-    <div class="brand-center">
-      <span class="brand-tag">Plataforma inmobiliaria</span>
-      <h1 class="brand-headline">Gestiona tu<br><strong>portafolio</strong><br>inmobiliario</h1>
-      <p class="brand-sub">Administra propiedades, asesores y clientes desde un solo lugar. Análisis en tiempo real y alertas inteligentes.</p>
-    </div>
-
-    <div class="brand-stats">
-      <div class="stat-item">
-        <span class="stat-num">142</span>
-        <span class="stat-label">Inmuebles activos</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">89</span>
-        <span class="stat-label">Clientes</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">23</span>
-        <span class="stat-label">Asesores</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right: form -->
-  <div class="form-panel">
-    <div class="form-header">
-      <h2 class="form-title">Bienvenido de vuelta</h2>
-      <p class="form-subtitle">Ingresa con tu cuenta para continuar</p>
-    </div>
-
-    <!-- Role selector -->
-    <div class="role-selector">
-      <button class="role-btn active" data-role="ADMIN" onclick="selectRole(this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM6 20a6 6 0 0 1 12 0"/><path d="M17 14l2 2 4-4"/></svg>
-        Admin
-      </button>
-      <button class="role-btn" data-role="AGENT" onclick="selectRole(this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        Asesor
-      </button>
-      <button class="role-btn" data-role="CLIENT" onclick="selectRole(this)">
+    <div class="sidebar-section">
+      <div class="sidebar-label">General</div>
+      <a href="admin_dashboard.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="admin_properties.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+        Inmuebles
+      </a>
+      <a href="admin_agents.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>
-        Cliente
-      </button>
+        Asesores
+      </a>
+      <a href="admin_operations.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/></svg>
+        Operaciones
+      </a>
     </div>
 
-    <!-- Fields -->
-    <div class="field">
-      <label>Usuario</label>
-      <input type="text" id="username" placeholder="Tu nombre de usuario" autocomplete="username">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Monitoreo</div>
+      <a href="admin_alerts.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Alertas
+        <span class="badge" id="badge-count">3</span>
+      </a>
     </div>
 
-    <div class="field">
-      <div class="field-row">
-        <label>Contraseña</label>
-        <a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar" id="avatar-initials">AD</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name-display">Administrador</div>
+          <div class="user-role">Admin · Cerrar sesión</div>
+        </div>
       </div>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Dashboard</span>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="runAlerts()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+          Generar alertas
+        </button>
+        <button class="btn btn-primary" onclick="window.location.href='admin_properties.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo inmueble
+        </button>
+      </div>
     </div>
 
-    <button class="btn-submit" id="btn-login" onclick="handleLogin()">
-      <span id="btn-text">Iniciar sesión</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </button>
+    <div class="content">
+      <!-- Metrics -->
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(74,111,227,0.15);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6B8AFF" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+          </div>
+          <div>
+            <div class="metric-val" id="m-properties">—</div>
+            <div class="metric-label">Inmuebles activos</div>
+            <div class="metric-delta">↑ actualizados</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(29,158,117,0.15);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>
+          </div>
+          <div>
+            <div class="metric-val" id="m-agents">—</div>
+            <div class="metric-label">Asesores</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(239,159,39,0.15);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>
+          </div>
+          <div>
+            <div class="metric-val" id="m-ops">—</div>
+            <div class="metric-label">Operaciones</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(226,75,74,0.15);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF7B7B" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+          </div>
+          <div>
+            <div class="metric-val" id="m-alerts">—</div>
+            <div class="metric-label">Alertas activas</div>
+          </div>
+        </div>
+      </div>
 
-    <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos. Intenta de nuevo.</div>
+      <!-- Properties table + alerts -->
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">
+            Inmuebles recientes
+            <a href="admin_properties.html">Ver todos →</a>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Inmueble</th>
+              <th>Barrio</th>
+              <th>Precio</th>
+              <th>Estado</th>
+            </tr></thead>
+            <tbody id="properties-tbody">
+            <tr><td colspan="4" style="color:var(--text-muted);font-size:13px;">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-    <p class="form-footer">Al iniciar sesión aceptas los términos de uso de PropTech.<br>¿Problemas para acceder? Contacta al administrador.</p>
+        <div class="card">
+          <div class="card-title">
+            Alertas recientes
+            <a href="admin_alerts.html">Ver todas →</a>
+          </div>
+          <div id="alerts-list">
+            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agents -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            Top asesores por cierres
+            <a href="admin_agents.html">Ver todos →</a>
+          </div>
+          <div id="agents-list">
+            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Accesos rápidos</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-ghost" style="justify-content:flex-start;width:100%;" onclick="window.location.href='admin_agents.html'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>
+              Registrar asesor
+            </button>
+            <button class="btn btn-ghost" style="justify-content:flex-start;width:100%;" onclick="window.location.href='admin_properties.html'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+              Registrar inmueble
+            </button>
+            <button class="btn btn-ghost" style="justify-content:flex-start;width:100%;" onclick="window.location.href='admin_operations.html'">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>
+              Ver operaciones
+            </button>
+            <button class="btn btn-ghost" style="justify-content:flex-start;width:100%;" onclick="runAlerts()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+              Ejecutar detector de alertas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
 </div>
 
 <script>
-  let selectedRole = 'ADMIN';
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  if (user.name) document.getElementById('user-name-display').textContent = user.name;
 
-  function selectRole(btn) {
-    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedRole = btn.dataset.role;
-    document.getElementById('error-msg').classList.remove('visible');
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  function statusBadge(s) {
+    const map = { ACTIVE:'s-active Activo', NEW:'s-new Nuevo', RESERVED:'s-reserved Reservado', SOLD:'s-sold Vendido', INACTIVE:'s-inactive Inactivo', RENTED:'s-sold Arrendado' };
+    const [cls, label] = (map[s] || 's-inactive Desconocido').split(' ');
+    return `<span class="badge-status ${cls}">${label}</span>`;
   }
 
-  async function handleLogin() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const btn = document.getElementById('btn-login');
-    const error = document.getElementById('error-msg');
-
-    if (!username || !password) {
-      error.textContent = 'Por favor completa todos los campos.';
-      error.classList.add('visible');
-      return;
-    }
-
-    btn.classList.add('loading');
-    document.getElementById('btn-text').textContent = 'Verificando...';
-    error.classList.remove('visible');
-
+  async function loadDashboard() {
     try {
-      const res = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+      const [propsRes, agentsRes, opsRes, alertsRes] = await Promise.all([
+        fetch(`${API}/properties`),
+        fetch(`${API}/agents`),
+        fetch(`${API}/operations`),
+        fetch(`${API}/abnormal-alerts`)
+      ]);
 
-      if (!res.ok) throw new Error();
+      if (propsRes.ok) {
+        const props = await propsRes.json();
+        document.getElementById('m-properties').textContent = props.filter(p => p.status === 'ACTIVE').length;
+        const tbody = document.getElementById('properties-tbody');
+        tbody.innerHTML = props.slice(0,5).map(p => `
+          <tr>
+            <td style="font-weight:500">${p.address || p.code}</td>
+            <td style="color:var(--text-muted)">${p.neighborhood?.name || '—'}</td>
+            <td>$${Number(p.price||0).toLocaleString()}</td>
+            <td>${statusBadge(p.status)}</td>
+          </tr>`).join('');
+      }
 
-      const data = await res.json();
+      if (agentsRes.ok) {
+        const agents = await agentsRes.json();
+        document.getElementById('m-agents').textContent = agents.length;
+        const sorted = agents.sort((a,b) => (b.closedDeals||0) - (a.closedDeals||0)).slice(0,4);
+        const max = sorted[0]?.closedDeals || 1;
+        const colors = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)'];
+        const tcolors = ['#6B8AFF','#3DD68C','#EF9F27','#FF7B7B'];
+        document.getElementById('agents-list').innerHTML = sorted.map((a,i) => {
+          const initials = (a.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          const pct = Math.round(((a.closedDeals||0)/max)*100);
+          return `<div class="agent-row">
+            <div class="agent-avatar" style="background:${colors[i]};color:${tcolors[i]}">${initials}</div>
+            <div style="flex:1">
+              <div class="agent-name">${a.name}</div>
+              <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${tcolors[i]}"></div></div>
+            </div>
+            <div class="agent-deals">${a.closedDeals||0} cierres</div>
+          </div>`;
+        }).join('');
+      }
 
-      // Guardar sesión
-      sessionStorage.setItem('user', JSON.stringify(data));
+      if (opsRes.ok) {
+        const ops = await opsRes.json();
+        document.getElementById('m-ops').textContent = ops.length;
+      }
 
-      // Redirigir según rol
-      if (data.role === 'ADMIN') window.location.href = 'admin_dashboard.html';
-      else if (data.role === 'AGENT') window.location.href = 'agent_dashboard.html';
-      else window.location.href = 'client_dashboard.html';
-
-    } catch {
-      error.textContent = 'Usuario o contraseña incorrectos. Intenta de nuevo.';
-      error.classList.add('visible');
-    } finally {
-      btn.classList.remove('loading');
-      document.getElementById('btn-text').textContent = 'Iniciar sesión';
+      if (alertsRes.ok) {
+        const alerts = await alertsRes.json();
+        document.getElementById('m-alerts').textContent = alerts.length;
+        document.getElementById('badge-count').textContent = alerts.length;
+        const dotMap = { HIGH:'a-high', MEDIUM:'a-medium', LOW:'a-low' };
+        document.getElementById('alerts-list').innerHTML = alerts.slice(0,4).map(a => `
+          <div class="alert-item">
+            <div class="alert-dot ${dotMap[a.attentionLevel]||'a-low'}"></div>
+            <div>
+              <div class="alert-text">${a.alertAbnormalType?.replace(/_/g,' ')}</div>
+              <div class="alert-meta">${a.property?.address || a.client?.name || '—'} · ${a.attentionLevel}</div>
+            </div>
+          </div>`).join('');
+      } else {
+        document.getElementById('alerts-list').innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin alertas</div>';
+        document.getElementById('m-alerts').textContent = '0';
+      }
+    } catch(e) {
+      console.error(e);
     }
   }
 
-  // Enter key
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleLogin();
-  });
+  async function runAlerts() {
+    await fetch(`${API}/abnormal-alerts/run`, { method:'POST' });
+    await fetch(`${API}/basic-alerts/generate`, { method:'POST' });
+    loadDashboard();
+  }
+
+  loadDashboard();
 </script>
 </body>
 </html>
