@@ -118,23 +118,17 @@ public class GraphSyncService {
         if (sameZone(from, to)) return;
 
         if (from.getZone() != null && to.getZone() != null) {
-            registerZoneEdge(
-                    zoneKey(from), buildZoneNode(from),
-                    zoneKey(to),   buildZoneNode(to)
-            );
+            registerZoneEdge(zoneKey(from), from, zoneKey(to), to);
         }
 
         if (from.getCity() != null && to.getCity() != null
                 && !from.getCity().equals(to.getCity())) {
-            registerZoneEdge(
-                    cityKey(from), buildCityNode(from),
-                    cityKey(to),   buildCityNode(to)
-            );
+            registerZoneEdge(cityKey(from), from, cityKey(to), to);
         }
     }
 
-    private void registerZoneEdge(String fromKey, ZoneNode fromData,
-                                  String toKey,   ZoneNode toData) {
+    private void registerZoneEdge(String fromKey, Neighborhood fromData,
+                                  String toKey,   Neighborhood toData) {
         Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
 
         if (!g.containsNode(fromKey)) {
@@ -216,40 +210,10 @@ public class GraphSyncService {
         return "ZONE|" + n.getCity().name() + "|" + n.getZone().name();
     }
 
-    private String neighborhoodKey(Neighborhood n) {
-        return "NBH|" + n.getCity().name() + "|" + n.getZone().name()
-                + "|" + n.getName().toUpperCase();
-    }
-
-    private ZoneNode buildCityNode(Neighborhood n) {
-        return ZoneNode.builder()
-                .level(ZoneNode.Level.CITY)
-                .city(n.getCity())
-                .build();
-    }
-
-    private ZoneNode buildZoneNode(Neighborhood n) {
-        return ZoneNode.builder()
-                .level(ZoneNode.Level.ZONE)
-                .city(n.getCity())
-                .zone(n.getZone())
-                .build();
-    }
-
-    private ZoneNode buildNeighborhoodNode(Neighborhood n) {
-        return ZoneNode.builder()
-                .level(ZoneNode.Level.NEIGHBORHOOD)
-                .city(n.getCity())
-                .zone(n.getZone())
-                .neighborhoodName(n.getName())
-                .build();
-    }
-
-    private GeographicZone toGeographicZone(ZoneNode node) {
+    private GeographicZone toGeographicZone(Neighborhood n) {
         return GeographicZone.builder()
-                .city(node.getCity())
-                .zone(node.getZone())
-                .nameNeighborhood(node.getNeighborhoodName())
+                .city(n.getCity())
+                .zone(n.getZone())
                 .build();
     }
 }
