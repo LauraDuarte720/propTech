@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech Admin — Operaciones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;}
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:#fff;}
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-icon svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:16px;font-weight:600;}
+    .sidebar-section{padding:16px 12px 8px;}
+    .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:0 8px;margin-bottom:6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:#fff;}
+    .nav-item.active{background:rgba(74,111,227,0.15);color:#fff;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border);}
+    .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
+    .user-card:hover{background:rgba(255,255,255,0.05);}
+    .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;}
+    .user-name{font-size:13px;font-weight:500;}
+    .user-role{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(19,25,54,0.4);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-size:18px;font-weight:500;}
+    .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+    .btn-ghost{background:rgba(255,255,255,0.06);color:#fff;border:1px solid var(--border);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .content{flex:1;overflow-y:auto;padding:28px;}
+    .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+    .search-box{flex:1;min-width:200px;position:relative;}
+    .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
+    .search-box input:focus{border-color:var(--accent);}
+    .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
+    select{padding:9px 14px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+    .table-wrap{background:var(--navy);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
+    td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(255,255,255,0.02);}
+    .badge-status{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;display:inline-block;}
+    .s-CREATED{background:rgba(74,111,227,0.15);color:var(--accent-light);}
+    .s-CLOSED{background:rgba(29,158,117,0.15);color:#3DD68C;}
+    .s-CANCELLED{background:rgba(88,94,99,0.2);color:var(--text-muted);}
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">General</div>
+      <a href="admin_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="admin_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles</a>
+      <a href="admin_agents.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores</a>
+      <a href="admin_operations.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>Operaciones</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Monitoreo</div>
+      <a href="admin_alerts.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alertas</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar">AD</div>
+        <div><div class="user-name">Administrador</div><div class="user-role">Admin · Cerrar sesión</div></div>
+      </div>
+    </div>
+  </nav>
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Operaciones</span>
+      <div style="display:flex;gap:8px;">
+        <select id="filter-type" onchange="filterOps()">
+          <option value="">Todos los tipos</option>
+          <option value="SALE">Venta</option>
+          <option value="RENT">Arriendo</option>
+          <option value="CONTRACT_RENEWAL">Renovación</option>
+          <option value="DEAL_CANCELLATION">Cancelación</option>
+        </select>
+        <select id="filter-status" onchange="filterOps()">
+          <option value="">Todos los estados</option>
+          <option value="CREATED">Creado</option>
+          <option value="CLOSED">Cerrado</option>
+          <option value="CANCELLED">Cancelado</option>
+        </select>
+      </div>
+    </div>
+    <div class="content">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Inmueble</th><th>Cliente</th><th>Asesor</th><th>Tipo</th><th>Valor</th><th>Estado</th><th>Fecha inicio</th>
+          </tr></thead>
+          <tbody id="ops-tbody">
+          <tr><td colspan="8" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  let allOps = [];
+  const typeLabel = { SALE:'Venta', RENT:'Arriendo', CONTRACT_RENEWAL:'Renovación', DEAL_CANCELLATION:'Cancelación' };
+
+  async function loadOps() {
+    const res = await fetch(`${API}/operations`);
+    if (!res.ok) return;
+    allOps = await res.json();
+    renderOps(allOps);
+  }
+
+  function renderOps(ops) {
+    const tbody = document.getElementById('ops-tbody');
+    if (!ops.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--text-muted);text-align:center;padding:32px;">Sin operaciones</td></tr>';
+      return;
+    }
+    tbody.innerHTML = ops.map(o => `<tr>
+      <td style="color:var(--text-muted);font-size:11px;">${o.id?.slice(0,10)||'—'}</td>
+      <td style="font-weight:500">${o.property?.address||o.property?.code||'—'}</td>
+      <td style="color:var(--text-muted)">${o.client?.name||'—'}</td>
+      <td style="color:var(--text-muted)">${o.agent?.name||'—'}</td>
+      <td>${typeLabel[o.operationType]||o.operationType||'—'}</td>
+      <td>$${Number(o.value||0).toLocaleString()}</td>
+      <td><span class="badge-status s-${o.processStatus}">${o.processStatus||'—'}</span></td>
+      <td style="color:var(--text-muted)">${o.dateInitial||'—'}</td>
+    </tr>`).join('');
+  }
+
+  function filterOps() {
+    const t = document.getElementById('filter-type').value;
+    const s = document.getElementById('filter-status').value;
+    renderOps(allOps.filter(o => (!t || o.operationType===t) && (!s || o.processStatus===s)));
+  }
+
+  loadOps();
+</script>
+</body>
+</html>

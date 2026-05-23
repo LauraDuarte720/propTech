@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech Admin — Inmuebles</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:#131936;--slate:#585E63;--black:#05060F;--white:#FFFFFF;
+      --accent:#4A6FE3;--accent-light:#6B8AFF;--surface:#1C2240;
+      --border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;
+    }
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:var(--white);}
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-icon svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:16px;font-weight:600;letter-spacing:-0.3px;}
+    .sidebar-section{padding:16px 12px 8px;}
+    .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:0 8px;margin-bottom:6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;font-weight:400;color:var(--text-muted);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:var(--white);}
+    .nav-item.active{background:rgba(74,111,227,0.15);color:var(--white);font-weight:500;}
+    .nav-item .badge{margin-left:auto;background:#E24B4A;color:white;font-size:10px;font-weight:600;padding:1px 6px;border-radius:99px;}
+    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border);}
+    .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.15s;}
+    .user-card:hover{background:rgba(255,255,255,0.05);}
+    .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+    .user-name{font-size:13px;font-weight:500;}
+    .user-role{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(19,25,54,0.4);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-size:18px;font-weight:500;letter-spacing:-0.3px;}
+    .topbar-actions{display:flex;align-items:center;gap:10px;}
+    .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
+    .btn-primary{background:var(--accent);color:white;}
+    .btn-primary:hover{background:var(--accent-light);}
+    .btn-ghost{background:rgba(255,255,255,0.06);color:var(--white);border:1px solid var(--border);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .btn-danger{background:rgba(226,75,74,0.15);color:#FF7B7B;border:1px solid rgba(226,75,74,0.2);}
+    .btn-danger:hover{background:rgba(226,75,74,0.25);}
+    .btn-success{background:rgba(29,158,117,0.15);color:#3DD68C;border:1px solid rgba(29,158,117,0.2);}
+    .btn-success:hover{background:rgba(29,158,117,0.25);}
+    .btn svg{width:14px;height:14px;}
+
+    .content{flex:1;overflow-y:auto;padding:28px;}
+
+    /* Filters */
+    .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .search-box{flex:1;min-width:200px;position:relative;}
+    .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border 0.15s;}
+    .search-box input:focus{border-color:var(--accent);}
+    .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
+    select{padding:9px 14px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+
+    /* Table */
+    .table-wrap{background:var(--navy);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+    td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(255,255,255,0.02);}
+    .td-addr{font-weight:500;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .td-muted{color:var(--text-muted);}
+    .td-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+    .badge-status{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;display:inline-block;white-space:nowrap;}
+    .s-ACTIVE{background:rgba(29,158,117,0.15);color:#3DD68C;}
+    .s-NEW{background:rgba(74,111,227,0.15);color:var(--accent-light);}
+    .s-RESERVED{background:rgba(239,159,39,0.15);color:#EF9F27;}
+    .s-SOLD{background:rgba(88,94,99,0.2);color:var(--text-muted);}
+    .s-INACTIVE{background:rgba(255,255,255,0.05);color:var(--text-muted);}
+    .s-RENTED{background:rgba(107,138,255,0.15);color:#6B8AFF;}
+    .s-UNDER_NEGOTIATION{background:rgba(239,159,39,0.15);color:#EF9F27;}
+
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:560px;max-height:85vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .modal-title{font-size:17px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+    .modal-title button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-group.full{grid-column:1/-1;}
+    label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
+    input[type=text],input[type=number],select.form-select,textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
+    input[type=text]:focus,input[type=number]:focus,select.form-select:focus,textarea:focus{border-color:var(--accent);}
+    textarea{resize:vertical;min-height:70px;}
+    select.form-select option{background:var(--navy);}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+    /* Info pill */
+    .info-pill{display:inline-flex;align-items:center;gap:5px;font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:99px;}
+    .info-pill.has-agent{color:#3DD68C;background:rgba(29,158,117,0.12);}
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">General</div>
+      <a href="admin_dashboard.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
+      </a>
+      <a href="admin_properties.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles
+      </a>
+      <a href="admin_agents.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores
+      </a>
+      <a href="admin_operations.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>Operaciones
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Monitoreo</div>
+      <a href="admin_alerts.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alertas
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar">AD</div>
+        <div>
+          <div class="user-name">Administrador</div>
+          <div class="user-role">Admin · Cerrar sesión</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Inmuebles</span>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="openModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar (sin publicar)
+        </button>
+        <button class="btn btn-primary" onclick="openModalPublish()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar y publicar
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="filters">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="search-input" placeholder="Buscar por dirección o código..." oninput="filterTable()">
+        </div>
+        <select id="filter-status" onchange="filterTable()">
+          <option value="">Todos los estados</option>
+          <option value="ACTIVE">Activo</option>
+          <option value="NEW">Nuevo</option>
+          <option value="INACTIVE">Inactivo</option>
+          <option value="RESERVED">Reservado</option>
+          <option value="SOLD">Vendido</option>
+          <option value="RENTED">Arrendado</option>
+        </select>
+        <select id="filter-type" onchange="filterTable()">
+          <option value="">Todos los tipos</option>
+          <option value="APARTMENT">Apartamento</option>
+          <option value="HOUSE">Casa</option>
+          <option value="RETAIL_SPACE">Local</option>
+          <option value="OFFICE">Oficina</option>
+          <option value="LOT">Lote</option>
+          <option value="WAREHOUSE">Bodega</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Dirección</th>
+            <th>Tipo</th>
+            <th>Barrio</th>
+            <th>Precio</th>
+            <th>Asesor</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr></thead>
+          <tbody id="props-tbody">
+          <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal crear inmueble -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modal-title-text">Registrar inmueble</span>
+      <button onclick="closeModal()">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Dirección</label>
+        <input type="text" id="f-address" placeholder="Ej: Calle 10 # 43-22">
+      </div>
+      <div class="form-group">
+        <label>Tipo de inmueble</label>
+        <select class="form-select" id="f-type">
+          <option value="APARTMENT">Apartamento</option>
+          <option value="HOUSE">Casa</option>
+          <option value="RETAIL_SPACE">Local comercial</option>
+          <option value="OFFICE">Oficina</option>
+          <option value="LOT">Lote</option>
+          <option value="WAREHOUSE">Bodega</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Propósito</label>
+        <select class="form-select" id="f-purpose">
+          <option value="SALE">Venta</option>
+          <option value="RENT">Arriendo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Precio</label>
+        <input type="number" id="f-price" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Área (m²)</label>
+        <input type="number" id="f-area" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Habitaciones</label>
+        <input type="number" id="f-bedrooms" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Baños</label>
+        <input type="number" id="f-bathrooms" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Barrio (nombre)</label>
+        <input type="text" id="f-neighborhood" placeholder="Ej: Laureles">
+      </div>
+      <div class="form-group">
+        <label>Ciudad</label>
+        <select class="form-select" id="f-city">
+          <option value="ARMENIA">Armenia</option>
+          <option value="BOGOTA">Bogotá</option>
+          <option value="MEDELLIN">Medellín</option>
+          <option value="CALI">Cali</option>
+          <option value="BARRANQUILLA">Barranquilla</option>
+          <option value="PEREIRA">Pereira</option>
+          <option value="MANIZALES">Manizales</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Asesor asignado (cédula) — requerido para publicar</label>
+        <select class="form-select" id="f-agent">
+          <option value="">Sin asesor (no se podrá publicar)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="modal-save-btn" onclick="saveProperty()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal asignar asesor -->
+<div class="modal-overlay" id="modal-assign">
+  <div class="modal" style="width:400px;">
+    <div class="modal-title">
+      Asignar asesor
+      <button onclick="closeAssign()">×</button>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>Inmueble</label>
+      <input type="text" id="assign-prop-label" disabled style="opacity:0.6;">
+    </div>
+    <div class="form-group">
+      <label>Selecciona un asesor</label>
+      <select class="form-select" id="assign-agent-select">
+        <option value="">Cargando asesores...</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAssign()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmAssign()">Asignar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  let allProps = [];
+  let allAgents = [];
+  let publishOnSave = false;
+  let assignPropCode = '';
+
+  const typeLabel = { APARTMENT:'Apartamento', HOUSE:'Casa', RETAIL_SPACE:'Local', OFFICE:'Oficina', LOT:'Lote', WAREHOUSE:'Bodega' };
+  const statusLabel = { ACTIVE:'Activo', NEW:'Nuevo', INACTIVE:'Inactivo', RESERVED:'Reservado', SOLD:'Vendido', RENTED:'Arrendado', UNDER_NEGOTIATION:'En negociación' };
+
+  async function loadAgents() {
+    const res = await fetch(`${API}/agents`);
+    if (!res.ok) return;
+    allAgents = await res.json();
+    const sel = document.getElementById('f-agent');
+    sel.innerHTML = '<option value="">Sin asesor (no se podrá publicar)</option>' +
+            allAgents.map(a => `<option value="${a.cedula}">${a.name} (${a.cedula})</option>`).join('');
+    const asel = document.getElementById('assign-agent-select');
+    asel.innerHTML = allAgents.map(a => `<option value="${a.cedula}">${a.name} (${a.cedula})</option>`).join('');
+  }
+
+  async function loadProps() {
+    const res = await fetch(`${API}/properties`);
+    if (!res.ok) return;
+    allProps = await res.json();
+    renderTable(allProps);
+  }
+
+  function renderTable(props) {
+    const tbody = document.getElementById('props-tbody');
+    if (!props.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Sin inmuebles</td></tr>';
+      return;
+    }
+    tbody.innerHTML = props.map(p => {
+      const hasAgent = !!p.agent;
+      const canPublish = p.status === 'NEW' || p.status === 'INACTIVE';
+      const isPublished = p.status === 'ACTIVE';
+      return `<tr>
+        <td class="td-addr" title="${p.address}">${p.address || p.code}</td>
+        <td class="td-muted">${typeLabel[p.propertyType] || p.propertyType}</td>
+        <td class="td-muted">${p.neighborhood?.name || '—'}</td>
+        <td>$${Number(p.price||0).toLocaleString()}</td>
+        <td>
+          <span class="info-pill ${hasAgent?'has-agent':''}">
+            ${hasAgent ? p.agent.name : 'Sin asesor'}
+          </span>
+        </td>
+        <td><span class="badge-status s-${p.status}">${statusLabel[p.status]||p.status}</span></td>
+        <td>
+          <div class="td-actions">
+            ${canPublish && hasAgent ? `<button class="btn btn-sm btn-success" onclick="publishProp('${p.code}')">Publicar</button>` : ''}
+            ${isPublished ? `<button class="btn btn-sm btn-ghost" onclick="unpublishProp('${p.code}')">Despublicar</button>` : ''}
+            ${!hasAgent ? `<button class="btn btn-sm btn-ghost" onclick="openAssign('${p.code}','${p.address||p.code}')">Asignar asesor</button>` : ''}
+            <button class="btn btn-sm btn-danger" onclick="deleteProp('${p.code}')">Eliminar</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filterTable() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const st = document.getElementById('filter-status').value;
+    const tp = document.getElementById('filter-type').value;
+    const filtered = allProps.filter(p =>
+            (!q || (p.address||'').toLowerCase().includes(q) || (p.code||'').toLowerCase().includes(q)) &&
+            (!st || p.status === st) &&
+            (!tp || p.propertyType === tp)
+    );
+    renderTable(filtered);
+  }
+
+  function openModal() {
+    publishOnSave = false;
+    document.getElementById('modal-title-text').textContent = 'Registrar inmueble (sin publicar)';
+    document.getElementById('modal-save-btn').textContent = 'Guardar';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function openModalPublish() {
+    publishOnSave = true;
+    document.getElementById('modal-title-text').textContent = 'Registrar y publicar inmueble';
+    document.getElementById('modal-save-btn').textContent = 'Registrar y publicar';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+  async function saveProperty() {
+    const agentId = document.getElementById('f-agent').value;
+    if (publishOnSave && !agentId) {
+      alert('Para publicar el inmueble debes asignar un asesor.');
+      return;
+    }
+    const body = {
+      address: document.getElementById('f-address').value,
+      propertyType: document.getElementById('f-type').value,
+      purpose: document.getElementById('f-purpose').value,
+      price: Number(document.getElementById('f-price').value),
+      area: Number(document.getElementById('f-area').value),
+      numBedrooms: Number(document.getElementById('f-bedrooms').value),
+      numBathrooms: Number(document.getElementById('f-bathrooms').value),
+      neighborhood: {
+        name: document.getElementById('f-neighborhood').value,
+        city: document.getElementById('f-city').value
+      }
+    };
+
+    const url = publishOnSave
+            ? `${API}/properties/with-agent/${agentId}`
+            : `${API}/properties${agentId ? `?agentId=${agentId}` : '?confirm=true'}`;
+
+    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (res.ok) { closeModal(); loadProps(); }
+    else { const e = await res.json(); alert(e.message || 'Error al guardar'); }
+  }
+
+  async function publishProp(code) {
+    const res = await fetch(`${API}/properties/${code}/publish`, { method:'PATCH' });
+    if (res.ok) loadProps();
+    else { const e = await res.json(); alert(e.message || 'Error al publicar'); }
+  }
+
+  async function unpublishProp(code) {
+    const res = await fetch(`${API}/properties/${code}/unpublish`, { method:'PATCH' });
+    if (res.ok) loadProps();
+  }
+
+  function openAssign(code, label) {
+    assignPropCode = code;
+    document.getElementById('assign-prop-label').value = label;
+    document.getElementById('modal-assign').classList.add('open');
+  }
+  function closeAssign() { document.getElementById('modal-assign').classList.remove('open'); }
+
+  async function confirmAssign() {
+    const agentId = document.getElementById('assign-agent-select').value;
+    if (!agentId) return;
+    const res = await fetch(`${API}/agents/${agentId}/properties/${assignPropCode}`, { method:'POST' });
+    if (res.ok) { closeAssign(); loadProps(); }
+    else { const e = await res.json(); alert(e.message || 'Error al asignar'); }
+  }
+
+  async function deleteProp(code) {
+    if (!confirm('¿Eliminar este inmueble?')) return;
+    const res = await fetch(`${API}/properties/${code}`, { method:'DELETE' });
+    if (res.ok) loadProps();
+  }
+
+  loadProps();
+  loadAgents();
+</script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropTech — Iniciar sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:   #131936;
+            --slate:  #585E63;
+            --black:  #05060F;
+            --white:  #FFFFFF;
+            --accent: #4A6FE3;
+            --accent-light: #6B8AFF;
+            --surface: #1C2240;
+            --surface2: #222847;
+            --border: rgba(255,255,255,0.08);
+            --border-hover: rgba(255,255,255,0.18);
+            --text-muted: #8A90A0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Outfit', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow: hidden;
+        }
+
+        /* Background geometric pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(74,111,227,0.12) 0%, transparent 60%),
+                    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(19,25,54,0.8) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Subtle grid lines */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 480px;
+        }
+
+        /* Left panel — brand */
+        .brand-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 56px;
+            border-right: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg { width: 20px; height: 20px; fill: white; }
+
+        .logo-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            color: var(--white);
+        }
+
+        .brand-center {
+            max-width: 480px;
+        }
+
+        .brand-tag {
+            display: inline-block;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-light);
+            margin-bottom: 20px;
+        }
+
+        .brand-headline {
+            font-family: 'Outfit', sans-serif;
+            font-size: 48px;
+            font-weight: 300;
+            line-height: 1.15;
+            color: var(--white);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .brand-headline strong {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .brand-sub {
+            font-family: 'Jost', sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 380px;
+        }
+
+        .brand-stats {
+            display: flex;
+            gap: 40px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: -0.5px;
+        }
+
+        .stat-label {
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Right panel — form */
+        .form-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 48px 56px;
+            background: rgba(19, 25, 54, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .form-header {
+            margin-bottom: 40px;
+        }
+
+        .form-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 500;
+            color: var(--white);
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-family: 'Jost', sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--text-muted);
+        }
+
+        /* Role selector */
+        .role-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .role-btn {
+            padding: 10px 8px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Jost', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .role-btn svg { width: 18px; height: 18px; opacity: 0.5; transition: opacity 0.2s; }
+
+        .role-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--white);
+        }
+
+        .role-btn:hover svg { opacity: 0.8; }
+
+        .role-btn.active {
+            border-color: var(--accent);
+            background: rgba(74,111,227,0.12);
+            color: var(--white);
+        }
+
+        .role-btn.active svg { opacity: 1; }
+
+        /* Form fields */
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .field input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .field input:focus {
+            border-color: var(--accent);
+            background: rgba(74,111,227,0.06);
+        }
+
+        .field-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .field-row label {
+            margin-bottom: 0;
+        }
+
+        .forgot {
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            color: var(--accent-light);
+            text-decoration: none;
+            font-weight: 400;
+            transition: opacity 0.2s;
+        }
+
+        .forgot:hover { opacity: 0.7; }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 24px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-submit:hover {
+            background: var(--accent-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Error message */
+        .error-msg {
+            display: none;
+            padding: 10px 14px;
+            background: rgba(220,60,60,0.12);
+            border: 1px solid rgba(220,60,60,0.25);
+            border-radius: 8px;
+            color: #FF7B7B;
+            font-family: 'Jost', sans-serif;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .error-msg.visible { display: block; }
+
+        /* Bottom note */
+        .form-footer {
+            margin-top: 28px;
+            font-family: 'Jost', sans-serif;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-tag    { animation: fadeUp 0.5s ease both; }
+        .brand-headline { animation: fadeUp 0.5s 0.1s ease both; }
+        .brand-sub    { animation: fadeUp 0.5s 0.2s ease both; }
+        .brand-stats  { animation: fadeUp 0.5s 0.3s ease both; }
+        .form-header  { animation: fadeUp 0.5s 0.15s ease both; }
+        .role-selector { animation: fadeUp 0.5s 0.25s ease both; }
+        .field        { animation: fadeUp 0.5s 0.3s ease both; }
+        .btn-submit   { animation: fadeUp 0.5s 0.4s ease both; }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- Left: brand -->
+    <div class="brand-panel">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+            </div>
+            <span class="logo-name">PropTech</span>
+        </div>
+
+        <div class="brand-center">
+            <span class="brand-tag">Plataforma inmobiliaria</span>
+            <h1 class="brand-headline">Gestiona tu<br><strong>portafolio</strong><br>inmobiliario</h1>
+            <p class="brand-sub">Administra propiedades, asesores y clientes desde un solo lugar. Análisis en tiempo real y alertas inteligentes.</p>
+        </div>
+
+        <div class="brand-stats">
+            <div class="stat-item">
+                <span class="stat-num">142</span>
+                <span class="stat-label">Inmuebles activos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">89</span>
+                <span class="stat-label">Clientes</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">23</span>
+                <span class="stat-label">Asesores</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: form -->
+    <div class="form-panel">
+        <div class="form-header">
+            <h2 class="form-title">Bienvenido de vuelta</h2>
+            <p class="form-subtitle">Ingresa con tu cuenta para continuar</p>
+        </div>
+
+        <!-- Role selector -->
+        <div class="role-selector">
+            <button class="role-btn active" data-role="ADMIN" onclick="selectRole(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM6 20a6 6 0 0 1 12 0"/><path d="M17 14l2 2 4-4"/></svg>
+                Admin
+            </button>
+            <button class="role-btn" data-role="AGENT" onclick="selectRole(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Asesor
+            </button>
+            <button class="role-btn" data-role="CLIENT" onclick="selectRole(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>
+                Cliente
+            </button>
+        </div>
+
+        <!-- Fields -->
+        <div class="field">
+            <label>Usuario</label>
+            <input type="text" id="username" placeholder="Tu nombre de usuario" autocomplete="username">
+        </div>
+
+        <div class="field">
+            <div class="field-row">
+                <label>Contraseña</label>
+                <a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
+            </div>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+        <button class="btn-submit" id="btn-login" onclick="handleLogin()">
+            <span id="btn-text">Iniciar sesión</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos. Intenta de nuevo.</div>
+
+        <p class="form-footer">Al iniciar sesión aceptas los términos de uso de PropTech.<br>¿Problemas para acceder? Contacta al administrador.</p>
+    </div>
+
+</div>
+
+<script>
+    let selectedRole = 'ADMIN';
+
+    function selectRole(btn) {
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedRole = btn.dataset.role;
+        document.getElementById('error-msg').classList.remove('visible');
+    }
+
+    async function handleLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const btn = document.getElementById('btn-login');
+        const error = document.getElementById('error-msg');
+
+        if (!username || !password) {
+            error.textContent = 'Por favor completa todos los campos.';
+            error.classList.add('visible');
+            return;
+        }
+
+        btn.classList.add('loading');
+        document.getElementById('btn-text').textContent = 'Verificando...';
+        error.classList.remove('visible');
+
+        try {
+            const res = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (!res.ok) throw new Error();
+
+            const data = await res.json();
+
+            // Guardar sesión
+            sessionStorage.setItem('user', JSON.stringify(data));
+
+            // Redirigir según rol
+            if (data.role === 'ADMIN') window.location.href = 'admin_dashboard.html';
+            else if (data.role === 'AGENT') window.location.href = 'agent_dashboard.html';
+            else window.location.href = 'client_dashboard.html';
+
+        } catch {
+            error.textContent = 'Usuario o contraseña incorrectos. Intenta de nuevo.';
+            error.classList.add('visible');
+        } finally {
+            btn.classList.remove('loading');
+            document.getElementById('btn-text').textContent = 'Iniciar sesión';
+        }
+    }
+
+    // Enter key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleLogin();
+    });
+</script>
+</body>
+</html>

@@ -14,13 +14,11 @@ public class ProptechApplication {
 
 
     public ProptechApplication() {
-
     }
 
 
     public static void main(String[] args) {
         SpringApplication.run(ProptechApplication.class, args);
-
         Runnable a;
     }
 
