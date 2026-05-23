@@ -67,11 +67,6 @@ public class AdminActionService {
                     case UNPUBLISH -> propertyService.publishProperty(log.getEntityId());
                 }
             }
-            case AGENT -> {
-                switch (log.getAction()) {
-                    case CREATE -> agentService.deleteAgent(log.getEntityId());
-                }
-            }
         }
     }
 
