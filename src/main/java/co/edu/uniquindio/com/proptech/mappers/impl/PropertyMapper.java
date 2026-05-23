@@ -8,6 +8,7 @@ import co.edu.uniquindio.com.proptech.domain.model.Neighborhood;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.services.AgentService;
 import co.edu.uniquindio.com.proptech.services.NeighborhoodService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +19,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
     NeighborhoodService neighborhoodService;
     AgentService agentService;
 
-    public PropertyMapper(MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper, MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper, NeighborhoodService neighborhoodService, AgentService agentService) {
+    public PropertyMapper(MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper, MapperCrud<Neighborhood, NeighborhoodDtoCreate, NeighborhoodDtoUpdate, NeighborhoodDtoReturn> neighborhoodMapper, NeighborhoodService neighborhoodService, @Lazy AgentService agentService) {
         this.agentMapper = agentMapper;
         this.neighborhoodMapper = neighborhoodMapper;
         this.neighborhoodService = neighborhoodService;
