@@ -1,4 +1,7 @@
 package co.edu.uniquindio.com.proptech.domain.enums;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * Enum representing the type of property.
  */
@@ -19,5 +22,15 @@ public enum PropertyType {
     @Override
     public String toString() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static PropertyType fromString(String value) {
+        for (PropertyType t : values()) {
+            if (t.name().equalsIgnoreCase(value) || t.displayName.equalsIgnoreCase(value)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("Unknown PropertyType: " + value);
     }
 }

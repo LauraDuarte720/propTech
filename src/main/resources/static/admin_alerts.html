@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="/proptech_utils.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PropTech Admin — Alertas</title>
@@ -157,13 +158,7 @@
 
     let allAlerts = [];
 
-    const typeLabel = {
-        HIGH_VISITS_NO_CLOSING: 'Múltiples visitas sin cierre',
-        CLIENT_MULTIPLE_VISITS_NO_CONTINUITY: 'Cliente con visitas sin continuidad',
-        AGENT_EXCESSIVE_OVERLOAD: 'Sobrecarga de asesor',
-        PROPERTY_PRICE_CHANGE: 'Cambio frecuente de precio',
-        ZONE_INTEREST_CONCENTRATION: 'Concentración de interés por zona'
-    };
+
 
     async function loadAlerts() {
         const res = await fetch(`${API}/abnormal-alerts`).catch(()=>null);
@@ -190,10 +185,10 @@
             const ts = a.timestamp ? new Date(a.timestamp).toLocaleDateString('es-CO', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
             return `<div class="alert-card ${a.reviewed?'reviewed':''}">
         <div class="alert-card-header">
-          <span class="alert-level l-${a.attentionLevel}">${a.attentionLevel}</span>
+          <span class="alert-level l-${a.attentionLevel}">${label(ATTENTION_LEVEL, a.attentionLevel)}</span>
           ${!a.reviewed ? `<button class="btn btn-ghost btn-sm" onclick="markReviewed('${a.id}')">Marcar revisada</button>` : '<span class="reviewed-badge">✓ Revisada</span>'}
         </div>
-        <div class="alert-type">${typeLabel[a.alertAbnormalType]||a.alertAbnormalType?.replace(/_/g,' ')||'—'}</div>
+        <div class="alert-type">${label(ALERT_TYPE, a.alertAbnormalType)}</div>
         <div class="alert-subject">${subject}</div>
         <div class="alert-meta">
           <span>${ts}</span>

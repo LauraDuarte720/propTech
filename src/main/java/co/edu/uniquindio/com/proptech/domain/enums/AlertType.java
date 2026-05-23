@@ -1,5 +1,6 @@
 package co.edu.uniquindio.com.proptech.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 public enum AlertType {
@@ -22,5 +23,15 @@ public enum AlertType {
     @Override
     public String toString() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static AlertType fromString(String value) {
+        for (AlertType t : values()) {
+            if (t.name().equalsIgnoreCase(value) || t.displayName.equalsIgnoreCase(value)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("Unknown PropertyType: " + value);
     }
 }

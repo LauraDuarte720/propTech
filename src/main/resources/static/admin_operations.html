@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="/proptech_utils.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PropTech Admin — Operaciones</title>
@@ -138,9 +139,9 @@
       <td style="font-weight:500">${o.property?.address||o.property?.code||'—'}</td>
       <td style="color:var(--text-muted)">${o.client?.name||'—'}</td>
       <td style="color:var(--text-muted)">${o.agent?.name||'—'}</td>
-      <td>${typeLabel[o.operationType]||o.operationType||'—'}</td>
+      <td>${label(OPERATION_TYPE, o.operationType)}</td>
       <td>$${Number(o.value||0).toLocaleString()}</td>
-      <td><span class="badge-status s-${o.processStatus}">${o.processStatus||'—'}</span></td>
+      <td><span class="badge-status s-${o.processStatus}">${label(PROCESS_STATUS, o.processStatus)}</span></td>
       <td style="color:var(--text-muted)">${o.dateInitial||'—'}</td>
     </tr>`).join('');
   }

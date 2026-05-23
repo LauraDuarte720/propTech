@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="/proptech_utils.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PropTech Admin — Dashboard</title>
@@ -332,9 +333,9 @@
             <td style="font-weight:500">${p.address || p.code}</td>
             <td style="color:var(--text-muted)">${p.neighborhood?.name || '—'}</td>
             <td>$${Number(p.price||0).toLocaleString()}</td>
-            <td>${statusBadge(p.status)}</td>
+            <td><span class="badge-status s-${p.status}">${label(PROPERTY_STATUS, p.status)}</span></td>
           </tr>`).join('');
-      }
+      }typeLabel
 
       if (agentsRes.ok) {
         const agents = await agentsRes.json();

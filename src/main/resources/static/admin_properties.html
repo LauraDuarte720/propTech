@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script src="/proptech_utils.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PropTech Admin — Inmuebles</title>
@@ -255,15 +256,8 @@
       </div>
       <div class="form-group">
         <label>Ciudad</label>
-        <select class="form-select" id="f-city">
-          <option value="ARMENIA">Armenia</option>
-          <option value="BOGOTA">Bogotá</option>
-          <option value="MEDELLIN">Medellín</option>
-          <option value="CALI">Cali</option>
-          <option value="BARRANQUILLA">Barranquilla</option>
-          <option value="PEREIRA">Pereira</option>
-          <option value="MANIZALES">Manizales</option>
-        </select>
+        <!-- Poblado dinámicamente desde CITY en proptech_utils.js -->
+        <select class="form-select" id="f-city"></select>
       </div>
       <div class="form-group full">
         <label>Asesor asignado (cédula) — requerido para publicar</label>
@@ -314,8 +308,13 @@
   let publishOnSave = false;
   let assignPropCode = '';
 
-  const typeLabel = { APARTMENT:'Apartamento', HOUSE:'Casa', RETAIL_SPACE:'Local', OFFICE:'Oficina', LOT:'Lote', WAREHOUSE:'Bodega' };
-  const statusLabel = { ACTIVE:'Activo', NEW:'Nuevo', INACTIVE:'Inactivo', RESERVED:'Reservado', SOLD:'Vendido', RENTED:'Arrendado', UNDER_NEGOTIATION:'En negociación' };
+  // Poblar el select de ciudad dinámicamente desde el enum CITY de proptech_utils.js
+  function populateCitySelect() {
+    const sel = document.getElementById('f-city');
+    sel.innerHTML = Object.entries(CITY)
+            .map(([key, val]) => `<option value="${key}">${val}</option>`)
+            .join('');
+  }
 
   async function loadAgents() {
     const res = await fetch(`${API}/agents`);
@@ -347,20 +346,20 @@
       const isPublished = p.status === 'ACTIVE';
       return `<tr>
         <td class="td-addr" title="${p.address}">${p.address || p.code}</td>
-        <td class="td-muted">${typeLabel[p.propertyType] || p.propertyType}</td>
+        <td class="td-muted">${label(PROPERTY_TYPE, p.propertyType)}</td>
         <td class="td-muted">${p.neighborhood?.name || '—'}</td>
-        <td>$${Number(p.price||0).toLocaleString()}</td>
+        <td>$${Number(p.price || 0).toLocaleString()}</td>
         <td>
-          <span class="info-pill ${hasAgent?'has-agent':''}">
+          <span class="info-pill ${hasAgent ? 'has-agent' : ''}">
             ${hasAgent ? p.agent.name : 'Sin asesor'}
           </span>
         </td>
-        <td><span class="badge-status s-${p.status}">${statusLabel[p.status]||p.status}</span></td>
+        <td><span class="badge-status s-${p.status}">${label(PROPERTY_STATUS, p.status)}</span></td>
         <td>
           <div class="td-actions">
             ${canPublish && hasAgent ? `<button class="btn btn-sm btn-success" onclick="publishProp('${p.code}')">Publicar</button>` : ''}
             ${isPublished ? `<button class="btn btn-sm btn-ghost" onclick="unpublishProp('${p.code}')">Despublicar</button>` : ''}
-            ${!hasAgent ? `<button class="btn btn-sm btn-ghost" onclick="openAssign('${p.code}','${p.address||p.code}')">Asignar asesor</button>` : ''}
+            ${!hasAgent ? `<button class="btn btn-sm btn-ghost" onclick="openAssign('${p.code}','${p.address || p.code}')">Asignar asesor</button>` : ''}
             <button class="btn btn-sm btn-danger" onclick="deleteProp('${p.code}')">Eliminar</button>
           </div>
         </td>
@@ -373,7 +372,7 @@
     const st = document.getElementById('filter-status').value;
     const tp = document.getElementById('filter-type').value;
     const filtered = allProps.filter(p =>
-            (!q || (p.address||'').toLowerCase().includes(q) || (p.code||'').toLowerCase().includes(q)) &&
+            (!q || (p.address || '').toLowerCase().includes(q) || (p.code || '').toLowerCase().includes(q)) &&
             (!st || p.status === st) &&
             (!tp || p.propertyType === tp)
     );
@@ -420,25 +419,25 @@
             ? `${API}/properties/with-agent/${agentId}`
             : `${API}/properties${agentId ? `?agentId=${agentId}` : '?confirm=true'}`;
 
-    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (res.ok) { closeModal(); loadProps(); }
     else { const e = await res.json(); alert(e.message || 'Error al guardar'); }
   }
 
   async function publishProp(code) {
-    const res = await fetch(`${API}/properties/${code}/publish`, { method:'PATCH' });
+    const res = await fetch(`${API}/properties/${code}/publish`, { method: 'PATCH' });
     if (res.ok) loadProps();
     else { const e = await res.json(); alert(e.message || 'Error al publicar'); }
   }
 
   async function unpublishProp(code) {
-    const res = await fetch(`${API}/properties/${code}/unpublish`, { method:'PATCH' });
+    const res = await fetch(`${API}/properties/${code}/unpublish`, { method: 'PATCH' });
     if (res.ok) loadProps();
   }
 
-  function openAssign(code, label) {
+  function openAssign(code, lbl) {
     assignPropCode = code;
-    document.getElementById('assign-prop-label').value = label;
+    document.getElementById('assign-prop-label').value = lbl;
     document.getElementById('modal-assign').classList.add('open');
   }
   function closeAssign() { document.getElementById('modal-assign').classList.remove('open'); }
@@ -446,17 +445,19 @@
   async function confirmAssign() {
     const agentId = document.getElementById('assign-agent-select').value;
     if (!agentId) return;
-    const res = await fetch(`${API}/agents/${agentId}/properties/${assignPropCode}`, { method:'POST' });
+    const res = await fetch(`${API}/agents/${agentId}/properties/${assignPropCode}`, { method: 'POST' });
     if (res.ok) { closeAssign(); loadProps(); }
     else { const e = await res.json(); alert(e.message || 'Error al asignar'); }
   }
 
   async function deleteProp(code) {
     if (!confirm('¿Eliminar este inmueble?')) return;
-    const res = await fetch(`${API}/properties/${code}`, { method:'DELETE' });
+    const res = await fetch(`${API}/properties/${code}`, { method: 'DELETE' });
     if (res.ok) loadProps();
   }
 
+  // Init
+  populateCitySelect();
   loadProps();
   loadAgents();
 </script>
