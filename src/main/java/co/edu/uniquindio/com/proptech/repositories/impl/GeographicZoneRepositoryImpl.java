@@ -63,7 +63,13 @@ public class GeographicZoneRepositoryImpl implements GeographicZoneRepository {
     public Optional<GeographicZone> findByCityZoneNeighborhood(City city, Zone zone, String nameNeighborhood) {
         for (int i = 0; i < propTech.getGeographicZones().size(); i++) {
             GeographicZone gz = propTech.getGeographicZones().get(i);
-            if (gz.getCity().equals(city) && gz.getZone().equals(zone) && gz.getNameNeighborhood().equals(nameNeighborhood))
+
+            boolean cityMatch = gz.getCity() != null && gz.getCity().equals(city);
+            boolean zoneMatch = (gz.getZone() == null && zone == null) || (gz.getZone() != null && gz.getZone().equals(zone));
+            boolean neighMatch = (gz.getNameNeighborhood() == null && (nameNeighborhood == null || nameNeighborhood.isBlank()))
+                    || (gz.getNameNeighborhood() != null && gz.getNameNeighborhood().equals(nameNeighborhood));
+
+            if (cityMatch && zoneMatch && neighMatch)
                 return Optional.of(gz);
         }
         return Optional.empty();
