@@ -122,11 +122,9 @@ const INTERACTION_TYPE = {
 };
 
 const ZONE = {
-    NORTE: 'Norte',
-    SUR: 'Sur',
-    ORIENTE: 'Oriente',
-    OCCIDENTE: 'Occidente',
-    CENTRO: 'Centro'
+    CENTER:'Centro',
+    NORTH: 'Norte',
+    SOUTH: 'Sur'
 };
 
 // Helper para traducir con fallback

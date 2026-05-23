@@ -255,6 +255,11 @@
         <input type="text" id="f-neighborhood" placeholder="Ej: Laureles">
       </div>
       <div class="form-group">
+        <label>Zona</label>
+        <!-- Poblado dinámicamente desde ZONE en proptech_utils.js -->
+        <select class="form-select" id="f-zone"></select>
+      </div>
+      <div class="form-group">
         <label>Ciudad</label>
         <!-- Poblado dinámicamente desde CITY en proptech_utils.js -->
         <select class="form-select" id="f-city"></select>
@@ -308,10 +313,17 @@
   let publishOnSave = false;
   let assignPropCode = '';
 
-  // Poblar el select de ciudad dinámicamente desde el enum CITY de proptech_utils.js
+  // Poblar selects dinámicamente desde los enums de proptech_utils.js
   function populateCitySelect() {
     const sel = document.getElementById('f-city');
     sel.innerHTML = Object.entries(CITY)
+            .map(([key, val]) => `<option value="${key}">${val}</option>`)
+            .join('');
+  }
+
+  function populateZoneSelect() {
+    const sel = document.getElementById('f-zone');
+    sel.innerHTML = Object.entries(ZONE)
             .map(([key, val]) => `<option value="${key}">${val}</option>`)
             .join('');
   }
@@ -411,7 +423,8 @@
       numBathrooms: Number(document.getElementById('f-bathrooms').value),
       neighborhood: {
         name: document.getElementById('f-neighborhood').value,
-        city: document.getElementById('f-city').value
+        city: document.getElementById('f-city').value,
+        zone: document.getElementById('f-zone').value
       }
     };
 
@@ -458,6 +471,7 @@
 
   // Init
   populateCitySelect();
+  populateZoneSelect();
   loadProps();
   loadAgents();
 </script>
