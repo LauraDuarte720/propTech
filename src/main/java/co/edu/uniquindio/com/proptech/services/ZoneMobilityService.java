@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ZoneMobilityService {
 
-    private static final int DOMINANCE_MIN_COUNT = 3;
-
     private final AlgorithmRepository algorithmRepository;
     private final OperationService operationService;
 
@@ -121,7 +119,6 @@ public class ZoneMobilityService {
 
         for (int i = 0; i < allPatterns.size(); i++) {
             ZoneTransitionPattern pattern = allPatterns.get(i);
-            if (pattern.getWeight() < DOMINANCE_MIN_COUNT) continue;
             if (pattern.getOperationCount() == 0) continue;
             result.add(pattern);
         }
