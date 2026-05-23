@@ -27,7 +27,6 @@ public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUp
                 .username(dto.getUsername())
                 .password(dto.getPassword())
                 .contact(dto.getContact())
-                .closedDeals(dto.getClosedDeals())
                 .assignedZone(geographicZoneService.getGeographicZoneById(dto.getAssignedZoneId()))
                 .build();
     }
@@ -52,7 +51,6 @@ public class AgentMapper implements MapperCrud<Agent, AgentDtoCreate, AgentDtoUp
                 .username(dto.getUsername())
                 .password(dto.getPassword())
                 .contact(dto.getContact())
-                .closedDeals(dto.getClosedDeals())
                 .assignedZone(dto.getAssignedZoneId() == null ? null : geographicZoneService.getGeographicZoneById(dto.getAssignedZoneId()))
                 .build();
     }
