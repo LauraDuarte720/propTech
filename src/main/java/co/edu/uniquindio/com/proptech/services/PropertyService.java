@@ -82,6 +82,11 @@ public class PropertyService {
         return propertyRepository.save(property);
     }
 
+    public Property registerAndPublishProperty(Property property, String agentId) {
+        Property saved = registerProperty(property, agentId, false);
+        return publishPropertyWithLog(saved.getCode());
+    }
+
     public Property publishPropertyWithLog(String propertyCode) {
         Property property = publishProperty(propertyCode);
         adminActionService.log(AdminActionType.PUBLISH, AdminEntityType.PROPERTY,
@@ -147,13 +152,6 @@ public class PropertyService {
         Property property = propertyRepository.findByCode(propertyCode)
                 .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
         propertyRepository.deleteById(propertyCode);
-    }
-
-    public void deletePropertyWithLog(String propertyCode) {
-        deleteProperty(propertyCode);
-        adminActionService.log(AdminActionType.DELETE, AdminEntityType.PROPERTY,
-                "Property deleted: " + propertyCode,
-                "Admin", propertyCode);
     }
 
     public HashTable<String, Property> getAllProperties() {
@@ -226,11 +224,6 @@ public class PropertyService {
         return list;
     }
 
-    public Property registerAndPublishProperty(Property property, String agentId) {
-        Property saved = registerProperty(property, agentId, false);
-        return publishProperty(saved.getCode());
-    }
-
     public ArrayList<Property> getPropertiesOrderedByDemand() {
         HashTable<String, Integer> frequency = visitService.getFrequencyByProperty();
         ArrayList<Property> list = getAllPropertiesAsList();
@@ -250,6 +243,16 @@ public class PropertyService {
             list.add(property);
         }
         return list;
+    }
+
+    public ArrayList<Property> getPublishableProperties() {
+        ArrayList<Property> result = new ArrayList<>();
+        for (Property property : propertyRepository.getProperties().values()) {
+            if (property.isAvailable()) {
+                result.add(property);
+            }
+        }
+        return result;
     }
 
     private void mergeSort(ArrayList<Property> list, Comparator<Property> comparator) {
