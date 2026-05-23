@@ -123,7 +123,7 @@ public class ZoneMobilityService {
             result.add(pattern);
         }
 
-        sortByWeightDesc(result);
+        sortByOperationCountDesc(result);
         return result;
     }
 
@@ -208,6 +208,18 @@ public class ZoneMobilityService {
             ZoneTransitionPattern key = list.get(i);
             int j = i - 1;
             while (j >= 0 && list.get(j).getWeight() < key.getWeight()) {
+                list.set(j + 1, list.get(j));
+                j--;
+            }
+            list.set(j + 1, key);
+        }
+    }
+
+    private void sortByOperationCountDesc(ArrayList<ZoneTransitionPattern> list) {
+        for (int i = 1; i < list.size(); i++) {
+            ZoneTransitionPattern key = list.get(i);
+            int j = i - 1;
+            while (j >= 0 && list.get(j).getOperationCount() < key.getOperationCount()) {
                 list.set(j + 1, list.get(j));
                 j--;
             }
