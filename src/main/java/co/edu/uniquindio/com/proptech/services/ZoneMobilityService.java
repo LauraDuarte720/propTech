@@ -1,14 +1,15 @@
 package co.edu.uniquindio.com.proptech.services;
 
-import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
-import co.edu.uniquindio.com.proptech.domain.model.ZoneNode;
-import co.edu.uniquindio.com.proptech.domain.model.ZoneTransitionPattern;
+import co.edu.uniquindio.com.proptech.domain.enums.OperationType;
+import co.edu.uniquindio.com.proptech.domain.enums.ProcessStatus;
+import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.repositories.AlgorithmRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.graph.Graph;
 import co.edu.uniquindio.com.proptech.structures.graph.GraphEdge;
 import co.edu.uniquindio.com.proptech.structures.graph.GraphNode;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ZoneMobilityService {
+
+    private static final int DOMINANCE_MIN_COUNT = 3;
 
     private final AlgorithmRepository algorithmRepository;
 
@@ -60,39 +63,52 @@ public class ZoneMobilityService {
         return result;
     }
 
-    /**
-     * Retorna el ranking de zonas destino más frecuentes en todo el sistema.
-     * Útil para detectar zonas con mayor atracción comercial.
-     */
-    public ArrayList<ZoneTransitionPattern> getTopDestinationZones() {
+    public ArrayList<ZoneTransitionPattern> getMobilityPatternsTo(String zoneKey) {
         Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
-        HashTable<String, Double> incomingWeight = new HashTable<>();
-
-        for (GraphNode<GeographicZone> node : g.getNodes().values()) {
-            ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(node.getId());
-            if (edges == null) continue;
-            for (int i = 0; i < edges.size(); i++) {
-                String targetId = edges.get(i).getTarget().getId();
-                Double current  = incomingWeight.get(targetId);
-                incomingWeight.put(targetId,
-                        (current == null ? 0 : current) + edges.get(i).getWeight());
-            }
-        }
-
+        ArrayList<GraphEdge<GeographicZone>> incoming = g.getIncomingEdges(zoneKey);
         ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
-        for (String key : incomingWeight.keys()) {
-            GraphNode<GeographicZone> node = g.getNode(key);
-            if (node == null) continue;
+        if (incoming.isEmpty()) return result;
+
+        GraphNode<GeographicZone> toNode = g.getNode(zoneKey);
+        if (toNode == null) return result;
+
+        for (int i = 0; i < incoming.size(); i++) {
+            GraphEdge<GeographicZone> edge = incoming.get(i);
             result.add(ZoneTransitionPattern.builder()
-                    .from(null)   // ranking global, sin origen único
-                    .to(toZoneNode(node.getData()))
-                    .weight(incomingWeight.get(key))
+                    .from(toZoneNode(edge.getTarget().getData()))
+                    .to(toZoneNode(toNode.getData()))
+                    .weight(edge.getWeight())
                     .build());
         }
 
         sortByWeightDesc(result);
         return result;
     }
+
+    /**
+     * Retorna el ranking de zonas destino más frecuentes en todo el sistema.
+     * Útil para detectar zonas con mayor atracción comercial.
+     */
+    public ArrayList<ZoneTransitionPattern> getTopDestinationZones() {
+        Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
+        ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
+        for (GraphNode<GeographicZone> node : g.getNodes().values()) {
+            ArrayList<GraphEdge<GeographicZone>> incoming = g.getIncomingEdges(node.getId());
+            if (incoming.isEmpty()) continue;
+            double total = 0;
+            for (int i = 0; i < incoming.size(); i++) {
+                total += incoming.get(i).getWeight();
+            }
+            result.add(ZoneTransitionPattern.builder()
+                    .from(null)
+                    .to(toZoneNode(node.getData()))
+                    .weight(total)
+                    .build());
+        }
+        sortByWeightDesc(result);
+        return result;
+    }
+
 
     // ══════════════════════════════════════════════
     // HELPERS PRIVADOS
