@@ -28,7 +28,8 @@ public class Agent extends User implements Comparable<Agent> {
 
     private LinkedList<SupportRequest> supportHistory;
 
-    private Integer closedDeals;
+    @Builder.Default
+    private Integer closedDeals = 0;
 
     public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, Integer closedDeals) {
         super(cedula, name, username, password);
