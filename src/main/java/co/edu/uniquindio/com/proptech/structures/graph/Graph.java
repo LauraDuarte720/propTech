@@ -79,6 +79,20 @@ public class Graph<T> {
         }
     }
 
+    public ArrayList<GraphEdge<T>> getIncomingEdges(String nodeId) {
+        ArrayList<GraphEdge<T>> incoming = new ArrayList<>();
+        for (GraphNode<T> node : nodes.values()) {
+            ArrayList<GraphEdge<T>> edges = adjacencyList.get(node.getId());
+            if (edges == null) continue;
+            for (int i = 0; i < edges.size(); i++) {
+                if (edges.get(i).getTarget().getId().equals(nodeId)) {
+                    incoming.add(edges.get(i));
+                }
+            }
+        }
+        return incoming;
+    }
+
     public double getEdgeWeight(String fromId, String toId) {
         ArrayList<GraphEdge<T>> edges = adjacencyList.get(fromId);
         if (edges == null) return 0;
