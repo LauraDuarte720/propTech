@@ -102,11 +102,11 @@ public class AgentService {
     }
 
     public Property addPropertyToAgent(String propertyCode, String agentId) {
-        return propertyAssignmentService.assignAgentWithLog(propertyCode, agentId);
+        return propertyAssignmentService.assignAgent(propertyCode, agentId);
     }
 
     public Property removePropertyFromAgent(String propertyCode, String agentId) {
-        return propertyAssignmentService.removeAgentFromPropertyWithLog(propertyCode, agentId);
+        return propertyAssignmentService.removeAgentFromProperty(propertyCode, agentId);
     }
 
     private ArrayList<Property> getIncompatibleProperties(Agent agent, GeographicZone geographicZone) {
@@ -145,14 +145,8 @@ public class AgentService {
             }
         }
         agentRepository.save(agent);
-        adminActionService.logUpdateZone(agent.getCedula(), previousZoneId, affectedCodes);
     }
 
-    public void restoreGeographicZone(GeographicZone previousZone, Agent agent, ArrayList<String> affectedPropertyCodes) {
-        propertyAssignmentService.restorePropertiesAfterZoneUndo(agent, affectedPropertyCodes);
-        agent.setAssignedZone(previousZone);
-        agentRepository.save(agent);
-    }
 
     public LinkedList<Agent> getAgentsMatchingNeighbor(Neighborhood neighborhood) {
         LinkedList<Agent> matching = new LinkedList<>();

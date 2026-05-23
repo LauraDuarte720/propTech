@@ -20,5 +20,6 @@ public class PropertySnapshot {
     private Integer numBathrooms;
     private PropertyStatus status;
     private Agent agent;
+    private int priceHistorySize;
 
 }

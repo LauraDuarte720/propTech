@@ -59,7 +59,6 @@ public class PropertyService {
             adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created and assigned to agent " + agentId + " -> " + saved.getCode(),
                     "Admin", saved.getCode());
-            propertyAssignmentService.assignAgentWithLog(saved.getCode(), agentId);
             return saved;
         } else {
             property.setStatus(PropertyStatus.INACTIVE);
@@ -113,36 +112,56 @@ public class PropertyService {
     public Property updateProperty(Property property) {
         return propertyRepository.findByCode(property.getCode()).map(existing -> {
 
+            boolean skipLog = false;
             existing.saveSnapshot();
 
-            Optional.ofNullable(property.getAddress()).ifPresent(existing::setAddress);
-            Optional.ofNullable(property.getNeighborhood()).ifPresent(existing::setNeighborhood);
-            Optional.ofNullable(property.getPurpose()).ifPresent(existing::setPurpose);
-
-            Optional.ofNullable(property.getPrice()).ifPresent(newPrice -> {
+            if (property.getAddress() != null) {
+                existing.setAddress(property.getAddress());
+            }
+            if (property.getNeighborhood() != null) {
+                existing.setNeighborhood(property.getNeighborhood());
+                skipLog = true;
+            }
+            if (property.getPurpose() != null) {
+                existing.setPurpose(property.getPurpose());
+            }
+            if (property.getPrice() != null) {
                 PriceHistory record = PriceHistory.builder()
                         .oldPrice(existing.getPrice())
-                        .newPrice(newPrice)
+                        .newPrice(property.getPrice())
                         .changedAt(LocalDateTime.now())
                         .build();
                 existing.getPriceHistory().addLast(record);
-                existing.setPrice(newPrice);
-            });
-
-            Optional.ofNullable(property.getArea()).ifPresent(existing::setArea);
-            Optional.ofNullable(property.getNumBedrooms()).ifPresent(existing::setNumBedrooms);
-            Optional.ofNullable(property.getNumBathrooms()).ifPresent(existing::setNumBathrooms);
-            Optional.ofNullable(property.getStatus()).ifPresent(existing::setStatus);
-            Optional.ofNullable(property.getAgent()).ifPresent(newAgent ->
-                    propertyAssignmentService.assignAgentWithLog(existing.getCode(), newAgent.getCedula())
-            );
+                existing.setPrice(property.getPrice());
+            }
+            if (property.getArea() != null) {
+                existing.setArea(property.getArea());
+            }
+            if (property.getNumBedrooms() != null) {
+                existing.setNumBedrooms(property.getNumBedrooms());
+            }
+            if (property.getNumBathrooms() != null) {
+                existing.setNumBathrooms(property.getNumBathrooms());
+            }
+            if (property.getStatus() != null) {
+                existing.setStatus(property.getStatus());
+            }
+            if (property.getAgent() != null) {
+                propertyAssignmentService.assignAgent(existing.getCode(), property.getAgent().getCedula());
+                skipLog = true;
+            }
 
             Property saved = propertyRepository.save(existing);
 
-            adminActionService.log(AdminActionType.UPDATE, AdminEntityType.PROPERTY,
-                    "Property updated: " + existing.getCode(),
-                    "Admin", existing.getCode());
-
+            if (!skipLog) {
+                adminActionService.log(
+                        AdminActionType.UPDATE,
+                        AdminEntityType.PROPERTY,
+                        "Property updated: " + existing.getCode(),
+                        "Admin",
+                        existing.getCode()
+                );
+            }
             return saved;
 
         }).orElseThrow(() -> new PropertyDoesNotExist("code", property.getCode()));
