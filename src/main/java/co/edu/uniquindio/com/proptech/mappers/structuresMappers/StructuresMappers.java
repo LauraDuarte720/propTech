@@ -71,4 +71,22 @@ public class StructuresMappers {
         }
         return result;
     }
+
+    public <K, V> java.util.Map<String, V> fromHashTableToMap(HashTable<K, V> source) {
+        java.util.Map<String, V> result = new java.util.HashMap<>();
+        List<K> keys = source.keysToJavaList();
+        for (K key : keys) {
+            result.put(key.toString(), source.get(key));
+        }
+        return result;
+    }
+
+    public <K, V, D> List<D> fromHashTableToList(HashTable<K, V> source,
+                                                 java.util.function.BiFunction<K, V, D> mapper) {
+        List<D> result = new java.util.ArrayList<>();
+        for (K key : source.keysToJavaList()) {
+            result.add(mapper.apply(key, source.get(key)));
+        }
+        return result;
+    }
 }
