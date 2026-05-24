@@ -35,6 +35,7 @@ public class OperationService {
         validatePurposeMatchesOperation(operation.getOperationType(), operation.getProperty());
         operation.setId(CodeGenerator.generateOperationCode());
         operation.setProcessStatus(ProcessStatus.CREATED);
+        operation.setValue(operation.getProperty().getPrice());
         operation.setCommission(
                 CommissionCalculator.calculate(operation.getOperationType(), operation.getProperty().getPrice())
         );

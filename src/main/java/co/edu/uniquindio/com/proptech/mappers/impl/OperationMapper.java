@@ -39,7 +39,6 @@ public class OperationMapper implements MapperCrud<Operation, OperationDtoCreate
                 .dateInitial(dto.getDateInitial())
                 .dateFinal(dto.getDateFinal() == null ? null : dto.getDateFinal())
                 .operationType(dto.getOperationType())
-                .value(dto.getValue())
                 .commission(dto.getCommission())
                 .build();
     }

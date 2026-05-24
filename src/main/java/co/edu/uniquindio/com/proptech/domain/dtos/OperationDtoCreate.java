@@ -26,7 +26,7 @@ public class OperationDtoCreate {
     @Size(max = 50, message = "Agent ID must not exceed 50 characters")
     private String agentId;
 
-    @NotBlank(message = "Initial date is mandatory")
+    @NotNull(message = "Initial date is mandatory")
     private LocalDate dateInitial;
 
     private LocalDate dateFinal;
@@ -34,13 +34,10 @@ public class OperationDtoCreate {
     @NotNull(message = "Operation type is required")
     private OperationType operationType;
 
-    @Positive(message = "Value must be greater than 0")
-    @Max(value = 10_000_000_000L, message = "Value exceeds realistic limit")
-    private double value;
 
     @PositiveOrZero(message = "Commission cannot be negative")
     @Max(value = 1_000_000_000L, message = "Commission exceeds realistic limit")
-    private double commission;
+    private Double commission;
 
     @AssertTrue(message = "Initial and final dates are required when operation type is CONTRACT_RENEWAL")
     public boolean isDatesRequiredForContract() {
