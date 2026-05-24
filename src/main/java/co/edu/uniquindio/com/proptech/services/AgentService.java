@@ -238,4 +238,9 @@ public class AgentService {
         }
         return result;
     }
+
+    public int getPendingSupportRequestsCount(String agentId) {
+        Agent agent = getAgentByCedula(agentId);
+        return agent.getSupportRequests().size();
+    }
 }

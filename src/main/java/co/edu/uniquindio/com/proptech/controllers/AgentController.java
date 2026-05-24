@@ -144,6 +144,15 @@ public class AgentController {
         );
     }
 
+    @GetMapping("/{agentId}/support-requests/count")
+    public ResponseEntity<Integer> getPendingRequestsCount(
+            @PathVariable String agentId) {
+
+        return ResponseEntity.ok(
+                agentService.getPendingSupportRequestsCount(agentId)
+        );
+    }
+
     @PostMapping("/{cedula}/support-requests/attend")
     public ResponseEntity<SupportRequestDtoReturn> attendSupportRequest(
             @PathVariable String cedula) {

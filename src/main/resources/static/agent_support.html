@@ -191,12 +191,29 @@
 
     // Build list from history + estimate pending
     let reqs = [];
+
     if (histRes && histRes.ok) {
       reqs = await histRes.json();
     }
+
     allReqs = reqs;
-    const pending = reqs.filter(r=>r.status==='PENDING').length;
-    document.getElementById('q-count').textContent = pending;
+
+// Obtener tamaño REAL de la cola
+    const countRes = await fetch(
+            `${API}/agents/${user.cedula}/support-requests/count`
+    ).catch(() => null);
+
+    if (countRes && countRes.ok) {
+
+      const count = await countRes.json();
+
+      document.getElementById('q-count').textContent = count;
+
+    } else {
+
+      document.getElementById('q-count').textContent = '0';
+    }
+
     renderReqs(filterReqs(currentTab));
   }
 
