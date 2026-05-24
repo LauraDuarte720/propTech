@@ -462,6 +462,53 @@ public class DataLoader {
                 .build());
 
         System.out.println("✅ DataLoader: datos de prueba cargados correctamente.");
+
+        // ══════════════════════════════════════════════
+// 9. DATOS EXTRA PARA DISPARAR ALERTAS ANÓMALAS
+// ══════════════════════════════════════════════
+
+// HIGH_VISITS_NO_CLOSING: prop6 necesita 5+ visitas COMPLETED sin operación
+// Usamos clientes existentes con agente1 (zona Norte Armenia = prop6)
+        for (int i = 0; i < 6; i++) {
+            Client c = (i % 2 == 0) ? cliente1 : cliente3;
+            registerVisitSafe(Visit.builder()
+                    .client(c).property(prop6).agent(agente1)
+                    .date(LocalDateTime.now().minusDays(20 + i))
+                    .visitType(VisitType.NORMAL)
+                    .postVisitNotes("Visita " + (i+1) + " sin cierre")
+                    .build());
+        }
+
+// CLIENT_MULTIPLE_VISITS_NO_CONTINUITY: cliente5 hace 4 visitas en 30 días sin COMPLETED
+        registerVisitSafe(Visit.builder()
+                .client(cliente5).property(prop6).agent(agente1)
+                .date(LocalDateTime.now().minusDays(25))
+                .visitType(VisitType.NORMAL).build());
+        registerVisitSafe(Visit.builder()
+                .client(cliente5).property(prop7).agent(agente2)
+                .date(LocalDateTime.now().minusDays(15))
+                .visitType(VisitType.NORMAL).build());
+        registerVisitSafe(Visit.builder()
+                .client(cliente5).property(prop6).agent(agente1)
+                .date(LocalDateTime.now().minusDays(8))
+                .visitType(VisitType.NORMAL).build());
+
+// AGENT_EXCESSIVE_OVERLOAD: agente1 acumula 11 visitas PENDING/CONFIRMED
+        for (int i = 0; i < 10; i++) {
+            registerVisitSafe(Visit.builder()
+                    .client(cliente1).property(prop6).agent(agente1)
+                    .date(LocalDateTime.now().plusDays(5 + i))
+                    .visitType(VisitType.NORMAL).build());
+        }
+
+// ZONE_INTEREST_CONCENTRATION: 6 visitas en zona NORTE en menos de 7 días
+        for (int i = 0; i < 5; i++) {
+            Client c = (i % 2 == 0) ? cliente2 : cliente4;
+            registerVisitSafe(Visit.builder()
+                    .client(c).property(prop6).agent(agente1)
+                    .date(LocalDateTime.now().minusDays(i))
+                    .visitType(VisitType.NORMAL).build());
+        }
     }
 
     // ── helpers privados ──────────────────────────────────────────────────────
@@ -498,4 +545,6 @@ public class DataLoader {
             System.out.println("⚠️  Visita omitida por conflicto de agenda: " + e.getMessage());
         }
     }
+
+
 }

@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 public enum AlertAbnormalType {
@@ -17,6 +18,11 @@ public enum AlertAbnormalType {
     AlertAbnormalType(String displayName, EntityAlert requiredEntity) {
         this.displayName = displayName;
         this.requiredEntity = requiredEntity;
+    }
+
+    @JsonValue
+    public String getKey() {
+        return this.name();
     }
 
     @Override
