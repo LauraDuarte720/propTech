@@ -46,12 +46,20 @@
     .btn-warning:hover{background:rgba(239,159,39,0.25);}
     .btn svg{width:14px;height:14px;}
     .content{flex:1;overflow-y:auto;padding:28px;}
-    .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
-    .search-box{flex:1;min-width:200px;position:relative;}
+
+    /* ── Filtros ── */
+    .filters{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+    .filters-row2{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .search-box{flex:1;min-width:180px;position:relative;}
     .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
     .search-box input:focus{border-color:var(--accent);}
     .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
     select{padding:9px 14px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+    select.active-filter{border-color:var(--accent);color:#fff;}
+    .filter-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);white-space:nowrap;align-self:center;}
+    .btn-reset{padding:6px 12px;font-size:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);cursor:pointer;font-family:'Jost',sans-serif;}
+    .btn-reset:hover{color:#fff;background:rgba(255,255,255,0.08);}
+
     .table-wrap{background:var(--navy);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
     table{width:100%;border-collapse:collapse;}
     th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
@@ -69,6 +77,7 @@
     .s-INACTIVE{background:rgba(255,255,255,0.05);color:var(--text-muted);}
     .s-RENTED{background:rgba(107,138,255,0.15);color:#6B8AFF;}
     .s-UNDER_NEGOTIATION{background:rgba(239,159,39,0.15);color:#EF9F27;}
+
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:580px;max-height:90vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
@@ -100,7 +109,6 @@
     .edit-action-strip-label{font-size:13px;}
     .edit-action-strip-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
     .strip-actions{display:flex;gap:6px;flex-shrink:0;}
-    /* Conflict warning — igual que admin_agents */
     .conflict-warning{grid-column:1/-1;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);border-radius:8px;padding:12px;font-size:12px;color:#EF9F27;display:none;}
     .conflict-warning.visible{display:block;}
     #toast{position:fixed;bottom:28px;right:28px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
@@ -154,12 +162,14 @@
     </div>
 
     <div class="content">
+
+      <!-- Fila 1: búsqueda por código + filtros de servidor -->
       <div class="filters">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" id="search-input" placeholder="Buscar por dirección o código..." oninput="filterTable()">
+          <input type="text" id="search-code" placeholder="Buscar por dirección o código..." oninput="applyLocalSearch()">
         </div>
-        <select id="filter-status" onchange="filterTable()">
+        <select id="filter-status" onchange="applyServerFilter()" title="Filtrar por estado">
           <option value="">Todos los estados</option>
           <option value="ACTIVE">Activo</option>
           <option value="NEW">Nuevo</option>
@@ -168,7 +178,7 @@
           <option value="SOLD">Vendido</option>
           <option value="RENTED">Arrendado</option>
         </select>
-        <select id="filter-type" onchange="filterTable()">
+        <select id="filter-type" onchange="applyServerFilter()" title="Filtrar por tipo">
           <option value="">Todos los tipos</option>
           <option value="APARTMENT">Apartamento</option>
           <option value="HOUSE">Casa</option>
@@ -177,6 +187,21 @@
           <option value="LOT">Lote</option>
           <option value="WAREHOUSE">Bodega</option>
         </select>
+        <select id="filter-city" onchange="applyServerFilter()" title="Filtrar por ciudad">
+          <option value="">Todas las ciudades</option>
+        </select>
+      </div>
+
+      <!-- Fila 2: ordenamiento + reset -->
+      <div class="filters-row2">
+        <span class="filter-label">Ordenar por:</span>
+        <select id="sort-select" onchange="applySort()">
+          <option value="">Sin ordenamiento</option>
+          <option value="price">Precio</option>
+          <option value="area">Área</option>
+          <option value="demand">Demanda</option>
+        </select>
+        <button class="btn-reset" onclick="resetAll()">✕ Limpiar filtros</button>
       </div>
 
       <div class="table-wrap">
@@ -203,7 +228,6 @@
       <button onclick="closeModal()">×</button>
     </div>
     <div class="form-grid">
-
       <div class="form-group full">
         <label>Dirección</label>
         <input type="text" id="f-address" placeholder="Ej: Calle 10 # 43-22">
@@ -252,10 +276,10 @@
       </div>
       <div class="form-group">
         <label>Ciudad</label>
-        <select class="form-select" id="f-city"></select>
+        <select class="form-select" id="f-city-form"></select>
       </div>
 
-      <!-- ── SECCIÓN SOLO CREAR ── -->
+      <!-- SECCIÓN SOLO CREAR -->
       <div id="create-only-section" class="form-group full" style="display:contents;">
         <div class="form-divider">Asesor y publicación</div>
         <div class="form-group full">
@@ -273,7 +297,7 @@
         </div>
       </div>
 
-      <!-- ── SECCIÓN SOLO EDITAR ── -->
+      <!-- SECCIÓN SOLO EDITAR -->
       <div id="edit-only-section" style="display:none;grid-column:1/-1;">
         <div class="form-divider" style="margin-bottom:12px;">Asesor y visibilidad</div>
         <div class="edit-action-strip" id="edit-agent-strip">
@@ -292,25 +316,19 @@
         </div>
       </div>
 
-      <!-- ── ADVERTENCIA CONFLICTO DE ZONA ── -->
+      <!-- ADVERTENCIA CONFLICTO DE ZONA -->
       <div class="conflict-warning" id="zone-conflict-warning"></div>
-
-    </div><!-- /form-grid -->
+    </div>
 
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <!-- Botón confirmar: aparece solo cuando hay conflicto de zona -->
-      <button class="btn btn-warning btn-sm" id="btn-confirm-update" style="display:none" onclick="confirmUpdate()">
-        Confirmar igualmente
-      </button>
+      <button class="btn btn-warning btn-sm" id="btn-confirm-update" style="display:none" onclick="confirmUpdate()">Confirmar igualmente</button>
       <button class="btn btn-primary" id="modal-save-btn" onclick="saveProperty()">Guardar sin publicar</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     MODAL ASIGNAR ASESOR (desde tabla)
-══════════════════════════════════════════════ -->
+<!-- MODAL ASIGNAR ASESOR -->
 <div class="modal-overlay" id="modal-assign">
   <div class="modal" style="width:400px;">
     <div class="modal-title">Asignar asesor<button onclick="closeAssign()">×</button></div>
@@ -335,19 +353,20 @@
   if (!user.role) window.location.href = 'proptech_login.html';
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-  let allProps        = [];
+  // ── Estado global ────────────────────────────────────────────
+  let allProps        = [];   // todos los props cargados del servidor (base o filtrados)
+  let displayedProps  = [];   // lo que se muestra tras búsqueda local
   let allAgents       = [];
   let publishOnSave   = false;
   let assignPropCode  = '';
   let editingCode     = null;
-  let pendingUpdateBody = null; // guarda el body cuando hay conflicto de zona
+  let pendingUpdateBody = null;
 
-  // ── Normalización de enums ───────────────────────────────────
+  // ── Normalización ────────────────────────────────────────────
   function toEnum(val) {
     if (!val) return '';
     return val.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
   }
-
   function normalizeProperty(p) {
     return {
       ...p,
@@ -362,14 +381,17 @@
     };
   }
 
-  // ── Selects zona/ciudad ──────────────────────────────────────
-  function populateCitySelect() {
-    document.getElementById('f-city').innerHTML =
+  // ── Poblar selects ───────────────────────────────────────────
+  function populateFormSelects() {
+    // Ciudad en formulario (id diferente al del filtro)
+    document.getElementById('f-city-form').innerHTML =
             Object.entries(CITY).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
-  }
-  function populateZoneSelect() {
     document.getElementById('f-zone').innerHTML =
             Object.entries(ZONE).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+    // Ciudad en filtro
+    document.getElementById('filter-city').innerHTML =
+            '<option value="">Todas las ciudades</option>' +
+            Object.entries(CITY).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
   }
 
   // ── Cargar asesores ──────────────────────────────────────────
@@ -385,14 +407,108 @@
             allAgents.map(a => `<option value="${a.cedula}">${a.name} (${a.cedula})</option>`).join('');
   }
 
-  // ── Cargar propiedades ───────────────────────────────────────
+  // ── Carga base (todos los props) ─────────────────────────────
   async function loadProps() {
     const res = await fetch(`${API}/properties`).catch(() => null);
     if (!res || !res.ok) return;
     allProps = await res.json();
-    renderTable(allProps);
+    applyLocalSearch();
   }
 
+  // ──────────────────────────────────────────────────────────────
+  // FILTROS Y ORDENAMIENTO
+  // ──────────────────────────────────────────────────────────────
+
+  // Filtros de servidor: ciudad, tipo, estado
+  // Si hay más de uno activo, hacemos intersección local porque el backend
+  // solo filtra de a uno. Si solo hay uno, llamamos directamente al endpoint.
+  async function applyServerFilter() {
+    const status = document.getElementById('filter-status').value;
+    const type   = document.getElementById('filter-type').value;
+    const city   = document.getElementById('filter-city').value;
+
+    // Marcar selects activos visualmente
+    ['filter-status','filter-type','filter-city'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.toggle('active-filter', !!el.value);
+    });
+
+    // Ningún filtro → cargar todo
+    if (!status && !type && !city) {
+      await loadProps();
+      return;
+    }
+
+    // Construir peticiones solo para los filtros activos
+    const fetches = [];
+    if (status) fetches.push(fetch(`${API}/properties/status/${status}`).then(r => r.ok ? r.json() : []));
+    if (type)   fetches.push(fetch(`${API}/properties/type/${type}`).then(r => r.ok ? r.json() : []));
+    if (city)   fetches.push(fetch(`${API}/properties/city/${city}`).then(r => r.ok ? r.json() : []));
+
+    const results = await Promise.all(fetches);
+
+    // Intersección por código si hay múltiples filtros
+    if (results.length === 1) {
+      allProps = results[0];
+    } else {
+      // Intersección: sólo props que aparecen en todos los resultados
+      const sets = results.map(arr => new Set(arr.map(p => p.code)));
+      allProps = results[0].filter(p => sets.every(s => s.has(p.code)));
+    }
+
+    applyLocalSearch();
+  }
+
+  // Ordenamiento: llama al endpoint y reemplaza allProps
+  async function applySort() {
+    const sort = document.getElementById('sort-select').value;
+    if (!sort) {
+      // Sin ordenamiento → recargar con filtros actuales
+      await applyServerFilter();
+      return;
+    }
+    const res = await fetch(`${API}/properties/ordered/${sort}`).catch(() => null);
+    if (!res || !res.ok) { showToast('error','Error al ordenar',''); return; }
+    const ordered = await res.json();
+
+    // Si hay filtros activos, filtrar localmente el resultado ordenado
+    const status = document.getElementById('filter-status').value;
+    const type   = document.getElementById('filter-type').value;
+    const city   = document.getElementById('filter-city').value;
+
+    allProps = ordered.map(normalizeProperty).filter(p =>
+            (!status || p.status       === status) &&
+            (!type   || p.propertyType === type)   &&
+            (!city   || p.neighborhood?.city === city)
+    );
+
+    applyLocalSearch();
+  }
+
+  // Búsqueda local por dirección o código sobre allProps
+  function applyLocalSearch() {
+    const q = document.getElementById('search-code').value.toLowerCase().trim();
+    displayedProps = allProps.map(normalizeProperty).filter(p =>
+            !q ||
+            (p.address || '').toLowerCase().includes(q) ||
+            (p.code    || '').toLowerCase().includes(q)
+    );
+    renderTable(displayedProps);
+  }
+
+  // Reset total
+  async function resetAll() {
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-type').value   = '';
+    document.getElementById('filter-city').value   = '';
+    document.getElementById('sort-select').value   = '';
+    document.getElementById('search-code').value   = '';
+    ['filter-status','filter-type','filter-city'].forEach(id =>
+            document.getElementById(id).classList.remove('active-filter'));
+    await loadProps();
+  }
+
+  // ── Render tabla ─────────────────────────────────────────────
   function renderTable(props) {
     const tbody = document.getElementById('props-tbody');
     if (!props.length) {
@@ -426,17 +542,6 @@
     }).join('');
   }
 
-  function filterTable() {
-    const q  = document.getElementById('search-input').value.toLowerCase();
-    const st = document.getElementById('filter-status').value;
-    const tp = document.getElementById('filter-type').value;
-    renderTable(allProps.map(normalizeProperty).filter(p =>
-            (!q  || (p.address || '').toLowerCase().includes(q) || (p.code || '').toLowerCase().includes(q)) &&
-            (!st || p.status === st) &&
-            (!tp || p.propertyType === tp)
-    ));
-  }
-
   // ── Conflicto de zona ────────────────────────────────────────
   function showZoneConflict(msg) {
     const el = document.getElementById('zone-conflict-warning');
@@ -444,7 +549,6 @@
     el.classList.add('visible');
     document.getElementById('btn-confirm-update').style.display = 'inline-flex';
   }
-
   function hideZoneConflict() {
     const el = document.getElementById('zone-conflict-warning');
     el.textContent = '';
@@ -455,34 +559,27 @@
 
   // ── Modal CREAR ──────────────────────────────────────────────
   function openModal() {
-    editingCode   = null;
-    publishOnSave = false;
+    editingCode = null; publishOnSave = false;
     hideZoneConflict();
-
     document.getElementById('modal-title-text').textContent = 'Registrar inmueble';
     document.getElementById('modal-save-btn').textContent   = 'Guardar sin publicar';
     document.getElementById('pub-switch').classList.remove('on');
     document.getElementById('pub-sub').textContent = 'Selecciona un asesor para habilitar la publicación.';
     document.getElementById('publish-toggle-row').classList.add('disabled-toggle');
-
     document.getElementById('create-only-section').style.display = 'contents';
     document.getElementById('edit-only-section').style.display   = 'none';
-
-    ['f-address','f-price','f-area','f-bedrooms','f-bathrooms','f-neighborhood'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
+    ['f-address','f-price','f-area','f-bedrooms','f-bathrooms','f-neighborhood'].forEach(id =>
+            document.getElementById(id).value = '');
     document.getElementById('f-type').value    = 'APARTMENT';
     document.getElementById('f-purpose').value = 'SALE';
     document.getElementById('f-agent').value   = '';
-
     document.getElementById('modal').classList.add('open');
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('f-agent').addEventListener('change', function() {
       const hasAgent = !!this.value;
-      const toggle   = document.getElementById('publish-toggle-row');
-      toggle.classList.toggle('disabled-toggle', !hasAgent);
+      document.getElementById('publish-toggle-row').classList.toggle('disabled-toggle', !hasAgent);
       if (!hasAgent && publishOnSave) {
         publishOnSave = false;
         document.getElementById('pub-switch').classList.remove('on');
@@ -495,21 +592,20 @@
   });
 
   function togglePublish() {
-    const hasAgent = !!document.getElementById('f-agent').value;
-    if (!hasAgent) return;
+    if (!document.getElementById('f-agent').value) return;
     publishOnSave = !publishOnSave;
     document.getElementById('pub-switch').classList.toggle('on', publishOnSave);
     document.getElementById('pub-sub').textContent = publishOnSave
             ? 'El inmueble se publicará de inmediato.'
             : 'El inmueble quedará sin publicar. Podrás publicarlo después.';
     document.getElementById('modal-save-btn').textContent = publishOnSave
-            ? 'Guardar y publicar'
-            : 'Guardar sin publicar';
+            ? 'Guardar y publicar' : 'Guardar sin publicar';
   }
 
   // ── Modal EDITAR ─────────────────────────────────────────────
   function openEdit(code) {
-    const raw = allProps.find(x => x.code === code);
+    // Buscar en allProps o en displayedProps
+    const raw = allProps.find(x => x.code === code) || displayedProps.find(x => x.code === code);
     if (!raw) return;
     const p = normalizeProperty(raw);
     editingCode = code;
@@ -517,7 +613,6 @@
 
     document.getElementById('modal-title-text').textContent = 'Editar inmueble';
     document.getElementById('modal-save-btn').textContent   = 'Guardar cambios';
-
     document.getElementById('create-only-section').style.display = 'none';
     document.getElementById('edit-only-section').style.display   = 'block';
 
@@ -529,10 +624,10 @@
     document.getElementById('f-neighborhood').value = p.neighborhood?.name || '';
 
     setTimeout(() => {
-      document.getElementById('f-type').value    = p.propertyType       || 'APARTMENT';
-      document.getElementById('f-purpose').value = p.purpose            || 'SALE';
-      document.getElementById('f-zone').value    = p.neighborhood?.zone || '';
-      document.getElementById('f-city').value    = p.neighborhood?.city || '';
+      document.getElementById('f-type').value        = p.propertyType       || 'APARTMENT';
+      document.getElementById('f-purpose').value     = p.purpose            || 'SALE';
+      document.getElementById('f-zone').value        = p.neighborhood?.zone || '';
+      document.getElementById('f-city-form').value   = p.neighborhood?.city || '';
     }, 50);
 
     const hasAgent = !!p.agent;
@@ -559,7 +654,7 @@
     } else if (canPublish) {
       pubActions.innerHTML = `<button class="btn btn-sm btn-success" onclick="publishFromEdit('${code}')">Publicar</button>`;
     } else {
-      pubActions.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">${hasAgent ? 'El estado actual no permite publicar (requiere Nuevo o Inactivo)' : 'Asigna un asesor primero para poder publicar'}</span>`;
+      pubActions.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">${hasAgent ? 'Estado no permite publicar (requiere Nuevo o Inactivo)' : 'Asigna un asesor primero para publicar'}</span>`;
     }
 
     document.getElementById('modal').classList.add('open');
@@ -577,7 +672,7 @@
   }
   async function assignAgentFromEdit(code) {
     const sel = document.getElementById('edit-inline-agent');
-    if (!sel || !sel.value) { showToast('info','Selecciona un asesor','Elige un asesor de la lista antes de continuar.'); return; }
+    if (!sel?.value) { showToast('info','Selecciona un asesor',''); return; }
     const res = await fetch(`${API}/agents/${sel.value}/properties/${code}`, { method: 'POST' });
     if (res.ok) { await loadProps(); openEdit(code); }
     else { const e = await res.json(); showToast('error','Error al asignar', e.message||''); }
@@ -614,18 +709,14 @@
 
     const neighName = document.getElementById('f-neighborhood').value.trim();
     const neighZone = document.getElementById('f-zone').value;
-    const neighCity = document.getElementById('f-city').value;
+    const neighCity = document.getElementById('f-city-form').value;
     if (neighName && neighZone && neighCity) {
       body.neighborhood = { name: neighName, zone: neighZone, city: neighCity };
     } else {
-      const currentProp = normalizeProperty(allProps.find(x => x.code === editingCode) || {});
-      const n = currentProp.neighborhood;
+      const cur = normalizeProperty(allProps.find(x => x.code === editingCode) || displayedProps.find(x => x.code === editingCode) || {});
+      const n = cur.neighborhood;
       if (n?.name && n?.zone && n?.city) {
-        body.neighborhood = {
-          name: neighName || n.name,
-          zone: neighZone || n.zone,
-          city: neighCity || n.city,
-        };
+        body.neighborhood = { name: neighName || n.name, zone: neighZone || n.zone, city: neighCity || n.city };
       }
     }
     return body;
@@ -641,89 +732,60 @@
     const bathrooms = Number(document.getElementById('f-bathrooms').value);
     const neighName = document.getElementById('f-neighborhood').value.trim();
     const neighZone = document.getElementById('f-zone').value;
-    const neighCity = document.getElementById('f-city').value;
-
+    const neighCity = document.getElementById('f-city-form').value;
     if (!address)   { showToast('error','Campo requerido','La dirección es obligatoria.');        return null; }
-    if (!type)      { showToast('error','Campo requerido','El tipo de inmueble es obligatorio.'); return null; }
-    if (!purpose)   { showToast('error','Campo requerido','El propósito es obligatorio.');         return null; }
     if (price <= 0) { showToast('error','Campo requerido','El precio debe ser mayor a 0.');        return null; }
     if (area  <= 0) { showToast('error','Campo requerido','El área debe ser mayor a 0.');          return null; }
     if (!neighName || !neighZone || !neighCity) {
-      showToast('error','Campos requeridos','El barrio, zona y ciudad son obligatorios.');
-      return null;
+      showToast('error','Campos requeridos','El barrio, zona y ciudad son obligatorios.'); return null;
     }
-    return {
-      address, propertyType: type, purpose, price, area,
+    return { address, propertyType: type, purpose, price, area,
       numBedrooms: bedrooms, numBathrooms: bathrooms,
-      neighborhood: { name: neighName, zone: neighZone, city: neighCity }
-    };
+      neighborhood: { name: neighName, zone: neighZone, city: neighCity } };
   }
 
-  // ── Guardar / actualizar ─────────────────────────────────────
+  // ── Guardar ──────────────────────────────────────────────────
   async function saveProperty() {
     if (editingCode) {
-      const body = buildPatchBody();
-      await submitUpdate(body, false);
+      await submitUpdate(buildPatchBody(), false);
     } else {
       const body = buildCreateBody();
       if (!body) return;
-
       const res = await fetch(`${API}/properties?confirm=true`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
       });
       if (!res.ok) { const e = await res.json(); showToast('error','Error al guardar', e.message||''); return; }
       const created = await res.json();
-
       const selectedAgent = document.getElementById('f-agent').value;
       if (selectedAgent) {
-        const assignRes = await fetch(`${API}/agents/${selectedAgent}/properties/${created.code}`, { method: 'POST' });
-        if (!assignRes.ok) {
-          showToast('error','Error al asignar','Inmueble creado pero no se pudo asignar el asesor.');
-          closeModal(); loadProps(); return;
-        }
+        const ar = await fetch(`${API}/agents/${selectedAgent}/properties/${created.code}`, { method: 'POST' });
+        if (!ar.ok) { showToast('error','Error al asignar','Inmueble creado pero no se pudo asignar el asesor.'); closeModal(); loadProps(); return; }
         if (publishOnSave) {
-          const pubRes = await fetch(`${API}/properties/${created.code}/publish`, { method: 'PATCH' });
-          if (!pubRes.ok) showToast('error','Error al publicar','Inmueble creado y asesor asignado, pero no se pudo publicar.');
+          const pr = await fetch(`${API}/properties/${created.code}/publish`, { method: 'PATCH' });
+          if (!pr.ok) showToast('error','Error al publicar','Inmueble creado y asesor asignado, pero no se pudo publicar.');
         }
       }
       closeModal(); loadProps();
     }
   }
 
-  // Envía el PATCH con el flag confirm
   async function submitUpdate(body, confirm) {
     const res = await fetch(`${API}/properties/${editingCode}?confirm=${confirm}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
     });
-
-    if (res.ok) {
-      hideZoneConflict();
-      closeModal();
-      loadProps();
-      return;
-    }
-
+    if (res.ok) { hideZoneConflict(); closeModal(); loadProps(); return; }
     const e = await res.json();
-
-    // El handler mete affectedProperties dentro de details
     const affected = e.details?.affectedProperties;
-    if (affected && affected.length > 0) {
+    if (affected?.length > 0) {
       pendingUpdateBody = body;
-      const names = affected.map(p => p.address || p.code).join(', ');
-      showZoneConflict(
-              `El asesor asignado no cubre la nueva zona. Al confirmar quedará desasignado del inmueble: ${names}`
-      );
+      showZoneConflict(`El asesor asignado no cubre la nueva zona. Al confirmar quedará desasignado del inmueble: ${affected.map(p => p.address||p.code).join(', ')}`);
     } else {
-      showToast('error', 'Error al guardar', e.message || '');
+      showToast('error','Error al guardar', e.message||'');
     }
   }
 
-  // Llamado por el botón "Confirmar igualmente"
   async function confirmUpdate() {
-    if (!pendingUpdateBody) return;
-    await submitUpdate(pendingUpdateBody, true);
+    if (pendingUpdateBody) await submitUpdate(pendingUpdateBody, true);
   }
 
   // ── Publicar / despublicar desde tabla ──────────────────────
@@ -738,7 +800,7 @@
     else { const e = await res.json(); showToast('error','Error al despublicar', e.message||''); }
   }
 
-  // ── Modal asignar asesor ─────────────────────────────────────
+  // ── Modal asignar ────────────────────────────────────────────
   function openAssign(code, lbl) {
     assignPropCode = code;
     document.getElementById('assign-prop-label').value = lbl;
@@ -762,21 +824,17 @@
 
   // ── Toast ────────────────────────────────────────────────────
   function showToast(type, title, msg) {
-    const icons = { error: '✕', success: '✓', info: 'ℹ' };
+    const icons = { error:'✕', success:'✓', info:'ℹ' };
     const el = document.createElement('div');
     el.className = `toast-item toast-${type}`;
     el.innerHTML = `<div class="toast-icon">${icons[type]||'ℹ'}</div>
       <div class="toast-body"><div class="toast-title">${title}</div>${msg ? `<div class="toast-msg">${msg}</div>` : ''}</div>`;
     document.getElementById('toast').appendChild(el);
-    setTimeout(() => {
-      el.style.animation = 'toastOut .3s ease forwards';
-      setTimeout(() => el.remove(), 300);
-    }, 4000);
+    setTimeout(() => { el.style.animation='toastOut .3s ease forwards'; setTimeout(()=>el.remove(),300); }, 4000);
   }
 
   // ── Init ─────────────────────────────────────────────────────
-  populateCitySelect();
-  populateZoneSelect();
+  populateFormSelects();
   loadProps();
   loadAgents();
 </script>
