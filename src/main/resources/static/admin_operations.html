@@ -146,10 +146,22 @@
     </tr>`).join('');
   }
 
-  function filterOps() {
+  async function filterOps() {
     const t = document.getElementById('filter-type').value;
     const s = document.getElementById('filter-status').value;
-    renderOps(allOps.filter(o => (!t || o.operationType===t) && (!s || o.processStatus===s)));
+
+    let url = `${API}/operations`;
+
+    if (t) url = `${API}/operations/type/${t}`;
+
+    const res = await fetch(url);
+    if (!res.ok) { renderOps([]); return; }
+    let ops = await res.json();
+
+    // Si además hay filtro de status, filtra local sobre lo que devolvió el backend
+    if (s) ops = ops.filter(o => o.processStatus === s);
+
+    renderOps(ops);
   }
 
   loadOps();
