@@ -21,9 +21,11 @@ public class Client extends User implements Comparable<Client> {
     private Integer minBedrooms;
     private ClientType clientType;
     private SearchStatus searchStatus;
-    private ArrayList<GeographicZone> interestZones;
+    @Builder.Default
+    private ArrayList<GeographicZone> interestZones = new ArrayList<>();
     private PropertyType desiredPropertyType;
-    private HashTable<InteractionType, ArrayList<UserInteraction>> interactionHistory;
+    @Builder.Default
+    private HashTable<InteractionType, ArrayList<UserInteraction>> interactionHistory = initInteractionHistory();
 
     public Client(String cedula, String name, String username, String password, String email, String phone, Double budget, Integer minBedrooms, ClientType clientType, SearchStatus searchStatus, PropertyType desiredPropertyType) {
         super(cedula, name, password, username);
@@ -35,11 +37,15 @@ public class Client extends User implements Comparable<Client> {
         this.searchStatus = searchStatus;
         this.interestZones = new ArrayList<>();
         this.desiredPropertyType = desiredPropertyType;
-        this.interactionHistory = new HashTable<>();
+        this.interactionHistory = initInteractionHistory();
+    }
 
+    private static HashTable<InteractionType, ArrayList<UserInteraction>> initInteractionHistory() {
+        HashTable<InteractionType, ArrayList<UserInteraction>> table = new HashTable<>();
         for (InteractionType type : InteractionType.values()) {
-            interactionHistory.put(type, new ArrayList<>());
+            table.put(type, new ArrayList<>());
         }
+        return table;
     }
 
     public void addInterestZone(GeographicZone zone) {
@@ -78,13 +84,9 @@ public class Client extends User implements Comparable<Client> {
 
     public UserInteraction getInteraction(String id, InteractionType type) {
         ArrayList<UserInteraction> list = interactionHistory.get(type);
-
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getId().equals(id)) {
-                return list.get(i);
-            }
+            if (list.get(i).getId().equals(id)) return list.get(i);
         }
-
         return null;
     }
 
@@ -105,14 +107,12 @@ public class Client extends User implements Comparable<Client> {
 
     public boolean removeInteraction(String id, InteractionType type) {
         ArrayList<UserInteraction> list = interactionHistory.get(type);
-
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getId().equals(id)) {
                 list.remove(i);
                 return true;
             }
         }
-
         return false;
     }
 
@@ -120,5 +120,4 @@ public class Client extends User implements Comparable<Client> {
     public int compareTo(Client o) {
         return Double.compare(this.budget, o.getBudget());
     }
-
 }

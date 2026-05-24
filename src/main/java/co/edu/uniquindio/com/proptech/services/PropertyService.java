@@ -40,11 +40,6 @@ public class PropertyService {
     }
 
     public Property registerProperty(Property property, String agentId, boolean confirm) {
-        boolean exists = propertyRepository.findByCode(property.getCode()).isPresent();
-        if (exists) {
-            throw new PropertyAlreadyExists("code", property.getCode());
-        }
-
         Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
         property.setNeighborhood(resolved);
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
