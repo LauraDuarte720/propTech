@@ -1,11 +1,14 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
+import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
 import co.edu.uniquindio.com.proptech.repositories.AlgorithmRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.graph.GraphEdge;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
+import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
@@ -279,5 +282,88 @@ public class RecommendationService {
             this.property = property;
             this.score    = score;
         }
+    }
+
+    /**
+     * Retorna una cola de prioridad de clientes ordenados por su intención
+     * de cierre, calculada sumando sus interacciones de tipo
+     * BUYING_INTENTION y RENTING_INTENTION en el historial.
+     */
+    public PriorityQueue<Client> getClientsByClosingIntention() {
+        HashTable<String, Client> allClients = clientService.getClients();
+        // Comparator: mayor intención = mayor prioridad
+        PriorityQueue<Client> queue = new PriorityQueue<>(
+                (a, b) -> Integer.compare(closingScore(b), closingScore(a))
+        );
+        for (Client client : allClients.values()) {
+            if (closingScore(client) > 0) {
+                queue.add(client);
+            }
+        }
+        return queue;
+    }
+
+    private int closingScore(Client client) {
+        int score = 0;
+        ArrayList<UserInteraction> buying =
+                client.getInteractionsByType(InteractionType.BUYING_INTENTION);
+        ArrayList<UserInteraction> renting =
+                client.getInteractionsByType(InteractionType.RENTING_INTENTION);
+        if (buying  != null) score += buying.size();
+        if (renting != null) score += renting.size();
+        return score;
+    }
+
+// ══════════════════════════════════════════════
+// COLA DE PRIORIDAD — INMUEBLES CON MAYOR DEMANDA
+// ══════════════════════════════════════════════
+
+    /**
+     * Retorna una cola de prioridad de propiedades ordenadas por demanda,
+     * calculada sumando sus interacciones de tipo VISITED, SAVED y
+     * NEGOTIATED en el grafo cliente-propiedad.
+     */
+    public PriorityQueue<Property> getPropertiesByDemand() {
+        HashTable<String, Property> allProperties = propertyService.getAllProperties();
+        HashTable<String, Integer> frequency = buildPropertyDemandFrequency();
+
+        // Comparator: mayor frecuencia = mayor prioridad
+        PriorityQueue<Property> queue = new PriorityQueue<>(
+                (a, b) -> {
+                    int fa = frequency.get(a.getCode()) != null ? frequency.get(a.getCode()) : 0;
+                    int fb = frequency.get(b.getCode()) != null ? frequency.get(b.getCode()) : 0;
+                    return Integer.compare(fb, fa);
+                }
+        );
+
+        for (Property property : allProperties.values()) {
+            queue.add(property);
+        }
+        return queue;
+    }
+
+    private HashTable<String, Integer> buildPropertyDemandFrequency() {
+        HashTable<String, Client> allClients = clientService.getClients();
+        HashTable<String, Integer> frequency = new HashTable<>();
+
+        InteractionType[] demandTypes = {
+                InteractionType.VISITED,
+                InteractionType.SAVED,
+                InteractionType.NEGOTIATED
+        };
+
+        for (Client client : allClients.values()) {
+            for (InteractionType type : demandTypes) {
+                ArrayList<UserInteraction> interactions = client.getInteractionsByType(type);
+                if (interactions == null) continue;
+                for (int i = 0; i < interactions.size(); i++) {
+                    Property p = interactions.get(i).getProperty();
+                    if (p == null) continue;
+                    Integer current = frequency.get(p.getCode());
+                    frequency.put(p.getCode(), current == null ? 1 : current + 1);
+                }
+            }
+        }
+        return frequency;
     }
 }
