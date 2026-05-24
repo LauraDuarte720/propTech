@@ -11,6 +11,7 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,9 +31,9 @@ public class PropertyService {
     ZoneMatcher zoneMatcher;
     PropertyMapper propertyMapper;
 
-    public PropertyService(PropertyRepository propertyRepository, AgentService agentService,
+    public PropertyService(PropertyRepository propertyRepository, @Lazy AgentService agentService,
                            NeighborhoodService neighborhoodService,
-                           PropertyAssignmentService propertyAssignmentService,
+                           @Lazy PropertyAssignmentService propertyAssignmentService,
                            VisitService visitService, AdminActionService adminActionService, ZoneMatcher zoneMatcher, PropertyMapper propertyMapper) {
         this.propertyRepository = propertyRepository;
         this.agentService = agentService;
@@ -45,24 +46,59 @@ public class PropertyService {
         this.propertyMapper = propertyMapper;
     }
 
+    public void changePropertyState(Property property, PropertyStatus status) {
+        if(propertyRepository.findByCode(property.getCode()).isEmpty()){
+            property.setStatus(status);
+            return;
+        }
+        ArrayList<Property> origin = propertyRepository.getPropertiesByStatus(property.getStatus());
+        ArrayList<Property> destination = propertyRepository.getPropertiesByStatus(status);
+        property.setStatus(status);
+        origin.remove(property);
+        destination.add(property);
+    }
+
+    public void changePropertyType(Property property, PropertyType type) {
+        if(propertyRepository.findByCode(property.getCode()).isEmpty()){
+            property.setPropertyType(type);
+            return;
+        }
+        ArrayList<Property> origin = propertyRepository.getPropertiesByType(property.getPropertyType());
+        ArrayList<Property> destination = propertyRepository.getPropertiesByType(type);
+        property.setPropertyType(type);
+        origin.remove(property);
+        destination.add(property);
+    }
+
+    public void changePropertyNeighborhood(Property property, Neighborhood neighborhood) {
+        if(propertyRepository.findByCode(property.getCode()).isEmpty()){
+            property.setNeighborhood(neighborhood);
+            return;
+        }
+        ArrayList<Property> origin = propertyRepository.getPropertiesByCity(property.getNeighborhood().getCity());
+        ArrayList<Property> destination = propertyRepository.getPropertiesByCity(neighborhood.getCity());
+        property.setNeighborhood(neighborhood);
+        origin.remove(property);
+        destination.add(property);
+    }
     public Property registerProperty(Property property, String agentId, boolean confirm) {
-        Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
-        property.setNeighborhood(resolved);
         property.setCode(CodeGenerator.generatePropertyCode(property.getPropertyType()));
+        Neighborhood resolved = neighborhoodService.findOrCreate(property.getNeighborhood());
+        changePropertyNeighborhood(property, resolved);
 
         if (agentId == null && !confirm) {
             throw new NoAgentConfirmationException();
         }
 
         if (agentId != null) {
-            property.setStatus(PropertyStatus.NEW);
+            changePropertyState(property, PropertyStatus.NEW);
             Property saved = propertyRepository.save(property);
             adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created and assigned to agent " + agentId + " -> " + saved.getCode(),
                     "Admin", saved.getCode());
             return saved;
         } else {
-            property.setStatus(PropertyStatus.INACTIVE);
+            changePropertyState(property, PropertyStatus.INACTIVE);
             Property saved = propertyRepository.save(property);
             adminActionService.log(AdminActionType.CREATE, AdminEntityType.PROPERTY,
                     "Property created without agent -> " + saved.getCode(),
@@ -78,7 +114,7 @@ public class PropertyService {
         if (property.getAgent() == null) {
             throw new NoAgentConfirmationException();
         }
-        property.setStatus(PropertyStatus.ACTIVE);
+        changePropertyState(property, PropertyStatus.ACTIVE);
         return propertyRepository.save(property);
     }
 
@@ -98,7 +134,7 @@ public class PropertyService {
     public Property unpublishProperty(String propertyCode) {
         Property property = propertyRepository.findByCode(propertyCode)
                 .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
-        property.setStatus(PropertyStatus.NEW);
+        changePropertyState(property, PropertyStatus.NEW);
         return propertyRepository.save(property);
     }
 
@@ -151,6 +187,9 @@ public class PropertyService {
                 propertyAssignmentService.assignAgent(existing.getCode(), property.getAgent().getCedula());
                 skipLog = true;
             }
+            if(property.getPropertyType() != null) {
+                changePropertyType(existing, property.getPropertyType());
+            }
 
             Property saved = propertyRepository.save(existing);
 
@@ -173,7 +212,7 @@ public class PropertyService {
         Agent agent = property.getAgent();
 
         if (agent == null) {
-            property.setNeighborhood(resolved);
+            changePropertyNeighborhood(property, resolved);
             return;
         }
 
@@ -190,7 +229,7 @@ public class PropertyService {
             propertyAssignmentService.removeAgentFromProperty(property.getCode(), agent.getCedula());
         }
 
-        property.setNeighborhood(resolved);
+        changePropertyNeighborhood(property, resolved);
     }
 
     public void deleteProperty(String propertyCode) {
@@ -298,6 +337,18 @@ public class PropertyService {
             }
         }
         return result;
+    }
+
+    public ArrayList<Property> getPropertiesByCity(City city){
+        return propertyRepository.getPropertiesByCity(city);
+    }
+
+    public ArrayList<Property> getPropertiesByType(PropertyType propertyType) {
+        return  propertyRepository.getPropertiesByType(propertyType);
+    }
+
+    public ArrayList<Property> getPropertiesByStatus(PropertyStatus propertyStatus) {
+        return propertyRepository.getPropertiesByStatus(propertyStatus);
     }
 
     private void mergeSort(ArrayList<Property> list, Comparator<Property> comparator) {

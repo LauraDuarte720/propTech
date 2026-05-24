@@ -14,6 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Property implements Comparable<Property> {
 
     private String code;
@@ -79,6 +80,10 @@ public class Property implements Comparable<Property> {
             return null;
         }
         return history.pop();
+    }
+
+    public void removeAgent(){
+        setAgent(null);
     }
 
     public boolean hasSnapshots() {

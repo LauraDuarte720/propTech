@@ -11,6 +11,7 @@ import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,11 +19,13 @@ public class PropertyAssignmentService {
     private final ZoneMatcher zoneMatcher;
     private final PropertyRepository propertyRepository;
     private final AgentRepository agentRepository;
+    private final PropertyService propertyService;
 
-    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository) {
+    public PropertyAssignmentService(ZoneMatcher zoneMatcher, PropertyRepository propertyRepository, AgentRepository agentRepository, PropertyService propertyService) {
         this.zoneMatcher = zoneMatcher;
         this.propertyRepository = propertyRepository;
         this.agentRepository = agentRepository;
+        this.propertyService = propertyService;
     }
 
     public Property assignAgent(String propertyCode, String agentId) {
@@ -48,8 +51,8 @@ public class PropertyAssignmentService {
                 .orElseThrow(() -> new AgentDoesNotExist("cedula", agentId));
 
         agent.removeProperty(property);
-        property.setAgent(null);
-        property.setStatus(PropertyStatus.INACTIVE);
+        property.removeAgent();
+        propertyService.unpublishProperty(propertyCode);
         propertyRepository.save(property);
         return property;
     }

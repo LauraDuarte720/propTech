@@ -180,11 +180,8 @@ public class PropertyController {
     @GetMapping("/status/{status}")
     public ResponseEntity<List<PropertyDtoReturn>> getPropertiesByStatus(
             @PathVariable PropertyStatus status) {
-        var byStatus = propertyService.getPropertiesByStatus();
-        var props = byStatus.get(status);
-        if (props == null) return ResponseEntity.ok(java.util.List.of());
         return ResponseEntity.ok(
-                structuresMappers.fromArrayList(props, propertyMapper::toDto)
+                structuresMappers.fromArrayList(propertyService.getPropertiesByStatus(status), propertyMapper::toDto)
         );
     }
 }
