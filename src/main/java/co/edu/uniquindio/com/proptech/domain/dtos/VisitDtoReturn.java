@@ -1,9 +1,10 @@
 package co.edu.uniquindio.com.proptech.domain.dtos;
 
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.VisitType;
 import lombok.*;
 
-import java.time.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,11 +19,15 @@ public class VisitDtoReturn {
 
     private PropertyDtoReturn property;
 
-    private LocalDateTime date;
-
     private AgentDtoReturn agent;
+
+    private LocalDateTime date;
 
     private VisitStatus status;
 
+    private VisitType visitType;
+
     private String postVisitNotes;
+
+    private LocalDateTime createdAt;
 }
