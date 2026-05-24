@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech — Asesor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="/proptech_utils.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #131936; --accent: #4A6FE3; --accent-light: #6B8AFF;
+      --border: rgba(19,25,54,0.12); --text-muted: #8A90A0;
+      --sidebar-w: 220px; --white: #FFFFFF; --bg: #F5F6FA;
+      --surface: #FFFFFF; --text: #1a1d2e;
+    }
+    html, body { height: 100%; font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); }
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* Sidebar */
+    .sidebar { width: var(--sidebar-w); background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; }
+    .sidebar-logo { padding: 24px 20px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-icon svg { width: 18px; height: 18px; fill: white; }
+    .logo-name { font-size: 16px; font-weight: 600; color: white; }
+    .sidebar-section { padding: 16px 12px 8px; }
+    .sidebar-label { font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 0 8px; margin-bottom: 6px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-family: 'Jost', sans-serif; font-size: 13px; color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-item.active { background: rgba(74,111,227,0.25); color: white; font-weight: 500; }
+    .nav-item .badge { margin-left: auto; background: #E24B4A; color: white; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 99px; }
+    .sidebar-footer { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .user-card { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+    .user-card:hover { background: rgba(255,255,255,0.06); }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; flex-shrink: 0; }
+    .user-name { font-size: 13px; font-weight: 500; color: white; }
+    .user-role { font-family: 'Jost', sans-serif; font-size: 11px; color: rgba(255,255,255,0.4); }
+
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { padding: 16px 28px; border-bottom: 1px solid var(--border); background: white; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .page-title { font-size: 18px; font-weight: 500; color: var(--text); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .alert-btn { position: relative; width: 36px; height: 36px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
+    .alert-btn:hover { background: #eef0f8; }
+    .alert-btn svg { width: 18px; height: 18px; color: var(--text-muted); }
+    .alert-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: #E24B4A; border: 2px solid white; }
+    .btn { padding: 8px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; display: flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-light); }
+    .btn svg { width: 14px; height: 14px; }
+
+    .content { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* Metrics */
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .metric-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .metric-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .metric-icon svg { width: 19px; height: 19px; }
+    .metric-val { font-size: 24px; font-weight: 600; color: var(--text); }
+    .metric-label { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 24px; }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .card-title a { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--accent); text-decoration: none; }
+
+    /* Property cards */
+    .props-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 12px; }
+    .prop-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.15s; }
+    .prop-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(74,111,227,0.1); }
+    .prop-type { font-family: 'Jost', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .prop-addr { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prop-price { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .prop-actions { display: flex; gap: 6px; }
+    .prop-btn { flex: 1; padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; border: none; font-family: 'Outfit', sans-serif; transition: all 0.15s; }
+    .prop-btn-visit { background: rgba(74,111,227,0.1); color: var(--accent); }
+    .prop-btn-visit:hover { background: rgba(74,111,227,0.2); }
+    .prop-btn-op { background: rgba(29,158,117,0.1); color: #1D9E75; }
+    .prop-btn-op:hover { background: rgba(29,158,117,0.2); }
+
+    /* Visit list */
+    .visit-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .visit-item:last-child { border-bottom: none; }
+    .visit-type-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .vip-dot { background: #EF9F27; }
+    .normal-dot { background: var(--accent); }
+    .visit-info { flex: 1; }
+    .visit-prop { font-size: 13px; font-weight: 500; color: var(--text); }
+    .visit-meta { font-family: 'Jost', sans-serif; font-size: 11px; color: var(--text-muted); }
+    .visit-badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-family: 'Jost', sans-serif; font-weight: 500; }
+    .vip-badge { background: rgba(239,159,39,0.15); color: #EF9F27; }
+    .normal-badge { background: rgba(74,111,227,0.1); color: var(--accent); }
+
+    /* Commission card */
+    .commission-big { font-size: 32px; font-weight: 600; color: var(--accent); letter-spacing: -1px; margin: 8px 0 4px; }
+    .commission-sub { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); }
+    .commission-breakdown { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .comm-row { display: flex; justify-content: space-between; align-items: center; }
+    .comm-label { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); }
+    .comm-val { font-size: 13px; font-weight: 500; color: var(--text); }
+
+    /* Alerts panel */
+    .alerts-panel { position: fixed; top: 0; right: 0; width: 360px; height: 100vh; background: white; border-left: 1px solid var(--border); z-index: 200; transform: translateX(100%); transition: transform 0.25s ease; display: flex; flex-direction: column; }
+    .alerts-panel.open { transform: translateX(0); }
+    .alerts-panel-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .alerts-panel-title { font-size: 15px; font-weight: 500; }
+    .alerts-panel-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted); }
+    .alerts-panel-body { flex: 1; overflow-y: auto; padding: 16px; }
+    .alert-item-panel { padding: 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); margin-bottom: 8px; }
+    .alert-item-type { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .alert-item-meta { font-family: 'Jost', sans-serif; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .alert-item-actions { display: flex; gap: 6px; }
+    .btn-xs { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; border: none; font-family: 'Outfit', sans-serif; }
+    .btn-xs-primary { background: var(--accent); color: white; }
+    .btn-xs-ghost { background: rgba(0,0,0,0.05); color: var(--text-muted); }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 199; }
+    .overlay.open { display: block; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 300; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 28px; width: 480px; max-height: 85vh; overflow-y: auto; animation: fadeUp 0.2s ease; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:translateY(0) } }
+    .modal-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; color: var(--text); }
+    .modal-title button { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group label { font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); }
+    .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none; transition: border 0.15s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .btn-ghost { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: #eef0f8; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Mi gestión</div>
+      <a href="agent_dashboard.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="agent_properties.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+        Mis inmuebles
+      </a>
+      <a href="agent_visits.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Mis visitas
+      </a>
+      <a href="agent_operations.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>
+        Operaciones
+      </a>
+      <a href="agent_support.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Solicitudes
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar" id="av">AS</div>
+        <div>
+          <div class="user-name" id="uname">Asesor</div>
+          <div class="user-role">Asesor · Cerrar sesión</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Dashboard</span>
+      <div class="topbar-right">
+        <div class="alert-btn" onclick="toggleAlerts()" title="Ver alertas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="alert-dot" id="alert-dot" style="display:none"></span>
+        </div>
+        <button class="btn btn-primary" onclick="window.location.href='agent_properties.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nueva visita
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Metrics -->
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(74,111,227,0.1);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4A6FE3" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+          </div>
+          <div class="metric-val" id="m-props">—</div>
+          <div class="metric-label">Inmuebles asignados</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(29,158,117,0.1);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="metric-val" id="m-visits">—</div>
+          <div class="metric-label">Visitas agendadas</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(239,159,39,0.1);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>
+          </div>
+          <div class="metric-val" id="m-ops">—</div>
+          <div class="metric-label">Operaciones activas</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon" style="background:rgba(74,111,227,0.1);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4A6FE3" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="metric-val" id="m-deals">—</div>
+          <div class="metric-label">Cierres totales</div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <!-- Properties quick access -->
+        <div class="card">
+          <div class="card-title">
+            Mis inmuebles
+            <a href="agent_properties.html">Ver todos →</a>
+          </div>
+          <div class="props-grid" id="props-grid">
+            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+
+        <!-- Commission -->
+        <div class="card">
+          <div class="card-title">Comisiones ganadas</div>
+          <div class="commission-big" id="comm-total">$0</div>
+          <div class="commission-sub">Solo operaciones cerradas</div>
+          <div class="commission-breakdown">
+            <div class="comm-row">
+              <span class="comm-label">Cierres completados</span>
+              <span class="comm-val" id="comm-deals">0</span>
+            </div>
+            <div class="comm-row">
+              <span class="comm-label">Comisión promedio</span>
+              <span class="comm-val" id="comm-avg">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visits queue -->
+      <div class="card">
+        <div class="card-title">
+          Cola de visitas (prioridad)
+          <a href="agent_visits.html">Ver todas →</a>
+        </div>
+        <div id="visits-list">
+          <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts panel -->
+<div class="overlay" id="overlay" onclick="toggleAlerts()"></div>
+<div class="alerts-panel" id="alerts-panel">
+  <div class="alerts-panel-header">
+    <span class="alerts-panel-title">Alertas del sistema</span>
+    <button class="alerts-panel-close" onclick="toggleAlerts()">×</button>
+  </div>
+  <div class="alerts-panel-body" id="alerts-body">
+    <div style="color:var(--text-muted);font-size:13px;">Cargando alertas...</div>
+  </div>
+</div>
+
+<!-- Modal visita rápida -->
+<div class="modal-overlay" id="modal-visit">
+  <div class="modal">
+    <div class="modal-title">
+      Nueva visita
+      <button onclick="closeVisitModal()">×</button>
+    </div>
+    <div class="form-group">
+      <label>Inmueble</label>
+      <input type="text" id="v-prop-label" disabled style="opacity:0.6;">
+      <input type="hidden" id="v-prop-code">
+    </div>
+    <div class="form-group">
+      <label>Cliente (cédula)</label>
+      <select id="v-client"></select>
+    </div>
+    <div class="form-group">
+      <label>Fecha y hora</label>
+      <input type="datetime-local" id="v-date">
+    </div>
+    <div class="form-group">
+      <label>Tipo de visita</label>
+      <select id="v-type">
+        <option value="NORMAL">Normal</option>
+        <option value="VIP">VIP</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeVisitModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveVisit()">Agendar visita</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal operación rápida -->
+<div class="modal-overlay" id="modal-op">
+  <div class="modal">
+    <div class="modal-title">
+      Nueva operación
+      <button onclick="closeOpModal()">×</button>
+    </div>
+    <div class="form-group">
+      <label>Inmueble</label>
+      <input type="text" id="op-prop-label" disabled style="opacity:0.6;">
+      <input type="hidden" id="op-prop-code">
+    </div>
+    <div class="form-group">
+      <label>Cliente</label>
+      <select id="op-client"></select>
+    </div>
+    <div class="form-group">
+      <label>Tipo de operación</label>
+      <select id="op-type">
+        <option value="SALE">Venta</option>
+        <option value="RENT">Arriendo</option>
+        <option value="CONTRACT_RENEWAL">Renovación de contrato</option>
+        <option value="DEAL_CANCELLATION">Cancelación</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Fecha inicio</label>
+      <input type="date" id="op-date-init">
+    </div>
+    <div class="form-group">
+      <label>Fecha fin</label>
+      <input type="date" id="op-date-end">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeOpModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveOperation()">Crear operación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  if (user.name) {
+    document.getElementById('uname').textContent = user.name;
+    const initials = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('av').textContent = initials;
+  }
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  let agentProps = [];
+  let allClients = [];
+
+  async function loadDashboard() {
+    const agentId = user.cedula;
+
+    // Comisiones
+    const commRes = await fetch(`${API}/operations/agent/${agentId}/commission`).catch(()=>null);
+    if (commRes && commRes.ok) {
+      const total = await commRes.json();
+      document.getElementById('comm-total').textContent = '$' + Number(total).toLocaleString();
+    }
+
+    // Agente info
+    const agentRes = await fetch(`${API}/agents/${agentId}`).catch(()=>null);
+    if (agentRes && agentRes.ok) {
+      const agent = await agentRes.json();
+      document.getElementById('m-deals').textContent = agent.closedDeals || 0;
+    }
+
+    // Propiedades del asesor
+    const propsRes = await fetch(`${API}/properties`).catch(()=>null);
+    if (propsRes && propsRes.ok) {
+      const all = await propsRes.json();
+      agentProps = all.filter(p => p.agent?.cedula === agentId);
+      document.getElementById('m-props').textContent = agentProps.length;
+      renderProps(agentProps.slice(0, 6));
+    }
+
+    // Visitas del asesor
+    const visitsRes = await fetch(`${API}/visits/agent/${agentId}`).catch(()=>null);
+    if (visitsRes && visitsRes.ok) {
+      const visits = await visitsRes.json();
+      const active = visits.filter(v => v.status === 'PENDING' || v.status === 'CONFIRMED');
+      document.getElementById('m-visits').textContent = active.length;
+      const sorted = visits.sort((a,b) => {
+        const pa = a.visitType === 'VIP' ? 0 : 1;
+        const pb = b.visitType === 'VIP' ? 0 : 1;
+        if (pa !== pb) return pa - pb;
+        return new Date(a.date) - new Date(b.date);
+      });
+      renderVisits(sorted.slice(0, 5));
+    }
+
+    // Operaciones
+    const opsRes = await fetch(`${API}/operations/agent/${agentId}`).catch(()=>null);
+    if (opsRes && opsRes.ok) {
+      const ops = await opsRes.json();
+      document.getElementById('m-ops').textContent = ops.filter(o=>o.processStatus==='CREATED').length;
+      const closed = ops.filter(o=>o.processStatus==='CLOSED');
+      document.getElementById('comm-deals').textContent = closed.length;
+      const avg = closed.length ? (closed.reduce((s,o)=>s+(o.commission||0),0)/closed.length) : 0;
+      document.getElementById('comm-avg').textContent = '$' + Math.round(avg).toLocaleString();
+    }
+
+    // Clientes para modales
+    const clientsRes = await fetch(`${API}/clients`).catch(()=>null);
+    if (clientsRes && clientsRes.ok) {
+      allClients = await clientsRes.json();
+      const opts = allClients.map(c=>`<option value="${c.cedula}">${c.name} (${c.cedula})</option>`).join('');
+      document.getElementById('v-client').innerHTML = opts;
+      document.getElementById('op-client').innerHTML = opts;
+    }
+
+    // Alertas básicas
+    loadAlerts();
+  }
+
+  function renderProps(props) {
+    const grid = document.getElementById('props-grid');
+    if (!props.length) { grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin inmuebles asignados</div>'; return; }
+    grid.innerHTML = props.map(p => `
+      <div class="prop-card">
+        <div class="prop-type">${label(PROPERTY_TYPE, p.propertyType)}</div>
+        <div class="prop-addr" title="${p.address}">${p.address || p.code}</div>
+        <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
+        <div class="prop-actions">
+          <button class="prop-btn prop-btn-visit" onclick="openVisitModal('${p.code}','${p.address||p.code}')">+ Visita</button>
+          <button class="prop-btn prop-btn-op" onclick="openOpModal('${p.code}','${p.address||p.code}')">+ Operación</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderVisits(visits) {
+    const list = document.getElementById('visits-list');
+    if (!visits.length) { list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin visitas agendadas</div>'; return; }
+    list.innerHTML = visits.map(v => {
+      const isVip = v.visitType === 'VIP';
+      const dt = v.date ? new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="visit-item">
+        <div class="visit-type-dot ${isVip?'vip-dot':'normal-dot'}"></div>
+        <div class="visit-info">
+          <div class="visit-prop">${v.property?.address || v.property?.code || '—'}</div>
+          <div class="visit-meta">${v.client?.name||'—'} · ${dt} · ${label(VISIT_STATUS, v.status)}</div>
+        </div>
+        <span class="visit-badge ${isVip?'vip-badge':'normal-badge'}">${isVip?'VIP':'Normal'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadAlerts() {
+    const res = await fetch(`${API}/basic-alerts/all`).catch(()=>null);
+    const body = document.getElementById('alerts-body');
+    if (!res || !res.ok) { body.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin alertas</div>'; return; }
+    const alerts = await res.json();
+    const unreviewed = alerts.filter(a=>!a.reviewed);
+    if (unreviewed.length > 0) document.getElementById('alert-dot').style.display = 'block';
+    if (!alerts.length) { body.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin alertas activas</div>'; return; }
+    body.innerHTML = alerts.map(a => `
+      <div class="alert-item-panel" id="alert-${a.id}">
+        <div class="alert-item-type">${label(ALERT_TYPE_BASIC, a.alertType)}</div>
+        <div class="alert-item-meta">${a.property?.address||a.visit?.property?.address||a.client?.name||'—'} ${a.reviewed?'· ✓ Revisada':''}</div>
+        ${!a.reviewed ? `<div class="alert-item-actions">
+          <button class="btn-xs btn-xs-primary" onclick="attendAlert('${a.id}')">Atender</button>
+        </div>` : ''}
+      </div>`).join('');
+  }
+
+  function toggleAlerts() {
+    document.getElementById('alerts-panel').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+
+  async function attendAlert(id) {
+    await fetch(`${API}/basic-alerts/pending/next`, { method:'POST' });
+    loadAlerts();
+  }
+
+  // Visit modal
+  function openVisitModal(code, label_) {
+    document.getElementById('v-prop-code').value = code;
+    document.getElementById('v-prop-label').value = label_;
+    document.getElementById('modal-visit').classList.add('open');
+  }
+  function closeVisitModal() { document.getElementById('modal-visit').classList.remove('open'); }
+
+  async function saveVisit() {
+    const body = {
+      propertyId: document.getElementById('v-prop-code').value,
+      clientId: document.getElementById('v-client').value,
+      agentId: user.cedula,
+      date: document.getElementById('v-date').value,
+      visitType: document.getElementById('v-type').value
+    };
+    const res = await fetch(`${API}/visits`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (res.ok) { closeVisitModal(); loadDashboard(); }
+    else { const e = await res.json(); alert(e.message||'Error al agendar visita'); }
+  }
+
+  // Operation modal
+  function openOpModal(code, label_) {
+    document.getElementById('op-prop-code').value = code;
+    document.getElementById('op-prop-label').value = label_;
+    document.getElementById('modal-op').classList.add('open');
+  }
+  function closeOpModal() { document.getElementById('modal-op').classList.remove('open'); }
+
+  async function saveOperation() {
+    const body = {
+      propertyId: document.getElementById('op-prop-code').value,
+      clientId: document.getElementById('op-client').value,
+      agentId: user.cedula,
+      operationType: document.getElementById('op-type').value,
+      dateInitial: document.getElementById('op-date-init').value,
+      dateFinal: document.getElementById('op-date-end').value
+    };
+    const res = await fetch(`${API}/operations`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (res.ok) { closeOpModal(); loadDashboard(); }
+    else { const e = await res.json(); alert(e.message||'Error al crear operación'); }
+  }
+
+  const ALERT_TYPE_BASIC = {
+    CONTRACT_EXPIRING: 'Contrato próximo a vencer',
+    PROPERTY_NO_VISITS: 'Inmueble sin visitas recientes',
+    HIGH_DEMAND: 'Inmueble con alta demanda',
+    PENDING_VISIT_CONFIRMATION: 'Visita pendiente de confirmación',
+    RESERVE_NO_CLOSURE: 'Reserva sin cierre',
+    INACTIVE_CLIENT: 'Cliente inactivo'
+  };
+
+  loadDashboard();
+</script>
+</body>
+</html>
