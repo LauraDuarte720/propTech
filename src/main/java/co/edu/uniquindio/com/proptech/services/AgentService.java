@@ -88,6 +88,17 @@ public class AgentService {
         if (agent.hasVisits()) {
             throw new AgentHasPendingVisitsException(cedula);
         }
+        if (agent.hasSupportRequests()) {
+            throw new AgentHasPendingSupportRequestsException(cedula);
+        }
+
+        ArrayList<Property> properties = new ArrayList<>();
+        for (Property property : agent.getAssignedProperties()) {
+            properties.add(property);
+        }
+        for (int i = 0; i < properties.size(); i++) {
+            propertyAssignmentService.removeAgentFromProperty(properties.get(i).getCode(), cedula);
+        }
 
         agentRepository.deleteByCedula(cedula);
     }
