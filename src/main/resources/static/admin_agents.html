@@ -325,23 +325,23 @@
       const pct = Math.round(((a.closedDeals||0)/maxDeals)*100);
       const zone = a.assignedZone;
       const zoneLabel = zone ? [label(CITY,zone.city),label(ZONE,zone.zone),zone.nameNeighborhood].filter(Boolean).join(' / ') : '—';
-      return `<tr>
-        <td><div class="td-agent">
-          <div class="agent-initials" style="background:${colors[ci]};color:${tcolors[ci]}">${initials}</div>
+      return `<tr>ials" style="background:${colors[ci]};color:${tcolors[ci]}">${initials}</div>
           <span style="font-weight:500">${a.name}</span>
         </div></td>
         <td style="color:var(--text-muted)">${a.cedula}</td>
-        <td style="color:var(--text-muted)">${a.contact||'—'}</td>
+        <td style="color:var(--text-muted)">${a.contact || '—'}</td>
         <td style="color:var(--text-muted)">${zoneLabel}</td>
         <td>
-          <div>${a.closedDeals||0}</div>
+          <div>${a.closedDeals || 0}</div>
           <div class="deals-bar"><div class="deals-fill" style="width:${pct}%"></div></div>
         </td>
         <td><div class="td-actions">
           <button class="btn btn-sm btn-ghost" onclick="openDetail('${a.cedula}')">Ver detalle</button>
           <button class="btn btn-sm btn-danger" onclick="deleteAgent('${a.cedula}')">Eliminar</button>
         </div></td>
-      </tr>`;
+      </tr>\`;
+        <td><div class="td-agent">
+          <div class="agent-init
     }).join('');
   }
 
