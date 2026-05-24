@@ -22,13 +22,15 @@ public class OperationService {
 
     private final AgentService agentService;
     private final ClientService clientService;
-    OperationRepository operationRepository;
+    private final PropertyService propertyService;
+    private final OperationRepository operationRepository;
 
     public OperationService(OperationRepository operationRepository, AgentMapper agentMapper,
-                            AgentService agentService, ClientService clientService) {
+                            AgentService agentService, ClientService clientService, PropertyService propertyService) {
         this.operationRepository = operationRepository;
         this.agentService = agentService;
         this.clientService = clientService;
+        this.propertyService = propertyService;
     }
 
     public Operation registerOperation(Operation operation) {
@@ -98,9 +100,9 @@ public class OperationService {
 
     private void applyPropertyStatus(OperationType type, Property property) {
         switch (type) {
-            case RENT, CONTRACT_RENEWAL -> property.setStatus(PropertyStatus.RENTED);
-            case SALE -> property.setStatus(PropertyStatus.SOLD);
-            case DEAL_CANCELLATION -> property.setStatus(PropertyStatus.ACTIVE);
+            case RENT, CONTRACT_RENEWAL -> propertyService.changePropertyState(property, PropertyStatus.RENTED);
+            case SALE -> propertyService.changePropertyState(property, PropertyStatus.SOLD);
+            case DEAL_CANCELLATION -> propertyService.changePropertyState(property, PropertyStatus.ACTIVE);
         }
     }
 

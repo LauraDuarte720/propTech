@@ -11,6 +11,7 @@ import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.graph.Graph;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import co.edu.uniquindio.com.proptech.structures.stack.Stack;
+import jakarta.annotation.PostConstruct;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ public class PropTech {
     public PropTech(String NIT) {
         this.NIT = NIT;
     }
+
     private String NIT;
     private HashTable<String, Property> properties = new HashTable<>();
     private HashTable<String, Client> clients = new HashTable<>();
@@ -48,4 +50,17 @@ public class PropTech {
     private Graph<GeographicZone> zoneGraph = new Graph<>();
     private Stack<AdminActionLog> adminUndoHistory = new Stack<>();
     private Queue<AdminActionLog> adminActionHistory = new Queue<>();
+
+    @PostConstruct
+    public void initBuckets() {
+        for (PropertyStatus status : PropertyStatus.values()) {
+            propertiesByStatus.put(status, new ArrayList<>());
+        }
+        for (PropertyType type : PropertyType.values()) {
+            propertiesByType.put(type, new ArrayList<>());
+        }
+        for (City city : City.values()) {
+            propertiesByCity.put(city, new ArrayList<>());
+        }
+    }
 }
