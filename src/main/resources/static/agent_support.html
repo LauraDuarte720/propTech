@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech — Solicitudes de soporte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="/proptech_utils.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.12);--text-muted:#8A90A0;--sidebar-w:220px;--bg:#F5F6FA;--text:#1a1d2e;}
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+    .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-icon svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:16px;font-weight:600;color:white;}
+    .sidebar-section{padding:16px 12px 8px;}
+    .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:0 8px;margin-bottom:6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+    .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+    .nav-item.active{background:rgba(74,111,227,0.25);color:white;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid rgba(255,255,255,0.08);}
+    .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
+    .user-card:hover{background:rgba(255,255,255,0.06);}
+    .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;}
+    .user-name{font-size:13px;font-weight:500;color:white;}
+    .user-role{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-size:18px;font-weight:500;}
+    .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
+    .btn-primary{background:var(--accent);color:white;}
+    .btn-primary:hover{background:var(--accent-light);}
+    .btn-ghost{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+    .btn-ghost:hover{background:#eef0f8;}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .btn-success{background:rgba(29,158,117,0.1);color:#1D9E75;border:1px solid rgba(29,158,117,0.2);}
+    .btn-success:hover{background:rgba(29,158,117,0.2);}
+    .btn-danger{background:rgba(226,75,74,0.1);color:#E24B4A;border:1px solid rgba(226,75,74,0.2);}
+    .btn-danger:hover{background:rgba(226,75,74,0.2);}
+    .btn svg{width:14px;height:14px;}
+    .content{flex:1;overflow-y:auto;padding:28px;}
+
+    /* Queue banner */
+    .queue-banner{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+    .queue-left{display:flex;align-items:center;gap:14px;}
+    .queue-icon{width:40px;height:40px;border-radius:10px;background:rgba(74,111,227,0.1);display:flex;align-items:center;justify-content:center;}
+    .queue-icon svg{width:20px;height:20px;color:var(--accent);}
+    .queue-title{font-size:14px;font-weight:500;}
+    .queue-sub{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-top:2px;}
+    .next-card{background:rgba(74,111,227,0.04);border:1px solid rgba(74,111,227,0.15);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:none;}
+    .next-card.visible{display:block;}
+    .next-card-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+    .next-card-msg{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
+    .next-card-meta{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+    .next-card-actions{display:flex;gap:8px;margin-top:12px;}
+
+    /* Tabs */
+    .tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;}
+    .tab{padding:7px 18px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--text-muted);transition:all 0.15s;border:none;background:none;}
+    .tab.active{background:var(--accent);color:white;font-weight:500;}
+
+    /* Cards grid */
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+    .req-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.15s;}
+    .req-card:hover{box-shadow:0 2px 12px rgba(74,111,227,0.08);}
+    .req-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+    .req-client{font-size:13px;font-weight:500;color:var(--text);}
+    .req-prop{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+    .b-PENDING{background:rgba(74,111,227,0.1);color:var(--accent);}
+    .b-ATTENDED{background:rgba(29,158,117,0.1);color:#1D9E75;}
+    .b-CANCELLED{background:rgba(88,94,99,0.1);color:var(--text-muted);}
+    .req-msg{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:12px;padding:10px;background:var(--bg);border-radius:8px;}
+    .req-actions{display:flex;gap:6px;}
+
+    /* Empty */
+    .empty{text-align:center;padding:60px;color:var(--text-muted);}
+    .empty-icon{font-size:40px;margin-bottom:10px;}
+    .empty-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px;}
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Mi gestión</div>
+      <a href="agent_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="agent_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Mis inmuebles</a>
+      <a href="agent_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas</a>
+      <a href="agent_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
+      <a href="agent_support.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar" id="av">AS</div>
+        <div><div class="user-name" id="uname">Asesor</div><div class="user-role">Asesor · Cerrar sesión</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Solicitudes de soporte</span>
+      <button class="btn btn-primary" onclick="attendNext()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        Atender siguiente
+      </button>
+    </div>
+
+    <div class="content">
+      <!-- Queue status -->
+      <div class="queue-banner">
+        <div class="queue-left">
+          <div class="queue-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div>
+            <div class="queue-title">Cola de solicitudes pendientes</div>
+            <div class="queue-sub">Se atienden en orden de llegada (FIFO)</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:600;color:var(--accent)" id="q-count">—</div>
+          <div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted)">pendientes</div>
+        </div>
+      </div>
+
+      <!-- Next request preview -->
+      <div class="next-card" id="next-card">
+        <div class="next-card-label">Siguiente en cola</div>
+        <div class="next-card-msg" id="next-msg">—</div>
+        <div class="next-card-meta" id="next-meta">—</div>
+        <div class="next-card-actions">
+          <button class="btn btn-success btn-sm" onclick="attendNext()">✓ Atender ahora</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="filterTab('all',this)">Todas</button>
+        <button class="tab" onclick="filterTab('PENDING',this)">Pendientes</button>
+        <button class="tab" onclick="filterTab('ATTENDED',this)">Atendidas</button>
+        <button class="tab" onclick="filterTab('CANCELLED',this)">Canceladas</button>
+      </div>
+
+      <div class="cards-grid" id="reqs-grid">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  if (user.name) {
+    document.getElementById('uname').textContent = user.name;
+    document.getElementById('av').textContent = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  }
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  let allReqs = [];
+  let currentTab = 'all';
+
+  const STATUS_LABEL = { PENDING:'Pendiente', ATTENDED:'Atendida', CANCELLED:'Cancelada' };
+
+  async function load() {
+    // Peek next
+    const nextRes = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(()=>null);
+    if (nextRes && nextRes.ok) {
+      const next = await nextRes.json();
+      if (next && next.id) {
+        document.getElementById('next-card').classList.add('visible');
+        document.getElementById('next-msg').textContent = next.message || '—';
+        document.getElementById('next-meta').textContent = `${next.client?.name||'—'} · ${next.property?.address||'—'}`;
+      }
+    }
+
+    // History
+    const histRes = await fetch(`${API}/agents/${user.cedula}/support-requests/history`).catch(()=>null);
+    const pendingCount = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(()=>null);
+
+    // Build list from history + estimate pending
+    let reqs = [];
+    if (histRes && histRes.ok) {
+      reqs = await histRes.json();
+    }
+    allReqs = reqs;
+    const pending = reqs.filter(r=>r.status==='PENDING').length;
+    document.getElementById('q-count').textContent = pending;
+    renderReqs(filterReqs(currentTab));
+  }
+
+  function filterReqs(tab) {
+    if (tab==='all') return allReqs;
+    return allReqs.filter(r=>r.status===tab);
+  }
+
+  function filterTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    renderReqs(filterReqs(tab));
+  }
+
+  function renderReqs(reqs) {
+    const grid = document.getElementById('reqs-grid');
+    if (!reqs.length) {
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><div class="empty-title">Sin solicitudes</div></div>`;
+      return;
+    }
+    grid.innerHTML = reqs.map(r => `
+      <div class="req-card">
+        <div class="req-card-header">
+          <div>
+            <div class="req-client">${r.client?.name||'Cliente'}</div>
+            <div class="req-prop">${r.property?.address||'—'}</div>
+          </div>
+          <span class="badge b-${r.status}">${STATUS_LABEL[r.status]||r.status}</span>
+        </div>
+        <div class="req-msg">${r.message||'—'}</div>
+        <div class="req-actions">
+          ${r.status==='PENDING' ? `
+            <button class="btn btn-sm btn-success" onclick="attendNext()">Atender</button>
+            <button class="btn btn-sm btn-danger" onclick="cancelReq('${r.id}')">Cancelar</button>
+          ` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  async function attendNext() {
+    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/attend`, { method:'POST' });
+    if (res.ok) {
+      document.getElementById('next-card').classList.remove('visible');
+      load();
+    } else {
+      const e = await res.json();
+      alert(e.message || 'No hay solicitudes pendientes');
+    }
+  }
+
+  async function cancelReq(id) {
+    if (!confirm('¿Cancelar esta solicitud?')) return;
+    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/${id}/cancel`, { method:'PATCH' });
+    if (res.ok) load();
+    else { const e = await res.json(); alert(e.message||'Error'); }
+  }
+
+  load();
+</script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropTech — Mis Inmuebles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="/proptech_utils.js"></script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.12);--text-muted:#8A90A0;--sidebar-w:220px;--bg:#F5F6FA;--text:#1a1d2e;}
+        html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
+        .app{display:flex;height:100vh;overflow:hidden;}
+        .sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;}
+        .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+        .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+        .logo-icon svg{width:18px;height:18px;fill:white;}
+        .logo-name{font-size:16px;font-weight:600;color:white;}
+        .sidebar-section{padding:16px 12px 8px;}
+        .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:0 8px;margin-bottom:6px;}
+        .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+        .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+        .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+        .nav-item.active{background:rgba(74,111,227,0.25);color:white;font-weight:500;}
+        .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid rgba(255,255,255,0.08);}
+        .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
+        .user-card:hover{background:rgba(255,255,255,0.06);}
+        .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;}
+        .user-name{font-size:13px;font-weight:500;color:white;}
+        .user-role{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);}
+        .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+        .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+        .page-title{font-size:18px;font-weight:500;}
+        .topbar-right{display:flex;align-items:center;gap:10px;}
+        .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
+        .btn-ghost{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+        .btn-ghost:hover{background:#eef0f8;}
+        .btn svg{width:14px;height:14px;}
+        .content{flex:1;overflow-y:auto;padding:28px;}
+
+        /* Filters */
+        .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+        .search-box{flex:1;min-width:200px;position:relative;}
+        .search-box input{width:100%;padding:9px 14px 9px 36px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border 0.15s;}
+        .search-box input:focus{border-color:var(--accent);}
+        .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
+        select{padding:9px 14px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+
+        /* Property cards grid */
+        .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+        .prop-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;}
+        .prop-card:hover{box-shadow:0 4px 20px rgba(74,111,227,0.1);border-color:rgba(74,111,227,0.25);}
+        .prop-card-header{padding:16px 16px 12px;border-bottom:1px solid var(--border);}
+        .prop-card-type{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+        .prop-card-addr{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
+        .prop-card-barrio{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+        .prop-card-body{padding:12px 16px;}
+        .prop-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+        .prop-stat{text-align:center;}
+        .prop-stat-val{font-size:14px;font-weight:600;color:var(--text);}
+        .prop-stat-label{font-family:'Jost',sans-serif;font-size:10px;color:var(--text-muted);margin-top:2px;}
+        .prop-price{font-size:16px;font-weight:600;color:var(--accent);margin-bottom:12px;}
+        .prop-status{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+        .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+        .s-ACTIVE{background:rgba(29,158,117,0.1);color:#1D9E75;}
+        .s-NEW{background:rgba(74,111,227,0.1);color:var(--accent);}
+        .s-RESERVED{background:rgba(239,159,39,0.1);color:#EF9F27;}
+        .s-SOLD{background:rgba(88,94,99,0.1);color:var(--text-muted);}
+        .s-INACTIVE{background:rgba(0,0,0,0.05);color:var(--text-muted);}
+        .s-RENTED{background:rgba(107,138,255,0.1);color:#6B8AFF;}
+        .prop-purpose{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+        .prop-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        .prop-btn{padding:8px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px;}
+        .prop-btn svg{width:13px;height:13px;}
+        .prop-btn-visit{background:rgba(74,111,227,0.08);color:var(--accent);}
+        .prop-btn-visit:hover{background:rgba(74,111,227,0.15);}
+        .prop-btn-op{background:rgba(29,158,117,0.08);color:#1D9E75;}
+        .prop-btn-op:hover{background:rgba(29,158,117,0.15);}
+
+        /* Empty state */
+        .empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
+        .empty-icon{font-size:48px;margin-bottom:12px;}
+        .empty-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;}
+        .empty-sub{font-size:13px;}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:white;border-radius:16px;padding:28px;width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:fadeUp 0.2s ease;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .modal-title{font-size:16px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+        .modal-title button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+        .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+        .form-group label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
+        .form-group input,.form-group select{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;}
+        .form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+        .form-group input:disabled{opacity:0.6;}
+        .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+        .btn-primary{background:var(--accent);color:white;}
+        .btn-primary:hover{background:var(--accent-light);}
+    </style>
+</head>
+<body>
+<div class="app">
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+            <span class="logo-name">PropTech</span>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Mi gestión</div>
+            <a href="agent_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+            <a href="agent_properties.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Mis inmuebles</a>
+            <a href="agent_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas</a>
+            <a href="agent_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
+            <a href="agent_support.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes</a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-card" onclick="logout()">
+                <div class="avatar" id="av">AS</div>
+                <div><div class="user-name" id="uname">Asesor</div><div class="user-role">Asesor · Cerrar sesión</div></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main">
+        <div class="topbar">
+            <span class="page-title">Mis inmuebles</span>
+            <div class="topbar-right">
+                <div class="search-box" style="width:240px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    <input type="text" placeholder="Buscar por dirección..." oninput="filterProps(this.value)">
+                </div>
+                <select onchange="filterByStatus(this.value)">
+                    <option value="">Todos los estados</option>
+                    <option value="ACTIVE">Activo</option>
+                    <option value="NEW">Nuevo</option>
+                    <option value="RESERVED">Reservado</option>
+                    <option value="RENTED">Arrendado</option>
+                    <option value="SOLD">Vendido</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="props-grid" id="props-grid">
+                <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal visita -->
+<div class="modal-overlay" id="modal-visit">
+    <div class="modal">
+        <div class="modal-title">Agendar visita <button onclick="closeVisit()">×</button></div>
+        <div class="form-group">
+            <label>Inmueble</label>
+            <input type="text" id="v-label" disabled>
+            <input type="hidden" id="v-code">
+        </div>
+        <div class="form-group">
+            <label>Cliente</label>
+            <select id="v-client"></select>
+        </div>
+        <div class="form-group">
+            <label>Fecha y hora</label>
+            <input type="datetime-local" id="v-date">
+        </div>
+        <div class="form-group">
+            <label>Tipo</label>
+            <select id="v-type">
+                <option value="NORMAL">Normal</option>
+                <option value="VIP">VIP</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeVisit()">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveVisit()">Agendar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal operación -->
+<div class="modal-overlay" id="modal-op">
+    <div class="modal">
+        <div class="modal-title">Nueva operación <button onclick="closeOp()">×</button></div>
+        <div class="form-group">
+            <label>Inmueble</label>
+            <input type="text" id="op-label" disabled>
+            <input type="hidden" id="op-code">
+        </div>
+        <div class="form-group">
+            <label>Cliente</label>
+            <select id="op-client"></select>
+        </div>
+        <div class="form-group">
+            <label>Tipo de operación</label>
+            <select id="op-type">
+                <option value="SALE">Venta (comisión 3%)</option>
+                <option value="RENT">Arriendo (comisión 8%)</option>
+                <option value="CONTRACT_RENEWAL">Renovación de contrato</option>
+                <option value="DEAL_CANCELLATION">Cancelación de trato</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Fecha inicio</label>
+            <input type="date" id="op-init">
+        </div>
+        <div class="form-group">
+            <label>Fecha fin</label>
+            <input type="date" id="op-end">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeOp()">Cancelar</button>
+            <button class="btn btn-primary" onclick="saveOp()">Crear operación</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = 'http://localhost:8080';
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    if (!user.role) window.location.href = 'proptech_login.html';
+    if (user.name) {
+        document.getElementById('uname').textContent = user.name;
+        document.getElementById('av').textContent = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    }
+    function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+    let allProps = [];
+    let allClients = [];
+
+    async function load() {
+        const [propsRes, clientsRes] = await Promise.all([
+            fetch(`${API}/properties`),
+            fetch(`${API}/clients`)
+        ]);
+        if (propsRes.ok) {
+            const all = await propsRes.json();
+            allProps = all.filter(p => p.agent?.cedula === user.cedula);
+            renderProps(allProps);
+        }
+        if (clientsRes.ok) {
+            allClients = await clientsRes.json();
+            const opts = allClients.map(c=>`<option value="${c.cedula}">${c.name} (${c.cedula})</option>`).join('');
+            document.getElementById('v-client').innerHTML = opts;
+            document.getElementById('op-client').innerHTML = opts;
+        }
+    }
+
+    function renderProps(props) {
+        const grid = document.getElementById('props-grid');
+        if (!props.length) {
+            grid.innerHTML = `<div class="empty"><div class="empty-icon">🏠</div><div class="empty-title">Sin inmuebles asignados</div><div class="empty-sub">El administrador aún no te ha asignado inmuebles</div></div>`;
+            return;
+        }
+        grid.innerHTML = props.map(p => `
+      <div class="prop-card">
+        <div class="prop-card-header">
+          <div class="prop-card-type">${label(PROPERTY_TYPE, p.propertyType)}</div>
+          <div class="prop-card-addr">${p.address || p.code}</div>
+          <div class="prop-card-barrio">${p.neighborhood?.name||'—'} · ${p.neighborhood?.city||'—'}</div>
+        </div>
+        <div class="prop-card-body">
+          <div class="prop-stats">
+            <div class="prop-stat">
+              <div class="prop-stat-val">${p.numBedrooms||'—'}</div>
+              <div class="prop-stat-label">Habitaciones</div>
+            </div>
+            <div class="prop-stat">
+              <div class="prop-stat-val">${p.numBathrooms||'—'}</div>
+              <div class="prop-stat-label">Baños</div>
+            </div>
+            <div class="prop-stat">
+              <div class="prop-stat-val">${p.area||'—'}</div>
+              <div class="prop-stat-label">m²</div>
+            </div>
+          </div>
+          <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
+          <div class="prop-status">
+            <span class="badge s-${p.status}">${label(PROPERTY_STATUS, p.status)}</span>
+            <span class="prop-purpose">${label(PROPERTY_PURPOSE, p.purpose)}</span>
+          </div>
+          <div class="prop-actions">
+            <button class="prop-btn prop-btn-visit" onclick="openVisit('${p.code}','${p.address||p.code}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              Agendar visita
+            </button>
+            <button class="prop-btn prop-btn-op" onclick="openOp('${p.code}','${p.address||p.code}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>
+              Nueva operación
+            </button>
+          </div>
+        </div>
+      </div>`).join('');
+    }
+
+    function filterProps(q) {
+        renderProps(allProps.filter(p => (p.address||'').toLowerCase().includes(q.toLowerCase()) || (p.code||'').toLowerCase().includes(q.toLowerCase())));
+    }
+
+    function filterByStatus(s) {
+        renderProps(s ? allProps.filter(p=>p.status===s) : allProps);
+    }
+
+    function openVisit(code, lbl) {
+        document.getElementById('v-code').value = code;
+        document.getElementById('v-label').value = lbl;
+        document.getElementById('modal-visit').classList.add('open');
+    }
+    function closeVisit() { document.getElementById('modal-visit').classList.remove('open'); }
+
+    async function saveVisit() {
+        const body = { propertyId: document.getElementById('v-code').value, clientId: document.getElementById('v-client').value, agentId: user.cedula, date: document.getElementById('v-date').value, visitType: document.getElementById('v-type').value };
+        const res = await fetch(`${API}/visits`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        if (res.ok) { closeVisit(); alert('Visita agendada exitosamente'); }
+        else { const e = await res.json(); alert(e.message||'Error al agendar'); }
+    }
+
+    function openOp(code, lbl) {
+        document.getElementById('op-code').value = code;
+        document.getElementById('op-label').value = lbl;
+        document.getElementById('modal-op').classList.add('open');
+    }
+    function closeOp() { document.getElementById('modal-op').classList.remove('open'); }
+
+    async function saveOp() {
+        const body = { propertyId: document.getElementById('op-code').value, clientId: document.getElementById('op-client').value, agentId: user.cedula, operationType: document.getElementById('op-type').value, dateInitial: document.getElementById('op-init').value, dateFinal: document.getElementById('op-end').value };
+        const res = await fetch(`${API}/operations`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        if (res.ok) { closeOp(); alert('Operación creada exitosamente'); }
+        else { const e = await res.json(); alert(e.message||'Error'); }
+    }
+
+    load();
+</script>
+</body>
+</html>

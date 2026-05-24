@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech — Operaciones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="/proptech_utils.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.12);--text-muted:#8A90A0;--sidebar-w:220px;--bg:#F5F6FA;--text:#1a1d2e;}
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.08);}
+    .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-icon svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:16px;font-weight:600;color:white;}
+    .sidebar-section{padding:16px 12px 8px;}
+    .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:0 8px;margin-bottom:6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+    .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+    .nav-item.active{background:rgba(74,111,227,0.25);color:white;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid rgba(255,255,255,0.08);}
+    .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
+    .user-card:hover{background:rgba(255,255,255,0.06);}
+    .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0;}
+    .user-name{font-size:13px;font-weight:500;color:white;}
+    .user-role{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-size:18px;font-weight:500;}
+    .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
+    .btn-primary{background:var(--accent);color:white;}
+    .btn-primary:hover{background:var(--accent-light);}
+    .btn-ghost{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+    .btn-ghost:hover{background:#eef0f8;}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .btn-success{background:rgba(29,158,117,0.1);color:#1D9E75;border:1px solid rgba(29,158,117,0.2);}
+    .btn-danger{background:rgba(226,75,74,0.1);color:#E24B4A;border:1px solid rgba(226,75,74,0.2);}
+    .btn svg{width:14px;height:14px;}
+    .content{flex:1;overflow-y:auto;padding:28px;}
+
+    /* Summary */
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+    .sum-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px;}
+    .sum-val{font-size:24px;font-weight:600;color:var(--text);margin-bottom:4px;}
+    .sum-label{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+    .sum-comm{font-size:20px;font-weight:600;color:var(--accent);}
+
+    /* Tabs */
+    .tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;}
+    .tab{padding:7px 18px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--text-muted);transition:all 0.15s;border:none;background:none;}
+    .tab.active{background:var(--accent);color:white;font-weight:500;}
+
+    /* Table */
+    .table-wrap{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
+    td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(74,111,227,0.02);}
+    .td-actions{display:flex;gap:6px;}
+    .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;display:inline-block;}
+    .b-CREATED{background:rgba(74,111,227,0.1);color:var(--accent);}
+    .b-CLOSED{background:rgba(29,158,117,0.1);color:#1D9E75;}
+    .b-CANCELLED{background:rgba(88,94,99,0.1);color:var(--text-muted);}
+
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:16px;padding:28px;width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:fadeUp 0.2s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .modal-title{font-size:16px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+    .modal-title button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+    .form-group label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
+    .form-group select,.form-group input{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;}
+    .form-group select:focus{border-color:var(--accent);}
+    .form-group input:disabled{opacity:0.6;}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+    /* Commission highlight */
+    .comm-highlight{background:rgba(74,111,227,0.06);border-radius:8px;padding:10px 14px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;}
+    .comm-highlight-label{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+    .comm-highlight-val{font-size:14px;font-weight:600;color:var(--accent);}
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Mi gestión</div>
+      <a href="agent_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="agent_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Mis inmuebles</a>
+      <a href="agent_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas</a>
+      <a href="agent_operations.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
+      <a href="agent_support.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar" id="av">AS</div>
+        <div><div class="user-name" id="uname">Asesor</div><div class="user-role">Asesor · Cerrar sesión</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Operaciones</span>
+      <select onchange="filterByStatus(this.value)">
+        <option value="">Todos los estados</option>
+        <option value="CREATED">Creadas</option>
+        <option value="CLOSED">Cerradas</option>
+        <option value="CANCELLED">Canceladas</option>
+      </select>
+    </div>
+
+    <div class="content">
+      <div class="summary">
+        <div class="sum-card">
+          <div class="sum-val" id="s-total">—</div>
+          <div class="sum-label">Total operaciones</div>
+        </div>
+        <div class="sum-card">
+          <div class="sum-val" id="s-closed">—</div>
+          <div class="sum-label">Operaciones cerradas</div>
+        </div>
+        <div class="sum-card">
+          <div class="sum-comm" id="s-comm">$0</div>
+          <div class="sum-label">Comisiones ganadas</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Inmueble</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Comisión</th><th>Estado</th><th>Acciones</th>
+          </tr></thead>
+          <tbody id="ops-tbody">
+          <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal cambiar estado -->
+<div class="modal-overlay" id="modal-status">
+  <div class="modal">
+    <div class="modal-title">Actualizar operación <button onclick="closeStatus()">×</button></div>
+    <input type="hidden" id="op-id">
+    <div class="form-group">
+      <label>Inmueble</label>
+      <input type="text" id="op-label" disabled>
+    </div>
+    <div class="form-group">
+      <label>Nuevo estado</label>
+      <select id="new-status">
+        <option value="CLOSED">Cerrar operación</option>
+        <option value="CANCELLED">Cancelar operación</option>
+      </select>
+    </div>
+    <div class="comm-highlight">
+      <span class="comm-highlight-label">Comisión de esta operación</span>
+      <span class="comm-highlight-val" id="op-comm-preview">$0</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeStatus()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveStatus()">Guardar cambio</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  if (user.name) {
+    document.getElementById('uname').textContent = user.name;
+    document.getElementById('av').textContent = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  }
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  let allOps = [];
+
+  async function load() {
+    const [opsRes, commRes] = await Promise.all([
+      fetch(`${API}/operations/agent/${user.cedula}`),
+      fetch(`${API}/operations/agent/${user.cedula}/commission`)
+    ]);
+    if (opsRes.ok) {
+      allOps = await opsRes.json();
+      const closed = allOps.filter(o=>o.processStatus==='CLOSED');
+      document.getElementById('s-total').textContent = allOps.length;
+      document.getElementById('s-closed').textContent = closed.length;
+      renderOps(allOps);
+    }
+    if (commRes.ok) {
+      const comm = await commRes.json();
+      document.getElementById('s-comm').textContent = '$' + Number(comm).toLocaleString();
+    }
+  }
+
+  function renderOps(ops) {
+    const tbody = document.getElementById('ops-tbody');
+    if (!ops.length) { tbody.innerHTML='<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Sin operaciones</td></tr>'; return; }
+    tbody.innerHTML = ops.map(o => {
+      const canChange = o.processStatus === 'CREATED';
+      return `<tr>
+        <td style="font-weight:500">${o.property?.address||o.property?.code||'—'}</td>
+        <td style="color:var(--text-muted)">${o.client?.name||'—'}</td>
+        <td>${label(OPERATION_TYPE, o.operationType)}</td>
+        <td>$${Number(o.value||o.property?.price||0).toLocaleString()}</td>
+        <td style="color:var(--accent);font-weight:500">$${Number(o.commission||0).toLocaleString()}</td>
+        <td><span class="badge b-${o.processStatus}">${label(PROCESS_STATUS, o.processStatus)}</span></td>
+        <td><div class="td-actions">
+          ${canChange ? `<button class="btn btn-sm btn-success" onclick="openStatus('${o.id}','${o.property?.address||o.property?.code||'—'}',${o.commission||0})">Cambiar estado</button>` : '—'}
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filterByStatus(s) {
+    renderOps(s ? allOps.filter(o=>o.processStatus===s) : allOps);
+  }
+
+  function openStatus(id, lbl, comm) {
+    document.getElementById('op-id').value = id;
+    document.getElementById('op-label').value = lbl;
+    document.getElementById('op-comm-preview').textContent = '$' + Number(comm).toLocaleString();
+    document.getElementById('modal-status').classList.add('open');
+  }
+  function closeStatus() { document.getElementById('modal-status').classList.remove('open'); }
+
+  async function saveStatus() {
+    const id = document.getElementById('op-id').value;
+    const status = document.getElementById('new-status').value;
+    const res = await fetch(`${API}/operations/${id}`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id, processStatus: status })
+    });
+    if (res.ok) { closeStatus(); load(); }
+    else { const e = await res.json(); alert(e.message||'Error'); }
+  }
+
+  load();
+</script>
+</body>
+</html>
