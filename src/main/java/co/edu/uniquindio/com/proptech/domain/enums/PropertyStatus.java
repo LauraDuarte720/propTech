@@ -35,7 +35,7 @@ public enum PropertyStatus {
         throw new IllegalArgumentException("Unknown PropertyType: " + value);
     }
 
-    @JsonValue           // 👈 agrega esto
+    @JsonValue
     public String getKey() {
         return this.name();
     }
