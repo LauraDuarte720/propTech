@@ -22,17 +22,22 @@ public class AgentController {
     private final MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper;
     private final MapperCreate<SupportRequest, SupportRequestDtoCreate, SupportRequestDtoReturn> supportRequestMapper;
     private final StructuresMappers structuresMappers;
+    private final MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper;
+    private final MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper;
+
 
     public AgentController(AgentService agentService,
                            MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper,
                            MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper,
                            MapperCreate<SupportRequest, SupportRequestDtoCreate, SupportRequestDtoReturn> supportRequestMapper,
-                           StructuresMappers structuresMappers) {
+                           StructuresMappers structuresMappers, MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper) {
         this.agentService = agentService;
         this.agentMapper = agentMapper;
         this.visitMapper = visitMapper;
         this.supportRequestMapper = supportRequestMapper;
         this.structuresMappers = structuresMappers;
+        this.geographicZoneMapper = geographicZoneMapper;
+        this.propertyMapper = propertyMapper;
     }
 
     // ══════════════════════════════════════════════
@@ -178,5 +183,23 @@ public class AgentController {
                         agentMapper::toDto
                 )
         );
+    }
+
+    @GetMapping("/{cedula}/properties")
+    public ResponseEntity<List<PropertyDtoReturn>> getAgentProperties(@PathVariable String cedula) {
+        Agent agent = agentService.getAgentByCedula(cedula);
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(agent.getAssignedProperties(), propertyMapper::toDto)
+        );
+    }
+
+    @PatchMapping("/{cedula}/zone")
+    public ResponseEntity<AgentDtoReturn> updateAgentZone(
+            @PathVariable String cedula,
+            @RequestParam(defaultValue = "false") boolean confirm,
+            @Validated @RequestBody GeographicZoneDtoCreate dto) {
+        GeographicZone zone = geographicZoneMapper.toEntity(dto);
+        Agent updated = agentService.updateAgentZone(cedula, zone, confirm);
+        return ResponseEntity.ok(agentMapper.toDto(updated));
     }
 }

@@ -32,8 +32,9 @@ public class AgentService {
     ZoneMatcher zoneMatcher;
     StructuresMappers structuresMappers;
     AdminActionService  adminActionService;
+    GeographicZoneService geographicZoneService;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers, AdminActionService adminActionService) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers, AdminActionService adminActionService, GeographicZoneService geographicZoneService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
@@ -41,6 +42,7 @@ public class AgentService {
         this.zoneMatcher = zoneMatcher;
         this.structuresMappers = structuresMappers;
         this.adminActionService = adminActionService;
+        this.geographicZoneService = geographicZoneService;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -124,6 +126,13 @@ public class AgentService {
             }
         }
         return incompatibles;
+    }
+
+    public Agent updateAgentZone(String cedula, GeographicZone newZone, boolean confirm) {
+        Agent agent = getAgentByCedula(cedula);
+        GeographicZone resolved = geographicZoneService.findOrCreate(newZone);
+        updateGeographicZone(resolved, agent, confirm);
+        return getAgentByCedula(cedula);
     }
 
     public void updateGeographicZone(GeographicZone newGeographicZone, Agent agent, boolean confirm) {
