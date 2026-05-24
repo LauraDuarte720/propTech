@@ -143,7 +143,7 @@ public class DataLoader {
                 .cedula("1094000005")
                 .name("Juliana Perez")
                 .username("juliana.perez")
-                .password("Juliana123")
+                    .password("Juliana123")
                 .contact("+57310111005")
                 .assignedZone(zonaSurArmenia)
                 .closedDeals(6)
@@ -460,6 +460,43 @@ public class DataLoader {
                 .id(op4.getId())
                 .processStatus(ProcessStatus.CLOSED)
                 .build());
+
+        // ─── CONTRACT_EXPIRING ──────────────────────────────────────────────
+        operationService.registerOperation(Operation.builder()
+                .property(prop7)
+                .client(cliente2)
+                .agent(agente2)
+                .operationType(OperationType.CONTRACT_RENEWAL)   // ← tipo necesario
+                .value(2_200_000.0)
+                .dateInitial(LocalDate.now().minusMonths(11))
+                .dateFinal(LocalDate.now().plusDays(15))          // ← vence en 15 días
+                .build());
+
+// ─── RESERVE_NO_CLOSURE ─────────────────────────────────────────────
+        operationService.registerOperation(Operation.builder()
+                .property(prop6)
+                .client(cliente4)
+                .agent(agente1)
+                .operationType(OperationType.SALE)
+                .value(150_000_000.0)
+                .dateInitial(LocalDate.now().minusDays(35))       // ← más de 30 días, sin cerrar
+                .build());
+
+// ─── INACTIVE_CLIENT ────────────────────────────────────────────────
+        Client clienteInactivo = clientService.registerClient(Client.builder()
+                .cedula("1093000099")
+                .name("Juan Inactivo")
+                .username("juan.inactivo")
+                .password("Juan999Ab")
+                .email("juan@email.com")
+                .phone("+57300200099")
+                .budget(200_000_000.0)
+                .minBedrooms(2)
+                .clientType(ClientType.BUYER)
+                .searchStatus(SearchStatus.PAUSED)
+                .desiredPropertyType(PropertyType.APARTMENT)
+                .build());
+// Sin interacciones → lleva "infinito" días inactivo
 
         System.out.println("✅ DataLoader: datos de prueba cargados correctamente.");
 

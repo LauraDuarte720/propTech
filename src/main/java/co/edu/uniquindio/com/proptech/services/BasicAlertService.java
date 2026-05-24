@@ -70,7 +70,7 @@ public class BasicAlertService {
     // ─── Helper para crear y enrutar la alerta ───────────────────────
 
     private BasicAlert buildAndRoute(AlertType type, Operation operation,
-                                     Property property, Visit visit, Client client) {
+                                     Property property, Visit visit, Client client, Agent agent) {
         BasicAlert alert = BasicAlert.builder()
                 .id(CodeGenerator.generateAlertCode(type))
                 .alertType(type)
@@ -80,6 +80,7 @@ public class BasicAlertService {
                 .property(property)
                 .visit(visit)
                 .client(client)
+                .agent(agent)
                 .build();
 
         basicAlertRepository.save(alert);
@@ -109,7 +110,10 @@ public class BasicAlertService {
 
             long days = ChronoUnit.DAYS.between(LocalDate.now(), op.getDateFinal());
             if (days >= 0 && days <= 30) {
-                buildAndRoute(AlertType.CONTRACT_EXPIRING, op, null, null, null);
+                if (!alertaYaExiste(AlertType.CONTRACT_EXPIRING, op.getId())) {
+                    buildAndRoute(AlertType.CONTRACT_EXPIRING, op, op.getProperty(), null, null, op.getAgent());
+                }
+
             }
         }
     }
@@ -135,7 +139,9 @@ public class BasicAlertService {
             }
 
             if (!hasRecentVisit) {
-                buildAndRoute(AlertType.PROPERTY_NO_VISITS, null, property, null, null);
+                if (!alertaYaExiste(AlertType.PROPERTY_NO_VISITS, property.getCode())) {
+                    buildAndRoute(AlertType.PROPERTY_NO_VISITS, null, property, null, null, property.getAgent());
+                }
             }
         }
     }
@@ -158,7 +164,9 @@ public class BasicAlertService {
             }
 
             if (count > 5) {
-                buildAndRoute(AlertType.HIGH_DEMAND, null, property, null, null);
+                if (!alertaYaExiste(AlertType.HIGH_DEMAND, property.getCode())) {
+                    buildAndRoute(AlertType.HIGH_DEMAND, null, property, null, null, property.getAgent());
+                }
             }
         }
     }
@@ -174,8 +182,9 @@ public class BasicAlertService {
                 long hours = ChronoUnit.HOURS.between(
                         visit.getCreatedAt(), LocalDateTime.now());
                 if (hours >= 24) {
-                    buildAndRoute(AlertType.PENDING_VISIT_CONFIRMATION,
-                            null, null, visit, null);
+                    if (!alertaYaExiste(AlertType.PENDING_VISIT_CONFIRMATION, visit.getId())) {
+                        buildAndRoute(AlertType.PENDING_VISIT_CONFIRMATION, null, null, visit, null, visit.getAgent());
+                    }
                 }
             }
         }
@@ -192,7 +201,9 @@ public class BasicAlertService {
                 long days = ChronoUnit.DAYS.between(
                         op.getDateInitial(), LocalDate.now());
                 if (days > 30) {
-                    buildAndRoute(AlertType.RESERVE_NO_CLOSURE, op, null, null, null);
+                    if (!alertaYaExiste(AlertType.RESERVE_NO_CLOSURE, op.getId())) {
+                        buildAndRoute(AlertType.RESERVE_NO_CLOSURE, op, null, null, null, op.getAgent());
+                    }
                 }
             }
         }
@@ -223,7 +234,9 @@ public class BasicAlertService {
             }
 
             if (!hasRecentInteraction) {
-                buildAndRoute(AlertType.INACTIVE_CLIENT, null, null, null, client);
+                if (!alertaYaExiste(AlertType.INACTIVE_CLIENT, client.getCedula())) {
+                    buildAndRoute(AlertType.INACTIVE_CLIENT, null, null, null, client, null);
+                }
             }
         }
     }
@@ -236,6 +249,7 @@ public class BasicAlertService {
         }
         BasicAlert alert = priorityAlerts.poll();
         alert.setReviewed(true);
+        basicAlertRepository.update(alert);
         return alert;
     }
 
@@ -245,6 +259,35 @@ public class BasicAlertService {
         }
         BasicAlert alert = pendingAlerts.dequeue();
         alert.setReviewed(true);
+        basicAlertRepository.update(alert);
         return alert;
+    }
+
+    // ─── Helper para evitar duplicados ──────────────────────────────
+    private boolean alertaYaExiste(AlertType type, String contextId) {
+        ArrayList<BasicAlert> all = basicAlertRepository.getAll();
+        for (int i = 0; i < all.size(); i++) {
+            BasicAlert a = all.get(i);
+            if (a.getAlertType() != type || a.isReviewed()) continue;
+
+            // Comparar por el id del contexto según el tipo
+            switch (type) {
+                case CONTRACT_EXPIRING:
+                case RESERVE_NO_CLOSURE:
+                    if (a.getOperation() != null && a.getOperation().getId().equals(contextId)) return true;
+                    break;
+                case PROPERTY_NO_VISITS:
+                case HIGH_DEMAND:
+                    if (a.getProperty() != null && a.getProperty().getCode().equals(contextId)) return true;
+                    break;
+                case PENDING_VISIT_CONFIRMATION:
+                    if (a.getVisit() != null && a.getVisit().getId().equals(contextId)) return true;
+                    break;
+                case INACTIVE_CLIENT:
+                    if (a.getClient() != null && a.getClient().getCedula().equals(contextId)) return true;
+                    break;
+            }
+        }
+        return false;
     }
 }
