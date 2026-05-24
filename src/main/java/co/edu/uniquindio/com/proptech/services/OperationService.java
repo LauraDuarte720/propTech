@@ -12,6 +12,7 @@ import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.OperationDoe
 import co.edu.uniquindio.com.proptech.repositories.OperationRepository;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+import co.edu.uniquindio.com.proptech.utils.CommissionCalculator;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -34,6 +35,9 @@ public class OperationService {
         validatePurposeMatchesOperation(operation.getOperationType(), operation.getProperty());
         operation.setId(CodeGenerator.generateOperationCode());
         operation.setProcessStatus(ProcessStatus.CREATED);
+        operation.setCommission(
+                CommissionCalculator.calculate(operation.getOperationType(), operation.getProperty().getPrice())
+        );
         applyPropertyStatus(operation.getOperationType(), operation.getProperty());
         return operationRepository.save(operation);
     }
@@ -139,5 +143,18 @@ public class OperationService {
 
     public LinkedList<Operation> getOperationsByProperty(String propertyCode) {
         return operationRepository.getOperationsByProperty(propertyCode);
+    }
+
+    public Double getTotalCommissionsByAgent(String agentId) {
+        Agent agent = agentService.getAgentByCedula(agentId);
+        LinkedList<Operation> ops = operationRepository.getOperationsByAgent(agent);
+        double total = 0;
+        for (int i = 0; i < ops.size(); i++) {
+            Operation op = ops.get(i);
+            if (op.getProcessStatus() == ProcessStatus.CLOSED && op.getCommission() != null) {
+                total += op.getCommission();
+            }
+        }
+        return total;
     }
 }

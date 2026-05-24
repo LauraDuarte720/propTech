@@ -103,4 +103,9 @@ public class OperationController {
                 )
         );
     }
+
+    @GetMapping("/agent/{agentId}/commission")
+    public ResponseEntity<Double> getTotalCommissionsByAgent(@PathVariable String agentId) {
+        return ResponseEntity.ok(operationService.getTotalCommissionsByAgent(agentId));
+    }
 }
