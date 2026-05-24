@@ -22,7 +22,7 @@ public enum ProcessStatus {
         return displayName;
     }
 
-    @JsonValue           // 👈 agrega esto
+    @JsonValue
     public String getKey() {
         return this.name();
     }

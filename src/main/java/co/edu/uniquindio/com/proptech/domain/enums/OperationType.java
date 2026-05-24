@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Enum representing the type of operation.
@@ -20,6 +21,11 @@ public enum OperationType {
     @Override
     public String toString() {
         return displayName;
+    }
+
+    @JsonValue
+    public String getKey() {
+        return this.name();
     }
 
     @JsonCreator
