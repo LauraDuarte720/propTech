@@ -113,4 +113,19 @@ public class PropertyRepositoryImpl implements PropertyRepository {
     public HashTable<PropertyStatus, ArrayList<Property>> getPropertiesByStatus() {
         return propTech.getPropertiesByStatus();
     }
+
+    @Override
+    public ArrayList<Property> getPropertiesByCity(City city){
+        return getPropertiesByCity().get(city);
+    }
+
+    @Override
+    public ArrayList<Property> getPropertiesByType(PropertyType propertyType) {
+        return  getPropertiesByType().get(propertyType);
+    }
+
+    @Override
+    public ArrayList<Property> getPropertiesByStatus(PropertyStatus propertyStatus) {
+        return getPropertiesByStatus().get(propertyStatus);
+    }
 }

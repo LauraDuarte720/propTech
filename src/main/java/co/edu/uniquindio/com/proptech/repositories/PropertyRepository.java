@@ -19,4 +19,7 @@ public interface PropertyRepository {
     HashTable<City, ArrayList<Property>> getPropertiesByCity();
     HashTable<PropertyType, ArrayList<Property>> getPropertiesByType();
     HashTable<PropertyStatus, ArrayList<Property>> getPropertiesByStatus();
+    ArrayList <Property> getPropertiesByCity(City city);
+    ArrayList<Property> getPropertiesByType(PropertyType propertyType);
+    ArrayList<Property> getPropertiesByStatus(PropertyStatus propertyStatus);
 }
