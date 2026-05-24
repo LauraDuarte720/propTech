@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--navy:#131936;--slate:#585E63;--black:#05060F;--white:#FFFFFF;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;}
-    html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:var(--white);}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;}
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:#fff;}
     .app{display:flex;height:100vh;overflow:hidden;}
     .sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
     .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
@@ -20,8 +20,8 @@
     .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:0 8px;margin-bottom:6px;}
     .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
     .nav-item svg{width:17px;height:17px;flex-shrink:0;}
-    .nav-item:hover{background:rgba(255,255,255,0.05);color:var(--white);}
-    .nav-item.active{background:rgba(74,111,227,0.15);color:var(--white);font-weight:500;}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:#fff;}
+    .nav-item.active{background:rgba(74,111,227,0.15);color:#fff;font-weight:500;}
     .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border);}
     .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
     .user-card:hover{background:rgba(255,255,255,0.05);}
@@ -30,20 +30,22 @@
     .user-role{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
     .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(19,25,54,0.4);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-    .page-title{font-size:18px;font-weight:500;letter-spacing:-0.3px;}
+    .page-title{font-size:18px;font-weight:500;}
     .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
     .btn-primary{background:var(--accent);color:white;}
     .btn-primary:hover{background:var(--accent-light);}
-    .btn-ghost{background:rgba(255,255,255,0.06);color:var(--white);border:1px solid var(--border);}
+    .btn-ghost{background:rgba(255,255,255,0.06);color:#fff;border:1px solid var(--border);}
     .btn-ghost:hover{background:rgba(255,255,255,0.1);}
     .btn-sm{padding:5px 12px;font-size:12px;}
     .btn-danger{background:rgba(226,75,74,0.15);color:#FF7B7B;border:1px solid rgba(226,75,74,0.2);}
     .btn-danger:hover{background:rgba(226,75,74,0.25);}
+    .btn-warning{background:rgba(239,159,39,0.15);color:#EF9F27;border:1px solid rgba(239,159,39,0.2);}
+    .btn-warning:hover{background:rgba(239,159,39,0.25);}
     .btn svg{width:14px;height:14px;}
     .content{flex:1;overflow-y:auto;padding:28px;}
     .filters{display:flex;gap:10px;margin-bottom:20px;}
     .search-box{flex:1;position:relative;}
-    .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border 0.15s;}
+    .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
     .search-box input:focus{border-color:var(--accent);}
     .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
     .table-wrap{background:var(--navy);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
@@ -52,10 +54,11 @@
     td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
     tr:last-child td{border-bottom:none;}
     tr:hover td{background:rgba(255,255,255,0.02);}
-    .td-actions{display:flex;gap:6px;}
+    .td-actions{display:flex;gap:6px;flex-wrap:wrap;}
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
-    .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:560px;max-height:85vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
+    .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:560px;max-height:88vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
+    .modal-wide{width:700px;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .modal-title{font-size:17px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
     .modal-title button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;}
@@ -63,7 +66,7 @@
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-group.full{grid-column:1/-1;}
     label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
-    input[type=text],input[type=password],input[type=number],select.form-select{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
+    input[type=text],input[type=password],input[type=number],select.form-select{width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
     input:focus,select.form-select:focus{border-color:var(--accent);}
     select.form-select option{background:var(--navy);}
     select.form-select:disabled{opacity:0.4;cursor:not-allowed;}
@@ -73,6 +76,36 @@
     .deals-bar{width:80px;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;margin-top:4px;}
     .deals-fill{height:4px;border-radius:99px;background:var(--accent);}
     .section-divider{grid-column:1/-1;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding-top:6px;border-top:1px solid var(--border);}
+    /* Detail modal */
+    .detail-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+    .detail-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0;}
+    .detail-name{font-size:18px;font-weight:500;}
+    .detail-meta{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-top:3px;}
+    .detail-tabs{display:flex;gap:4px;margin-bottom:18px;background:rgba(255,255,255,0.04);border-radius:8px;padding:4px;}
+    .tab-btn{flex:1;padding:7px 12px;border:none;background:none;color:var(--text-muted);font-family:'Jost',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border-radius:6px;transition:all 0.15s;}
+    .tab-btn.active{background:var(--accent);color:#fff;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+    .info-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+    .info-row:last-child{border-bottom:none;}
+    .info-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+    .prop-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;}
+    .prop-item-info{display:flex;flex-direction:column;gap:3px;}
+    .prop-item-addr{font-size:13px;font-weight:500;}
+    .prop-item-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+    .badge-status{font-size:11px;padding:3px 9px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+    .s-ACTIVE{background:rgba(29,158,117,0.15);color:#3DD68C;}
+    .s-NEW{background:rgba(74,111,227,0.15);color:var(--accent-light);}
+    .s-RESERVED{background:rgba(239,159,39,0.15);color:#EF9F27;}
+    .s-SOLD{background:rgba(88,94,99,0.2);color:var(--text-muted);}
+    .s-INACTIVE{background:rgba(255,255,255,0.05);color:var(--text-muted);}
+    .s-RENTED{background:rgba(107,138,255,0.15);color:#6B8AFF;}
+    .empty-tab{color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center;}
+    /* Zone update section */
+    .zone-form{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:4px;}
+    .zone-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .conflict-warning{background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);border-radius:8px;padding:12px;margin-top:12px;font-size:12px;color:#EF9F27;display:none;}
+    .conflict-warning.visible{display:block;}
   </style>
 </head>
 <body>
@@ -84,32 +117,19 @@
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">General</div>
-      <a href="admin_dashboard.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
-      </a>
-      <a href="admin_properties.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles
-      </a>
-      <a href="admin_agents.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores
-      </a>
-      <a href="admin_operations.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>Operaciones
-      </a>
+      <a href="admin_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="admin_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles</a>
+      <a href="admin_agents.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores</a>
+      <a href="admin_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>Operaciones</a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Monitoreo</div>
-      <a href="admin_alerts.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alertas
-      </a>
+      <a href="admin_alerts.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alertas</a>
     </div>
     <div class="sidebar-footer">
       <div class="user-card" onclick="logout()">
         <div class="avatar">AD</div>
-        <div>
-          <div class="user-name">Administrador</div>
-          <div class="user-role">Admin · Cerrar sesión</div>
-        </div>
+        <div><div class="user-name">Administrador</div><div class="user-role">Admin · Cerrar sesión</div></div>
       </div>
     </div>
   </nav>
@@ -122,7 +142,6 @@
         Registrar asesor
       </button>
     </div>
-
     <div class="content">
       <div class="filters">
         <div class="search-box">
@@ -133,12 +152,7 @@
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Asesor</th>
-            <th>Cédula</th>
-            <th>Contacto</th>
-            <th>Zona asignada</th>
-            <th>Cierres</th>
-            <th>Acciones</th>
+            <th>Asesor</th><th>Cédula</th><th>Contacto</th><th>Zona asignada</th><th>Cierres</th><th>Acciones</th>
           </tr></thead>
           <tbody id="agents-tbody">
           <tr><td colspan="6" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
@@ -152,61 +166,107 @@
 <!-- Modal registrar asesor -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
-    <div class="modal-title">
-      <span>Registrar asesor</span>
-      <button onclick="closeModal()">×</button>
-    </div>
+    <div class="modal-title"><span>Registrar asesor</span><button onclick="closeModal()">×</button></div>
     <div class="form-grid">
-
-      <!-- Datos personales -->
-      <div class="form-group">
-        <label>Cédula</label>
-        <input type="text" id="f-cedula" placeholder="Número de cédula">
-      </div>
-      <div class="form-group">
-        <label>Nombre completo</label>
-        <input type="text" id="f-name" placeholder="Nombre y apellido">
-      </div>
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="f-username" placeholder="nombre.usuario">
-      </div>
-      <div class="form-group">
-        <label>Contraseña (May + min + número)</label>
-        <input type="password" id="f-password" placeholder="Ej: Admin123">
-      </div>
-      <div class="form-group full">
-        <label>Contacto / Teléfono</label>
-        <input type="text" id="f-contact" placeholder="+57 300 000 0000">
-      </div>
-
-      <!-- Zona geográfica -->
+      <div class="form-group"><label>Cédula</label><input type="text" id="f-cedula" placeholder="Número de cédula"></div>
+      <div class="form-group"><label>Nombre completo</label><input type="text" id="f-name" placeholder="Nombre y apellido"></div>
+      <div class="form-group"><label>Username</label><input type="text" id="f-username" placeholder="nombre.usuario"></div>
+      <div class="form-group"><label>Contraseña (May + min + número)</label><input type="password" id="f-password" placeholder="Ej: Admin123"></div>
+      <div class="form-group full"><label>Contacto / Teléfono</label><input type="text" id="f-contact" placeholder="+57 300 000 0000"></div>
       <div class="section-divider">Zona geográfica</div>
-
       <div class="form-group full">
         <label>Ciudad <span style="color:#FF7B7B">*</span></label>
-        <!-- Poblado dinámicamente desde CITY en proptech_utils.js -->
-        <select class="form-select" id="f-city" onchange="onCityChange()">
+        <select class="form-select" id="f-city" onchange="onCityChange('f-city','f-zone','f-neighborhood')">
           <option value="">— Selecciona una ciudad —</option>
         </select>
       </div>
       <div class="form-group">
         <label>Zona</label>
-        <!-- Habilitado solo si hay ciudad -->
-        <select class="form-select" id="f-zone" onchange="onZoneChange()" disabled>
+        <select class="form-select" id="f-zone" onchange="onZoneChange('f-zone','f-neighborhood')" disabled>
           <option value="">— Selecciona una zona —</option>
         </select>
       </div>
       <div class="form-group">
         <label>Barrio (opcional)</label>
-        <!-- Habilitado solo si hay ciudad + zona -->
         <input type="text" id="f-neighborhood" placeholder="Ej: Laureles" disabled>
       </div>
-
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveAgent()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalle asesor -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal modal-wide">
+    <div class="modal-title"><span>Detalle del asesor</span><button onclick="closeDetail()">×</button></div>
+
+    <div class="detail-header">
+      <div class="detail-avatar" id="d-avatar"></div>
+      <div>
+        <div class="detail-name" id="d-name"></div>
+        <div class="detail-meta" id="d-meta"></div>
+      </div>
+    </div>
+
+    <div class="detail-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-info')">Información</button>
+      <button class="tab-btn" onclick="switchTab('tab-props')">Inmuebles</button>
+      <button class="tab-btn" onclick="switchTab('tab-zone')">Cambiar zona</button>
+    </div>
+
+    <!-- Tab: Info -->
+    <div class="tab-content active" id="tab-info">
+      <div class="info-row"><span class="info-label">Cédula</span><span id="d-cedula">—</span></div>
+      <div class="info-row"><span class="info-label">Username</span><span id="d-username">—</span></div>
+      <div class="info-row"><span class="info-label">Contacto</span><span id="d-contact">—</span></div>
+      <div class="info-row"><span class="info-label">Cierres</span><span id="d-deals">—</span></div>
+      <div class="info-row"><span class="info-label">Ciudad</span><span id="d-city">—</span></div>
+      <div class="info-row"><span class="info-label">Zona</span><span id="d-zone">—</span></div>
+      <div class="info-row"><span class="info-label">Barrio zona</span><span id="d-barrio">—</span></div>
+    </div>
+
+    <!-- Tab: Inmuebles -->
+    <div class="tab-content" id="tab-props">
+      <div id="d-props-list"><div class="empty-tab">Cargando...</div></div>
+    </div>
+
+    <!-- Tab: Cambiar zona -->
+    <div class="tab-content" id="tab-zone">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+        Selecciona la nueva zona geográfica. Si hay inmuebles incompatibles se te avisará antes de confirmar.
+      </p>
+      <div class="zone-form">
+        <div class="zone-form-grid">
+          <div class="form-group full">
+            <label>Ciudad <span style="color:#FF7B7B">*</span></label>
+            <select class="form-select" id="z-city" onchange="onCityChange('z-city','z-zone','z-neighborhood')">
+              <option value="">— Selecciona una ciudad —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Zona</label>
+            <select class="form-select" id="z-zone" onchange="onZoneChange('z-zone','z-neighborhood')" disabled>
+              <option value="">— Selecciona una zona —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Barrio (opcional)</label>
+            <input type="text" id="z-neighborhood" placeholder="Ej: Laureles" disabled>
+          </div>
+        </div>
+        <div class="conflict-warning" id="zone-conflict-warning"></div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button class="btn btn-primary btn-sm" onclick="updateZone(false)">Actualizar zona</button>
+          <button class="btn btn-warning btn-sm" id="btn-confirm-zone" style="display:none" onclick="updateZone(true)">Confirmar igualmente</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeDetail()">Cerrar</button>
     </div>
   </div>
 </div>
@@ -218,48 +278,36 @@
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
   let allAgents = [];
-  const colors = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(107,138,255,0.2)'];
+  let currentAgentCedula = '';
+  const colors  = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(107,138,255,0.2)'];
   const tcolors = ['#6B8AFF','#3DD68C','#EF9F27','#FF7B7B','#B8AFFE'];
 
-  // ── Poblar selects desde enums ──────────────────────────────
-  function populateCitySelect() {
-    const sel = document.getElementById('f-city');
+  function populateCitySelect(id) {
+    const sel = document.getElementById(id);
     sel.innerHTML = '<option value="">— Selecciona una ciudad —</option>' +
-            Object.entries(CITY).map(([key, val]) => `<option value="${key}">${val}</option>`).join('');
+            Object.entries(CITY).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
   }
-
-  function populateZoneSelect() {
-    const sel = document.getElementById('f-zone');
+  function populateZoneSelect(id) {
+    const sel = document.getElementById(id);
     sel.innerHTML = '<option value="">— Selecciona una zona —</option>' +
-            Object.entries(ZONE).map(([key, val]) => `<option value="${key}">${val}</option>`).join('');
+            Object.entries(ZONE).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
   }
-
-  // ── Lógica de dependencias ciudad → zona → barrio ───────────
-  function onCityChange() {
-    const city = document.getElementById('f-city').value;
-    const zoneEl = document.getElementById('f-zone');
-    const neighEl = document.getElementById('f-neighborhood');
-
-    if (city) {
-      zoneEl.disabled = false;
-    } else {
-      zoneEl.value = '';
-      zoneEl.disabled = true;
-      neighEl.value = '';
-      neighEl.disabled = true;
-    }
+  function onCityChange(cityId, zoneId, neighId) {
+    const city = document.getElementById(cityId).value;
+    const zoneEl = document.getElementById(zoneId);
+    const neighEl = document.getElementById(neighId);
+    if (city) { zoneEl.disabled = false; }
+    else { zoneEl.value=''; zoneEl.disabled=true; neighEl.value=''; neighEl.disabled=true; }
   }
-
-  function onZoneChange() {
-    const zone = document.getElementById('f-zone').value;
-    const neighEl = document.getElementById('f-neighborhood');
+  function onZoneChange(zoneId, neighId) {
+    const zone = document.getElementById(zoneId).value;
+    const neighEl = document.getElementById(neighId);
     neighEl.disabled = !zone;
     if (!zone) neighEl.value = '';
   }
 
-  // ── Cargar agentes ──────────────────────────────────────────
   async function loadAgents() {
-    const res = await fetch(`${API}/agents`).catch(() => null);
+    const res = await fetch(`${API}/agents`).catch(()=>null);
     if (!res || !res.ok) {
       document.getElementById('agents-tbody').innerHTML =
               '<tr><td colspan="6" style="color:var(--text-muted);text-align:center;padding:32px;">Sin asesores registrados</td></tr>';
@@ -275,90 +323,62 @@
       tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-muted);text-align:center;padding:32px;">Sin asesores registrados</td></tr>';
       return;
     }
-    const maxDeals = Math.max(...agents.map(a => a.closedDeals || 0), 1);
-    tbody.innerHTML = agents.map((a, i) => {
+    const maxDeals = Math.max(...agents.map(a => a.closedDeals||0), 1);
+    tbody.innerHTML = agents.map((a,i) => {
       const ci = i % colors.length;
-      const initials = (a.name || '??').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-      const pct = Math.round(((a.closedDeals || 0) / maxDeals) * 100);
+      const initials = (a.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const pct = Math.round(((a.closedDeals||0)/maxDeals)*100);
       const zone = a.assignedZone;
-      const zoneLabel = zone
-              ? [label(CITY, zone.city), label(ZONE, zone.zone), zone.neighborhood?.name].filter(Boolean).join(' / ')
-              : '—';
+      const zoneLabel = zone ? [label(CITY,zone.city),label(ZONE,zone.zone),zone.nameNeighborhood].filter(Boolean).join(' / ') : '—';
       return `<tr>
-        <td>
-          <div class="td-agent">
-            <div class="agent-initials" style="background:${colors[ci]};color:${tcolors[ci]}">${initials}</div>
-            <span style="font-weight:500">${a.name}</span>
-          </div>
-        </td>
+        <td><div class="td-agent">
+          <div class="agent-initials" style="background:${colors[ci]};color:${tcolors[ci]}">${initials}</div>
+          <span style="font-weight:500">${a.name}</span>
+        </div></td>
         <td style="color:var(--text-muted)">${a.cedula}</td>
-        <td style="color:var(--text-muted)">${a.contact || '—'}</td>
+        <td style="color:var(--text-muted)">${a.contact||'—'}</td>
         <td style="color:var(--text-muted)">${zoneLabel}</td>
         <td>
-          <div>${a.closedDeals || 0}</div>
+          <div>${a.closedDeals||0}</div>
           <div class="deals-bar"><div class="deals-fill" style="width:${pct}%"></div></div>
         </td>
-        <td>
-          <div class="td-actions">
-            <button class="btn btn-sm btn-danger" onclick="deleteAgent('${a.cedula}')">Eliminar</button>
-          </div>
-        </td>
+        <td><div class="td-actions">
+          <button class="btn btn-sm btn-ghost" onclick="openDetail('${a.cedula}')">Ver detalle</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteAgent('${a.cedula}')">Eliminar</button>
+        </div></td>
       </tr>`;
     }).join('');
   }
 
   function filterAgents(q) {
-    const filtered = allAgents.filter(a =>
-            (a.name || '').toLowerCase().includes(q.toLowerCase()) ||
-            (a.cedula || '').includes(q)
-    );
-    renderAgents(filtered);
+    renderAgents(allAgents.filter(a =>
+            (a.name||'').toLowerCase().includes(q.toLowerCase()) || (a.cedula||'').includes(q)
+    ));
   }
 
+  // ── Modal registrar ─────────────────────────────────────────
   function openModal() {
-    // Reset form
-    ['f-cedula','f-name','f-username','f-password','f-contact','f-neighborhood'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('f-city').value = '';
-    document.getElementById('f-zone').value = '';
-    document.getElementById('f-zone').disabled = true;
-    document.getElementById('f-neighborhood').disabled = true;
+    ['f-cedula','f-name','f-username','f-password','f-contact','f-neighborhood'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('f-city').value='';
+    document.getElementById('f-zone').value=''; document.getElementById('f-zone').disabled=true;
+    document.getElementById('f-neighborhood').disabled=true;
     document.getElementById('modal').classList.add('open');
   }
-
   function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
   async function saveAgent() {
     const city = document.getElementById('f-city').value;
-    if (!city) {
-      alert('La ciudad es obligatoria.');
-      return;
-    }
-
+    if (!city) { alert('La ciudad es obligatoria.'); return; }
     const zone = document.getElementById('f-zone').value || null;
     const neighborhood = document.getElementById('f-neighborhood').value.trim() || null;
-
-    // Paso 1: crear la GeographicZone y obtener su ID
     const zoneBody = { city };
     if (zone) zoneBody.zone = zone;
     if (neighborhood) zoneBody.nameNeighborhood = neighborhood;
-
     const zoneRes = await fetch(`${API}/geo-zones/find-or-create`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(zoneBody)
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(zoneBody)
     });
-
-    if (!zoneRes.ok) {
-      const e = await zoneRes.json();
-      alert(e.message || 'Error al crear la zona geográfica');
-      return;
-    }
-
+    if (!zoneRes.ok) { const e = await zoneRes.json(); alert(e.message||'Error al crear zona'); return; }
     const createdZone = await zoneRes.json();
-
-    // Paso 2: crear el agente con el ID de la zona
     const agentBody = {
       cedula: document.getElementById('f-cedula').value,
       name: document.getElementById('f-name').value,
@@ -367,32 +387,135 @@
       contact: document.getElementById('f-contact').value,
       assignedZoneId: createdZone.id
     };
-
     const agentRes = await fetch(`${API}/agents`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(agentBody)
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(agentBody)
+    });
+    if (agentRes.ok) { closeModal(); loadAgents(); }
+    else { const e = await agentRes.json(); alert(e.message||'Error al guardar'); }
+  }
+
+  // ── Modal detalle ───────────────────────────────────────────
+  async function openDetail(cedula) {
+    currentAgentCedula = cedula;
+    const agent = allAgents.find(a => a.cedula === cedula);
+    if (!agent) return;
+
+    const ci = allAgents.indexOf(agent) % colors.length;
+    const initials = (agent.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+    document.getElementById('d-avatar').textContent = initials;
+    document.getElementById('d-avatar').style.background = colors[ci];
+    document.getElementById('d-avatar').style.color = tcolors[ci];
+    document.getElementById('d-name').textContent = agent.name;
+    document.getElementById('d-meta').textContent = `${agent.cedula} · ${agent.contact||'Sin contacto'}`;
+    document.getElementById('d-cedula').textContent = agent.cedula;
+    document.getElementById('d-username').textContent = agent.username||'—';
+    document.getElementById('d-contact').textContent = agent.contact||'—';
+    document.getElementById('d-deals').textContent = agent.closedDeals||0;
+
+    const z = agent.assignedZone;
+    document.getElementById('d-city').textContent = z ? label(CITY, z.city) : '—';
+    document.getElementById('d-zone').textContent = z ? label(ZONE, z.zone) : '—';
+    document.getElementById('d-barrio').textContent = z?.nameNeighborhood || '—';
+
+    // Reset tabs
+    switchTab('tab-info');
+    document.getElementById('zone-conflict-warning').classList.remove('visible');
+    document.getElementById('btn-confirm-zone').style.display = 'none';
+    ['z-city','z-zone','z-neighborhood'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = '';
+      if (id !== 'z-city') el.disabled = true;
     });
 
-    if (agentRes.ok) {
-      closeModal();
-      loadAgents();
+    document.getElementById('modal-detail').classList.add('open');
+    loadAgentProperties(cedula);
+  }
+
+  function closeDetail() { document.getElementById('modal-detail').classList.remove('open'); }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    const idx = ['tab-info','tab-props','tab-zone'].indexOf(tabId);
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  }
+
+  async function loadAgentProperties(cedula) {
+    const res = await fetch(`${API}/agents/${cedula}/properties`).catch(()=>null);
+    const container = document.getElementById('d-props-list');
+    if (!res || !res.ok) { container.innerHTML = '<div class="empty-tab">Sin inmuebles asignados</div>'; return; }
+    const props = await res.json();
+    if (!props.length) { container.innerHTML = '<div class="empty-tab">Sin inmuebles asignados</div>'; return; }
+    container.innerHTML = props.map(p => `
+      <div class="prop-item">
+        <div class="prop-item-info">
+          <div class="prop-item-addr">${p.address||p.code}</div>
+          <div class="prop-item-meta">${p.neighborhood?.name||'—'} · ${p.neighborhood?.city||''} · $${Number(p.price||0).toLocaleString()}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="badge-status s-${p.status}">${label(PROPERTY_STATUS,p.status)}</span>
+          <button class="btn btn-sm btn-danger" onclick="unlinkProperty('${p.code}')">Desligar</button>
+        </div>
+      </div>`).join('');
+  }
+
+  async function unlinkProperty(propertyCode) {
+    if (!confirm('¿Desligar este inmueble del asesor? Quedará sin asesor e inactivo.')) return;
+    const res = await fetch(`${API}/agents/${currentAgentCedula}/properties/${propertyCode}`, { method:'DELETE' });
+    if (res.ok) { loadAgentProperties(currentAgentCedula); loadAgents(); }
+    else { const e = await res.json(); alert(e.message||'Error al desligar'); }
+  }
+
+  // ── Cambiar zona ────────────────────────────────────────────
+  async function updateZone(confirm) {
+    const city = document.getElementById('z-city').value;
+    if (!city) { alert('La ciudad es obligatoria.'); return; }
+    const zone = document.getElementById('z-zone').value || null;
+    const neighborhood = document.getElementById('z-neighborhood').value.trim() || null;
+    const body = { city };
+    if (zone) body.zone = zone;
+    if (neighborhood) body.nameNeighborhood = neighborhood;
+
+    const res = await fetch(`${API}/agents/${currentAgentCedula}/zone?confirm=${confirm}`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      document.getElementById('zone-conflict-warning').classList.remove('visible');
+      document.getElementById('btn-confirm-zone').style.display = 'none';
+      const updated = await res.json();
+      // Actualizar en la lista local
+      const idx = allAgents.findIndex(a => a.cedula === currentAgentCedula);
+      if (idx !== -1) allAgents[idx] = updated;
+      renderAgents(allAgents);
+      alert('Zona actualizada correctamente.');
     } else {
-      const e = await agentRes.json();
-      alert(e.message || 'Error al guardar el asesor');
+      const e = await res.json();
+      // ZoneChangeConflictException devuelve la lista de propiedades afectadas
+      if (e.affectedProperties && e.affectedProperties.length > 0) {
+        const names = e.affectedProperties.map(p => p.address||p.code).join(', ');
+        const warning = document.getElementById('zone-conflict-warning');
+        warning.textContent = `Al cambiar la zona, los siguientes inmuebles perderán su asesor: ${names}`;
+        warning.classList.add('visible');
+        document.getElementById('btn-confirm-zone').style.display = 'inline-flex';
+      } else {
+        alert(e.message||'Error al actualizar zona');
+      }
     }
   }
 
   async function deleteAgent(cedula) {
-    if (!confirm('¿Eliminar este asesor?')) return;
-    const res = await fetch(`${API}/agents/${cedula}`, { method: 'DELETE' });
+    if (!confirm('¿Eliminar este asesor? Sus inmuebles quedarán sin asesor.')) return;
+    const res = await fetch(`${API}/agents/${cedula}`, { method:'DELETE' });
     if (res.ok) loadAgents();
-    else { const e = await res.json(); alert(e.message || 'Error al eliminar'); }
+    else { const e = await res.json(); alert(e.message||'Error al eliminar'); }
   }
 
   // Init
-  populateCitySelect();
-  populateZoneSelect();
+  populateCitySelect('f-city'); populateZoneSelect('f-zone');
+  populateCitySelect('z-city'); populateZoneSelect('z-zone');
   loadAgents();
 </script>
 </body>
