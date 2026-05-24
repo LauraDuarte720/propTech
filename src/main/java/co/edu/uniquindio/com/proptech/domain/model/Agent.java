@@ -20,13 +20,17 @@ public class Agent extends User implements Comparable<Agent> {
 
     private GeographicZone assignedZone;
 
-    private ArrayList<Property> assignedProperties;
+    @Builder.Default
+    private ArrayList<Property> assignedProperties = new ArrayList<>();
 
-    private PriorityQueue<Visit> scheduledVisits;
+    @Builder.Default
+    private PriorityQueue<Visit> scheduledVisits = new PriorityQueue<>(Comparator.comparing(Visit::getDate));
 
-    private Queue<SupportRequest> supportRequests;
+    @Builder.Default
+    private Queue<SupportRequest> supportRequests = new Queue<>();
 
-    private LinkedList<SupportRequest> supportHistory;
+    @Builder.Default
+    private LinkedList<SupportRequest> supportHistory = new LinkedList<>();
 
     @Builder.Default
     private Integer closedDeals = 0;
@@ -35,11 +39,8 @@ public class Agent extends User implements Comparable<Agent> {
         super(cedula, name, username, password);
         this.contact = contact;
         this.assignedZone = assignedZone;
-        this.assignedProperties = new ArrayList<>();
-        this.scheduledVisits = new PriorityQueue<>(Comparator.comparing(Visit::getDate));
-        this.supportRequests = new Queue<>();
         this.closedDeals = closedDeals;
-        this.supportHistory = new LinkedList<>();
+
     }
 
 
