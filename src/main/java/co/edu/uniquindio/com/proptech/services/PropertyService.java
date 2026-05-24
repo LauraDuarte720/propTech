@@ -2,19 +2,20 @@ package co.edu.uniquindio.com.proptech.services;
 
 import co.edu.uniquindio.com.proptech.domain.enums.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAgentConfirmationException;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyAlreadyExists;
-import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PropertyDoesNotExist;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
+import co.edu.uniquindio.com.proptech.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.repositories.PropertyRepository;
 import co.edu.uniquindio.com.proptech.structures.AVLTree.AVLTree;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
+import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,17 +27,22 @@ public class PropertyService {
     PropertyAssignmentService propertyAssignmentService;
     VisitService visitService;
     AdminActionService adminActionService;
+    ZoneMatcher zoneMatcher;
+    PropertyMapper propertyMapper;
 
     public PropertyService(PropertyRepository propertyRepository, AgentService agentService,
                            NeighborhoodService neighborhoodService,
                            PropertyAssignmentService propertyAssignmentService,
-                           VisitService visitService, AdminActionService adminActionService) {
+                           VisitService visitService, AdminActionService adminActionService, ZoneMatcher zoneMatcher, PropertyMapper propertyMapper) {
         this.propertyRepository = propertyRepository;
         this.agentService = agentService;
         this.neighborhoodService = neighborhoodService;
         this.propertyAssignmentService = propertyAssignmentService;
         this.visitService = visitService;
         this.adminActionService = adminActionService;
+        this.zoneMatcher = zoneMatcher;
+
+        this.propertyMapper = propertyMapper;
     }
 
     public Property registerProperty(Property property, String agentId, boolean confirm) {
@@ -104,7 +110,7 @@ public class PropertyService {
         return property;
     }
 
-    public Property updateProperty(Property property) {
+    public Property updateProperty(Property property, boolean confirm) {
         return propertyRepository.findByCode(property.getCode()).map(existing -> {
 
             boolean skipLog = false;
@@ -114,7 +120,7 @@ public class PropertyService {
                 existing.setAddress(property.getAddress());
             }
             if (property.getNeighborhood() != null) {
-                existing.setNeighborhood(property.getNeighborhood());
+                updatePropertyNeighborhood(existing, property.getNeighborhood(), confirm);
                 skipLog = true;
             }
             if (property.getPurpose() != null) {
@@ -160,6 +166,31 @@ public class PropertyService {
             return saved;
 
         }).orElseThrow(() -> new PropertyDoesNotExist("code", property.getCode()));
+    }
+
+    private void updatePropertyNeighborhood(Property property, Neighborhood neighborhood, boolean confirm) {
+        Neighborhood resolved = neighborhoodService.findOrCreate(neighborhood);
+        Agent agent = property.getAgent();
+
+        if (agent == null) {
+            property.setNeighborhood(resolved);
+            return;
+        }
+
+        boolean matches = zoneMatcher.match(agent.getAssignedZone(), resolved);
+
+        if (!matches && !confirm) {
+            throw new ZoneChangeConflictException(
+                    "El agente asignado no cubre la nueva zona. Confirma para desasignarlo.",
+                    List.of(propertyMapper.toSimpleDto(property))
+            );
+        }
+
+        if (!matches) {
+            propertyAssignmentService.removeAgentFromProperty(property.getCode(), agent.getCedula());
+        }
+
+        property.setNeighborhood(resolved);
     }
 
     public void deleteProperty(String propertyCode) {

@@ -76,7 +76,6 @@
     .deals-bar{width:80px;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;margin-top:4px;}
     .deals-fill{height:4px;border-radius:99px;background:var(--accent);}
     .section-divider{grid-column:1/-1;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding-top:6px;border-top:1px solid var(--border);}
-    /* Detail modal */
     .detail-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
     .detail-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0;}
     .detail-name{font-size:18px;font-weight:500;}
@@ -101,7 +100,6 @@
     .s-INACTIVE{background:rgba(255,255,255,0.05);color:var(--text-muted);}
     .s-RENTED{background:rgba(107,138,255,0.15);color:#6B8AFF;}
     .empty-tab{color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center;}
-    /* Zone update section */
     .zone-form{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:4px;}
     .zone-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
     .conflict-warning{background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);border-radius:8px;padding:12px;margin-top:12px;font-size:12px;color:#EF9F27;display:none;}
@@ -217,7 +215,6 @@
       <button class="tab-btn" onclick="switchTab('tab-zone')">Cambiar zona</button>
     </div>
 
-    <!-- Tab: Info -->
     <div class="tab-content active" id="tab-info">
       <div class="info-row"><span class="info-label">Cédula</span><span id="d-cedula">—</span></div>
       <div class="info-row"><span class="info-label">Username</span><span id="d-username">—</span></div>
@@ -228,12 +225,10 @@
       <div class="info-row"><span class="info-label">Barrio zona</span><span id="d-barrio">—</span></div>
     </div>
 
-    <!-- Tab: Inmuebles -->
     <div class="tab-content" id="tab-props">
       <div id="d-props-list"><div class="empty-tab">Cargando...</div></div>
     </div>
 
-    <!-- Tab: Cambiar zona -->
     <div class="tab-content" id="tab-zone">
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
         Selecciona la nueva zona geográfica. Si hay inmuebles incompatibles se te avisará antes de confirmar.
@@ -356,7 +351,6 @@
     ));
   }
 
-  // ── Modal registrar ─────────────────────────────────────────
   function openModal() {
     ['f-cedula','f-name','f-username','f-password','f-contact','f-neighborhood'].forEach(id => document.getElementById(id).value='');
     document.getElementById('f-city').value='';
@@ -394,7 +388,6 @@
     else { const e = await agentRes.json(); alert(e.message||'Error al guardar'); }
   }
 
-  // ── Modal detalle ───────────────────────────────────────────
   async function openDetail(cedula) {
     currentAgentCedula = cedula;
     const agent = allAgents.find(a => a.cedula === cedula);
@@ -418,9 +411,9 @@
     document.getElementById('d-zone').textContent = z ? label(ZONE, z.zone) : '—';
     document.getElementById('d-barrio').textContent = z?.nameNeighborhood || '—';
 
-    // Reset tabs
     switchTab('tab-info');
     document.getElementById('zone-conflict-warning').classList.remove('visible');
+    document.getElementById('zone-conflict-warning').textContent = '';
     document.getElementById('btn-confirm-zone').style.display = 'none';
     ['z-city','z-zone','z-neighborhood'].forEach(id => {
       const el = document.getElementById(id);
@@ -468,7 +461,7 @@
     else { const e = await res.json(); alert(e.message||'Error al desligar'); }
   }
 
-  // ── Cambiar zona ────────────────────────────────────────────
+  // ── Cambiar zona ─────────────────────────────────────────────
   async function updateZone(confirm) {
     const city = document.getElementById('z-city').value;
     if (!city) { alert('La ciudad es obligatoria.'); return; }
@@ -479,29 +472,32 @@
     if (neighborhood) body.nameNeighborhood = neighborhood;
 
     const res = await fetch(`${API}/agents/${currentAgentCedula}/zone?confirm=${confirm}`, {
-      method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
     });
 
     if (res.ok) {
+      // Éxito — limpiar warning, actualizar lista y cerrar
       document.getElementById('zone-conflict-warning').classList.remove('visible');
+      document.getElementById('zone-conflict-warning').textContent = '';
       document.getElementById('btn-confirm-zone').style.display = 'none';
       const updated = await res.json();
-      // Actualizar en la lista local
       const idx = allAgents.findIndex(a => a.cedula === currentAgentCedula);
       if (idx !== -1) allAgents[idx] = updated;
       renderAgents(allAgents);
+      closeDetail();
       alert('Zona actualizada correctamente.');
     } else {
       const e = await res.json();
-      // ZoneChangeConflictException devuelve la lista de propiedades afectadas
-      if (e.affectedProperties && e.affectedProperties.length > 0) {
-        const names = e.affectedProperties.map(p => p.address||p.code).join(', ');
+      // El GlobalExceptionHandler mete affectedProperties dentro de details, no en la raíz
+      const affected = e.details?.affectedProperties;
+      if (affected && affected.length > 0) {
+        const names = affected.map(p => p.address || p.code).join(', ');
         const warning = document.getElementById('zone-conflict-warning');
         warning.textContent = `Al cambiar la zona, los siguientes inmuebles perderán su asesor: ${names}`;
         warning.classList.add('visible');
         document.getElementById('btn-confirm-zone').style.display = 'inline-flex';
       } else {
-        alert(e.message||'Error al actualizar zona');
+        alert(e.message || 'Error al actualizar zona');
       }
     }
   }

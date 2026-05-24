@@ -69,10 +69,11 @@ public class PropertyController {
     @PatchMapping("/{code}")
     public ResponseEntity<PropertyDtoReturn> updateProperty(
             @PathVariable String code,
+            @RequestParam(defaultValue = "false") boolean confirm,
             @Validated @RequestBody PropertyDtoUpdate dto) {
         Property property = propertyMapper.toUpdate(dto);
         property.setCode(code);
-        return ResponseEntity.ok(propertyMapper.toDto(propertyService.updateProperty(property)));
+        return ResponseEntity.ok(propertyMapper.toDto(propertyService.updateProperty(property, confirm)));
     }
 
     @DeleteMapping("/{code}")
