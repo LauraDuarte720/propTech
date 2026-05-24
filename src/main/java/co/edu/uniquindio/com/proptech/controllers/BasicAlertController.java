@@ -3,9 +3,12 @@ package co.edu.uniquindio.com.proptech.controllers;
 import co.edu.uniquindio.com.proptech.domain.dtos.BasicAlertDto;
 import co.edu.uniquindio.com.proptech.domain.model.BasicAlert;
 import co.edu.uniquindio.com.proptech.mappers.MapperOnlyDto;
+import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.services.BasicAlertService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/basic-alerts")
@@ -13,11 +16,13 @@ public class BasicAlertController {
 
     private final BasicAlertService basicAlertService;
     private final MapperOnlyDto<BasicAlert, BasicAlertDto> basicAlertMapper;
+    private final StructuresMappers structuresMappers;
 
     public BasicAlertController(BasicAlertService basicAlertService,
-                                MapperOnlyDto<BasicAlert, BasicAlertDto> basicAlertMapper) {
+                                MapperOnlyDto<BasicAlert, BasicAlertDto> basicAlertMapper, StructuresMappers structuresMappers) {
         this.basicAlertService = basicAlertService;
         this.basicAlertMapper = basicAlertMapper;
+        this.structuresMappers = structuresMappers;
     }
 
     // Generar todas las alertas
@@ -77,5 +82,24 @@ public class BasicAlertController {
     public ResponseEntity<Void> generateInactiveClient() {
         basicAlertService.createAlertInactiveClient();
         return ResponseEntity.noContent().build();
+    }
+
+    // Todas las alertas guardadas (para mostrar en lista/cards)
+    @GetMapping("/all")
+    public ResponseEntity<List<BasicAlertDto>> getAllAlerts() {
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        basicAlertService.getAllAlerts(),
+                        basicAlertMapper::toDto
+                )
+        );
+    }
+
+    // Ver la siguiente urgente sin sacarla de la cola
+    @GetMapping("/priority/peek")
+    public ResponseEntity<BasicAlertDto> peekPriorityAlert() {
+        return ResponseEntity.ok(
+                basicAlertMapper.toDto(basicAlertService.getNextPriorityAlert())
+        );
     }
 }

@@ -55,6 +55,18 @@ public class BasicAlertService {
         createAlertInactiveClient();
     }
 
+    public ArrayList<BasicAlert> getAllAlerts() {
+        return basicAlertRepository.getAll();
+    }
+
+    public boolean hasPendingAlerts() {
+        return !pendingAlerts.isEmpty();
+    }
+
+    public boolean hasPriorityAlerts() {
+        return !priorityAlerts.isEmpty();
+    }
+
     // ─── Helper para crear y enrutar la alerta ───────────────────────
 
     private BasicAlert buildAndRoute(AlertType type, Operation operation,

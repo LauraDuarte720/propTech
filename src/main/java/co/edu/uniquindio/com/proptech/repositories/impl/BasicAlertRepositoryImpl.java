@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.repositories.impl;
 import co.edu.uniquindio.com.proptech.domain.model.BasicAlert;
 import co.edu.uniquindio.com.proptech.domain.model.PropTech;
 import co.edu.uniquindio.com.proptech.repositories.BasicAlertRepository;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
@@ -50,4 +51,11 @@ public class BasicAlertRepositoryImpl implements BasicAlertRepository {
         }
         return alert;
     }
+
+    @Override
+    public ArrayList<BasicAlert> getAll() {
+        return propTech.getBasicAlerts();
+    }
+
+
 }
