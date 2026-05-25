@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/proptech_utils.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech Admin — Reportes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;}
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:#fff;}
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-icon svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:16px;font-weight:600;}
+    .sidebar-section{padding:16px 12px 8px;}
+    .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:0 8px;margin-bottom:6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:#fff;}
+    .nav-item.active{background:rgba(74,111,227,0.15);color:#fff;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border);}
+    .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
+    .user-card:hover{background:rgba(255,255,255,0.05);}
+    .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;}
+    .user-name{font-size:13px;font-weight:500;}
+    .user-role{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(19,25,54,0.4);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-size:18px;font-weight:500;}
+    .content{flex:1;overflow-y:auto;padding:28px;}
+
+    /* Tabs */
+    .report-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border-radius:10px;padding:4px;margin-bottom:24px;}
+    .tab-btn{flex:1;padding:9px 12px;border:none;background:none;color:var(--text-muted);font-family:'Jost',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;transition:all 0.15s;}
+    .tab-btn.active{background:var(--accent);color:#fff;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+
+    /* Cards */
+    .card{background:var(--navy);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;}
+    .card-title{font-size:14px;font-weight:500;margin-bottom:16px;color:#fff;}
+
+    /* Table */
+    .table-wrap{overflow:hidden;border-radius:10px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;}
+    th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);}
+    td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(255,255,255,0.02);}
+
+    /* Bar chart */
+    .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+    .bar-label{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);width:140px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .bar-track{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;}
+    .bar-fill{height:8px;border-radius:99px;background:var(--accent);transition:width 0.4s ease;}
+    .bar-val{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);width:40px;text-align:right;flex-shrink:0;}
+
+    /* Stat grid */
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+    .stat-box{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:14px;}
+    .stat-val{font-size:22px;font-weight:600;letter-spacing:-0.5px;}
+    .stat-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+    /* Price range accordion */
+    .range-block{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+    .range-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;user-select:none;}
+    .range-header:hover{background:rgba(255,255,255,0.03);}
+    .range-title{font-size:13px;font-weight:500;}
+    .range-count{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+    .range-chevron{transition:transform 0.2s;color:var(--text-muted);}
+    .range-block.open .range-chevron{transform:rotate(180deg);}
+    .range-body{display:none;padding:0 16px 14px;}
+    .range-block.open .range-body{display:block;}
+    .prop-pill{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+    .prop-pill:last-child{border-bottom:none;}
+
+    /* Agent ranking */
+    .agent-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+    .agent-row:last-child{border-bottom:none;}
+    .agent-rank{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);width:24px;flex-shrink:0;text-align:center;}
+    .agent-rank.gold{color:#EF9F27;}
+    .agent-rank.silver{color:#8A90A0;}
+    .agent-rank.bronze{color:#b5651d;}
+    .agent-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+    .agent-info{flex:1;}
+    .agent-name{font-size:13px;font-weight:500;}
+    .agent-zone{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .agent-stats{display:flex;gap:20px;text-align:right;}
+    .agent-stat-val{font-size:13px;font-weight:500;}
+    .agent-stat-label{font-family:'Jost',sans-serif;font-size:10px;color:var(--text-muted);}
+
+    .empty-state{color:var(--text-muted);font-size:13px;padding:24px 0;text-align:center;}
+    .badge-status{font-size:11px;padding:3px 9px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+    .s-ACTIVE{background:rgba(29,158,117,0.15);color:#3DD68C;}
+    .s-NEW{background:rgba(74,111,227,0.15);color:var(--accent-light);}
+    .s-SOLD{background:rgba(88,94,99,0.2);color:var(--text-muted);}
+    .s-RENTED{background:rgba(107,138,255,0.15);color:#6B8AFF;}
+    .s-INACTIVE{background:rgba(255,255,255,0.05);color:var(--text-muted);}
+    .s-RESERVED{background:rgba(239,159,39,0.15);color:#EF9F27;}
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">General</div>
+      <a href="admin_dashboard.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
+      </a>
+      <a href="admin_properties.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles
+      </a>
+      <a href="admin_agents.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores
+      </a>
+      <a href="admin_operations.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>Operaciones
+      </a>
+      <a href="admin_reports.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/></svg>Reportes
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Monitoreo</div>
+      <a href="admin_alerts.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alertas
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar">AD</div>
+        <div><div class="user-name">Administrador</div><div class="user-role">Admin · Cerrar sesión</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Reportes</span>
+    </div>
+    <div class="content">
+
+      <div class="report-tabs">
+        <button class="tab-btn active" onclick="switchTab('zone')">Por zona</button>
+        <button class="tab-btn" onclick="switchTab('price')">Por precio</button>
+        <button class="tab-btn" onclick="switchTab('visits')">Por visitas</button>
+        <button class="tab-btn" onclick="switchTab('closures')">Por cierres</button>
+      </div>
+
+      <!-- ── ZONA ── -->
+      <div class="tab-panel active" id="panel-zone">
+        <div class="stat-grid" id="zone-stats">
+          <div class="stat-box"><div class="stat-val" id="z-total-props">—</div><div class="stat-label">Inmuebles totales</div></div>
+          <div class="stat-box"><div class="stat-val" id="z-total-visits">—</div><div class="stat-label">Visitas totales</div></div>
+          <div class="stat-box"><div class="stat-val" id="z-total-closures">—</div><div class="stat-label">Cierres totales</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Inmuebles por ciudad</div>
+          <div id="zone-bars-props"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Visitas por ciudad</div>
+          <div id="zone-bars-visits"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Cierres por ciudad</div>
+          <div id="zone-bars-closures"></div>
+        </div>
+      </div>
+
+      <!-- ── PRECIO ── -->
+      <div class="tab-panel" id="panel-price">
+        <div class="card">
+          <div class="card-title">Distribución por rango de precio</div>
+          <div id="price-bars"></div>
+        </div>
+        <div id="price-ranges"></div>
+      </div>
+
+      <!-- ── VISITAS ── -->
+      <div class="tab-panel" id="panel-visits">
+        <div class="card">
+          <div class="card-title">Inmuebles más visitados</div>
+          <div id="visits-bars"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Inmueble</th><th>Barrio</th><th>Precio</th><th>Estado</th><th>Visitas</th>
+            </tr></thead>
+            <tbody id="visits-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CIERRES ── -->
+      <div class="tab-panel" id="panel-closures">
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-val" id="c-total-closures">—</div><div class="stat-label">Cierres totales</div></div>
+          <div class="stat-box"><div class="stat-val" id="c-total-value">—</div><div class="stat-label">Valor total</div></div>
+          <div class="stat-box"><div class="stat-val" id="c-total-commission">—</div><div class="stat-label">Comisiones totales</div></div>
+        </div>
+        <div id="closures-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  const avColors = ['#4A6FE3','#3DD68C','#EF9F27','#FF7B7B','#B8AFFE','#6B8AFF'];
+  const avBg     = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(184,175,254,0.2)','rgba(107,138,255,0.2)'];
+
+  // ── Tab switching ─────────────────────────────────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    const idx = ['zone','price','visits','closures'].indexOf(name);
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  }
+
+  // ── Bar chart helper ──────────────────────────────────────────────────────
+  function renderBars(containerId, items, labelFn, valueFn, colorFn) {
+    const max = Math.max(...items.map(valueFn), 1);
+    document.getElementById(containerId).innerHTML = items.map((item, i) =>
+            `<div class="bar-row">
+        <div class="bar-label" title="${labelFn(item)}">${labelFn(item)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((valueFn(item)/max)*100)}%;background:${colorFn ? colorFn(i) : 'var(--accent)'}"></div></div>
+        <div class="bar-val">${valueFn(item)}</div>
+      </div>`
+    ).join('');
+  }
+
+  // ── ZONA ─────────────────────────────────────────────────────────────────
+  async function loadZone() {
+    const res = await fetch(`${API}/reports/zone`).catch(()=>null);
+    if (!res || !res.ok) { showEmpty('zone-bars-props','Sin datos'); return; }
+    const data = await res.json();
+    if (!data.length) { showEmpty('zone-bars-props','Sin datos'); return; }
+
+    document.getElementById('z-total-props').textContent     = data.reduce((s,z) => s + z.totalProperties, 0);
+    document.getElementById('z-total-visits').textContent    = data.reduce((s,z) => s + z.totalVisits, 0);
+    document.getElementById('z-total-closures').textContent  = data.reduce((s,z) => s + z.totalClosures, 0);
+
+    renderBars('zone-bars-props',    data, z => label(CITY, z.city) || z.city, z => z.totalProperties,  i => avColors[i % avColors.length]);
+    renderBars('zone-bars-visits',   data, z => label(CITY, z.city) || z.city, z => z.totalVisits,      i => avColors[i % avColors.length]);
+    renderBars('zone-bars-closures', data, z => label(CITY, z.city) || z.city, z => z.totalClosures,    i => avColors[i % avColors.length]);
+  }
+
+  // ── PRECIO ────────────────────────────────────────────────────────────────
+  async function loadPrice() {
+    const res = await fetch(`${API}/reports/price`).catch(()=>null);
+    if (!res || !res.ok) { showEmpty('price-bars','Sin datos'); return; }
+    const data = await res.json();
+    if (!data.length) { showEmpty('price-bars','Sin datos'); return; }
+
+    renderBars('price-bars', data, d => d.range, d => d.totalProperties, i => avColors[i % avColors.length]);
+
+    document.getElementById('price-ranges').innerHTML = data.map((d, i) => `
+      <div class="range-block" id="range-${i}">
+        <div class="range-header" onclick="toggleRange(${i})">
+          <span class="range-title">${d.range}</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="range-count">${d.totalProperties} inmueble${d.totalProperties !== 1 ? 's' : ''}</span>
+            <svg class="range-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="range-body">
+          ${(d.properties||[]).map(p => `
+            <div class="prop-pill">
+              <span>${p.address || p.code}</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="color:var(--text-muted);font-size:12px">$${Number(p.price||0).toLocaleString()}</span>
+                <span class="badge-status s-${p.status}">${label(PROPERTY_STATUS, p.status)}</span>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  function toggleRange(i) {
+    document.getElementById('range-' + i).classList.toggle('open');
+  }
+
+  // ── VISITAS ───────────────────────────────────────────────────────────────
+  async function loadVisits() {
+    const res = await fetch(`${API}/reports/visits`).catch(()=>null);
+    if (!res || !res.ok) { showEmptyTbody('visits-tbody', 6); return; }
+    const data = await res.json();
+    if (!data.length) { showEmptyTbody('visits-tbody', 6); return; }
+
+    renderBars('visits-bars', data.slice(0, 8),
+            d => d.property?.address || d.property?.code || '—',
+            d => d.totalVisits,
+            i => avColors[i % avColors.length]);
+
+    document.getElementById('visits-tbody').innerHTML = data.map((d, i) => `
+      <tr>
+        <td style="color:var(--text-muted);font-family:'Jost',sans-serif">${i + 1}</td>
+        <td style="font-weight:500">${d.property?.address || d.property?.code || '—'}</td>
+        <td style="color:var(--text-muted)">${d.property?.neighborhood?.name || '—'}</td>
+        <td>$${Number(d.property?.price || 0).toLocaleString()}</td>
+        <td><span class="badge-status s-${d.property?.status}">${label(PROPERTY_STATUS, d.property?.status)}</span></td>
+        <td style="font-weight:600;color:var(--accent-light)">${d.totalVisits}</td>
+      </tr>`).join('');
+  }
+
+  // ── CIERRES ───────────────────────────────────────────────────────────────
+  async function loadClosures() {
+    const res = await fetch(`${API}/reports/closures`).catch(()=>null);
+    if (!res || !res.ok) { showEmpty('closures-list','Sin datos de cierres'); return; }
+    const data = await res.json();
+    if (!data.length) { showEmpty('closures-list','Sin datos de cierres'); return; }
+
+    document.getElementById('c-total-closures').textContent  = data.reduce((s,c) => s + c.totalClosures, 0);
+    document.getElementById('c-total-value').textContent     = '$' + data.reduce((s,c) => s + (c.totalValue||0), 0).toLocaleString();
+    document.getElementById('c-total-commission').textContent = '$' + data.reduce((s,c) => s + (c.totalCommission||0), 0).toLocaleString();
+
+    const rankLabels = ['gold','silver','bronze'];
+    document.getElementById('closures-list').innerHTML = `
+      <div class="card">
+        <div class="card-title">Ranking de asesores por cierres</div>
+        ${data.map((c, i) => {
+      const a = c.agent || {};
+      const initials = (a.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const rankClass = rankLabels[i] || '';
+      const zone = a.assignedZone;
+      const zoneLabel = zone ? [label(CITY, zone.city), label(ZONE, zone.zone)].filter(Boolean).join(' / ') : '—';
+      return `<div class="agent-row">
+            <div class="agent-rank ${rankClass}">${i+1}</div>
+            <div class="agent-avatar" style="background:${avBg[i % avBg.length]};color:${avColors[i % avColors.length]}">${initials}</div>
+            <div class="agent-info">
+              <div class="agent-name">${a.name || '—'}</div>
+              <div class="agent-zone">${zoneLabel}</div>
+            </div>
+            <div class="agent-stats">
+              <div>
+                <div class="agent-stat-val">${c.totalClosures}</div>
+                <div class="agent-stat-label">Cierres</div>
+              </div>
+              <div>
+                <div class="agent-stat-val">$${Number(c.totalValue||0).toLocaleString()}</div>
+                <div class="agent-stat-label">Valor</div>
+              </div>
+              <div>
+                <div class="agent-stat-val">$${Number(c.totalCommission||0).toLocaleString()}</div>
+                <div class="agent-stat-label">Comisión</div>
+              </div>
+            </div>
+          </div>`;
+    }).join('')}
+      </div>`;
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function showEmpty(id, msg) {
+    document.getElementById(id).innerHTML = `<div class="empty-state">${msg}</div>`;
+  }
+  function showEmptyTbody(id, cols) {
+    document.getElementById(id).innerHTML =
+            `<tr><td colspan="${cols}" class="empty-state" style="text-align:center;padding:24px;">Sin datos</td></tr>`;
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadZone();
+  loadPrice();
+  loadVisits();
+  loadClosures();
+</script>
+</body>
+</html>
