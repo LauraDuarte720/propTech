@@ -18,6 +18,7 @@ public class AdminActionLogMapper implements MapperOnlyDto<AdminActionLog, Admin
                 .description(entity.getDescription())
                 .timestamp(entity.getTimestamp())
                 .performedBy(entity.getPerformedBy())
+                .entityId(entity.getEntityId())
                 .build();
     }
 }
