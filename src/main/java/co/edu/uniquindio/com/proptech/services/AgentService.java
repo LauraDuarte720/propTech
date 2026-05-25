@@ -17,6 +17,7 @@ import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +34,11 @@ public class AgentService {
     StructuresMappers structuresMappers;
     AdminActionService  adminActionService;
     GeographicZoneService geographicZoneService;
+    PropertyService propertyService;
 
-    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper, PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers, AdminActionService adminActionService, GeographicZoneService geographicZoneService) {
+    public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper,
+                        PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers,
+                        AdminActionService adminActionService, GeographicZoneService geographicZoneService, @Lazy PropertyService propertyService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
@@ -43,6 +47,7 @@ public class AgentService {
         this.structuresMappers = structuresMappers;
         this.adminActionService = adminActionService;
         this.geographicZoneService = geographicZoneService;
+        this.propertyService = propertyService;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -77,6 +82,7 @@ public class AgentService {
     }
 
     public Visit registerVisit(Visit visit) {
+        propertyService.assertPropertyVisitableAndRequestable(visit.getProperty().getCode());
         Visit saved = visitService.registerVisit(visit);
         Agent agent = saved.getAgent();
         agent.enqueueVisit(saved);
@@ -176,6 +182,7 @@ public class AgentService {
     }
 
     public SupportRequest registerSupportRequest(SupportRequest request) {
+        propertyService.assertPropertyVisitableAndRequestable(request.getProperty().getCode());
         Agent agent = request.getAgent();
         request.setId(CodeGenerator.generateSupportRequestCode());
         request.setStatus(SupportRequestStatus.PENDING);

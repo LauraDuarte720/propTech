@@ -46,6 +46,7 @@ public class PropertyService {
         this.propertyMapper = propertyMapper;
     }
 
+
     public void changePropertyState(Property property, PropertyStatus status) {
         if(propertyRepository.findByCode(property.getCode()).isEmpty()){
             property.setStatus(status);
@@ -134,7 +135,7 @@ public class PropertyService {
     public Property unpublishProperty(String propertyCode) {
         Property property = propertyRepository.findByCode(propertyCode)
                 .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
-        changePropertyState(property, PropertyStatus.NEW);
+        changePropertyState(property, PropertyStatus.INACTIVE);
         return propertyRepository.save(property);
     }
 
@@ -179,9 +180,6 @@ public class PropertyService {
             }
             if (property.getNumBathrooms() != null) {
                 existing.setNumBathrooms(property.getNumBathrooms());
-            }
-            if (property.getStatus() != null) {
-                existing.setStatus(property.getStatus());
             }
             if (property.getAgent() != null) {
                 propertyAssignmentService.assignAgent(existing.getCode(), property.getAgent().getCedula());
@@ -290,6 +288,30 @@ public class PropertyService {
         return result;
     }
 
+    public void assertPropertyVisitableAndRequestable(String propertyCode) {
+        Property property = getPropertyByCode(propertyCode);
+        PropertyStatus status = property.getStatus();
+        if (status != PropertyStatus.ACTIVE && status != PropertyStatus.RESERVED) {
+            throw new PropertyNotOperatableException(propertyCode, status);
+        }
+    }
+
+    public void assertPropertyOperatable(String propertyCode, OperationType operationType) {
+        Property property = getPropertyByCode(propertyCode);
+        PropertyStatus status = property.getStatus();
+
+        if (status == PropertyStatus.RENTED) {
+            if (operationType != OperationType.CONTRACT_RENEWAL &&
+                    operationType != OperationType.DEAL_CANCELLATION) {
+                throw new PropertyNotOperatableException(propertyCode, status);
+            }
+            return;
+        }
+
+        if (status != PropertyStatus.ACTIVE) {
+            throw new PropertyNotOperatableException(propertyCode, status);
+        }
+    }
     public HashTable<City, ArrayList<Property>> getPropertiesByCity() {
         return propertyRepository.getPropertiesByCity();
     }

@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.enums.*;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
+import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.OperationNotUpdatable;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.PurposeMismatchException;
 import co.edu.uniquindio.com.proptech.mappers.impl.AgentMapper;
 import co.edu.uniquindio.com.proptech.domain.model.Agent;
@@ -34,6 +35,10 @@ public class OperationService {
     }
 
     public Operation registerOperation(Operation operation) {
+        propertyService.assertPropertyOperatable(
+                operation.getProperty().getCode(),
+                operation.getOperationType()
+        );
         validatePurposeMatchesOperation(operation.getOperationType(), operation.getProperty());
         operation.setId(CodeGenerator.generateOperationCode());
         operation.setProcessStatus(ProcessStatus.CREATED);
@@ -41,7 +46,7 @@ public class OperationService {
         operation.setCommission(
                 CommissionCalculator.calculate(operation.getOperationType(), operation.getProperty().getPrice())
         );
-        applyPropertyStatus(operation.getOperationType(), operation.getProperty());
+        applyPropertyStatusToCreatedOperation(operation.getOperationType(), operation.getProperty());
         return operationRepository.save(operation);
     }
 
@@ -52,6 +57,11 @@ public class OperationService {
     }
 
     private Operation applyUpdates(Operation existing, Operation incoming) {
+        if (existing.getProcessStatus() == ProcessStatus.CLOSED ||
+                existing.getProcessStatus() == ProcessStatus.CANCELLED) {
+            throw new OperationNotUpdatable(
+                    "Cannot edit a finalized operation: " + existing.getId());
+        }
         applyFieldUpdates(existing, incoming);
         Optional.ofNullable(incoming.getProcessStatus())
                 .ifPresent(status -> applyStatusChange(existing, status));
@@ -81,8 +91,8 @@ public class OperationService {
     }
 
     private void handleClosed(Operation existing) {
-        existing.getAgent().setClosedDeals(existing.getAgent().getClosedDeals() + 1);
-        applyPropertyStatus(existing.getOperationType(), existing.getProperty());
+        existing.getAgent().increaseClosedDeals();
+        applyPropertyStatusToClosedOperation(existing.getOperationType(), existing.getProperty());
         registerNegotiatedInteractionIfApplicable(existing);
     }
 
@@ -98,11 +108,26 @@ public class OperationService {
         }
     }
 
-    private void applyPropertyStatus(OperationType type, Property property) {
+    private void applyPropertyStatusToCreatedOperation(OperationType type, Property property) {
+        switch (type) {
+            case RENT, CONTRACT_RENEWAL, SALE -> propertyService.changePropertyState(property, PropertyStatus.RESERVED);
+            case DEAL_CANCELLATION -> handleDealCancellation(property);
+        }
+    }
+    private void applyPropertyStatusToClosedOperation(OperationType type, Property property) {
         switch (type) {
             case RENT, CONTRACT_RENEWAL -> propertyService.changePropertyState(property, PropertyStatus.RENTED);
-            case SALE -> propertyService.changePropertyState(property, PropertyStatus.SOLD);
-            case DEAL_CANCELLATION -> propertyService.changePropertyState(property, PropertyStatus.ACTIVE);
+            case SALE-> propertyService.changePropertyState(property, PropertyStatus.SOLD);
+        }
+    }
+
+
+    public void handleDealCancellation(Property property) {
+        if(property.getAgent() == null){
+            propertyService.unpublishProperty(property.getCode());
+        }
+        else{
+            propertyService.publishProperty(property.getCode());
         }
     }
 

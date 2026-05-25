@@ -52,7 +52,16 @@ public class PropertyAssignmentService {
 
         agent.removeProperty(property);
         property.removeAgent();
-        propertyService.unpublishProperty(propertyCode);
+
+        PropertyStatus status = property.getStatus();
+        boolean keepStatus = status == PropertyStatus.SOLD
+                || status == PropertyStatus.RENTED
+                || status == PropertyStatus.RESERVED;
+
+        if (!keepStatus) {
+            propertyService.changePropertyState(property, PropertyStatus.INACTIVE);
+        }
+
         propertyRepository.save(property);
         return property;
     }
