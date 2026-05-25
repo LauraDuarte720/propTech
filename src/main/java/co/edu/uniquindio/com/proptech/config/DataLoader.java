@@ -408,6 +408,59 @@ public class DataLoader {
                 .date(LocalDateTime.now().plusDays(3))
                 .visitType(VisitType.NORMAL)
                 .build());
+        // ══════════════════════════════════════════════
+// SUPPORT REQUESTS
+// ══════════════════════════════════════════════
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente1)
+                        .property(prop1)
+                        .agent(agente1)
+                        .message("Necesito informacion adicional sobre opciones de financiamiento.")
+                        .date(LocalDateTime.now().minusDays(2))
+                        .build()
+        );
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente2)
+                        .property(prop2)
+                        .agent(agente2)
+                        .message("Quiero agendar una nueva visita para negociar el precio.")
+                        .date(LocalDateTime.now().minusDays(1))
+                        .build()
+        );
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente3)
+                        .property(prop3)
+                        .agent(agenteSur)
+                        .message("Tengo dudas sobre las condiciones del contrato de arriendo.")
+                        .date(LocalDateTime.now().minusHours(10))
+                        .build()
+        );
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente4)
+                        .property(prop5)
+                        .agent(agente4)
+                        .message("Deseo conocer los impuestos asociados a la propiedad.")
+                        .date(LocalDateTime.now().minusHours(5))
+                        .build()
+        );
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente5)
+                        .property(prop7)
+                        .agent(agente2)
+                        .message("Necesito informacion sobre disponibilidad y parqueaderos.")
+                        .date(LocalDateTime.now().minusMinutes(30))
+                        .build()
+        );
 
         // ══════════════════════════════════════════════
         // 8. OPERACIONES
@@ -497,60 +550,6 @@ public class DataLoader {
                 .desiredPropertyType(PropertyType.APARTMENT)
                 .build());
 // Sin interacciones → lleva "infinito" días inactivo
-
-        // ══════════════════════════════════════════════
-// SUPPORT REQUESTS
-// ══════════════════════════════════════════════
-
-        agentService.registerSupportRequest(
-                SupportRequest.builder()
-                        .client(cliente1)
-                        .property(prop1)
-                        .agent(agente1)
-                        .message("Necesito informacion adicional sobre opciones de financiamiento.")
-                        .date(LocalDateTime.now().minusDays(2))
-                        .build()
-        );
-
-        agentService.registerSupportRequest(
-                SupportRequest.builder()
-                        .client(cliente2)
-                        .property(prop2)
-                        .agent(agente2)
-                        .message("Quiero agendar una nueva visita para negociar el precio.")
-                        .date(LocalDateTime.now().minusDays(1))
-                        .build()
-        );
-
-        agentService.registerSupportRequest(
-                SupportRequest.builder()
-                        .client(cliente3)
-                        .property(prop3)
-                        .agent(agenteSur)
-                        .message("Tengo dudas sobre las condiciones del contrato de arriendo.")
-                        .date(LocalDateTime.now().minusHours(10))
-                        .build()
-        );
-
-        agentService.registerSupportRequest(
-                SupportRequest.builder()
-                        .client(cliente4)
-                        .property(prop5)
-                        .agent(agente4)
-                        .message("Deseo conocer los impuestos asociados a la propiedad.")
-                        .date(LocalDateTime.now().minusHours(5))
-                        .build()
-        );
-
-        agentService.registerSupportRequest(
-                SupportRequest.builder()
-                        .client(cliente5)
-                        .property(prop7)
-                        .agent(agente2)
-                        .message("Necesito informacion sobre disponibilidad y parqueaderos.")
-                        .date(LocalDateTime.now().minusMinutes(30))
-                        .build()
-        );
 
         // Atender solicitudes
         agentService.attendSupportRequest(agente2.getCedula());
