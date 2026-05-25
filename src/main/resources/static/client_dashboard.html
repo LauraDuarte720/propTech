@@ -1033,11 +1033,10 @@
             </select>
           </div>
           <div class="form-group full"><label>Estado de búsqueda</label>
-            <select id="p-search-status">
-              <option value="ACTIVE">Buscando activamente</option>
-              <option value="PAUSED">En pausa</option>
-              <option value="CLOSED">Búsqueda cerrada</option>
-            </select>
+            <div id="p-search-status-display"
+              style="padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;opacity:0.7;">
+              —</div>
+            <input type="hidden" id="p-search-status">
           </div>
         </div>
         <div class="form-actions">
@@ -1328,6 +1327,8 @@
       document.getElementById('p-client-type').value = clientData.clientType || 'BUYER';
       document.getElementById('p-prop-type').value = clientData.desiredPropertyType || 'APARTMENT';
       document.getElementById('p-search-status').value = clientData.searchStatus || 'ACTIVE';
+      const searchLabelDisplay = (typeof SEARCH_STATUS !== 'undefined' ? SEARCH_STATUS[clientData.searchStatus] : null) || clientData.searchStatus || '—';
+      document.getElementById('p-search-status-display').textContent = searchLabelDisplay;
     }
 
     async function saveProfile() {
