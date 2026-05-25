@@ -329,6 +329,33 @@
             pointer-events: none;
         }
 
+        /* Guest Explore button */
+        .btn-ghost-explore {
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-ghost-explore:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--border-hover);
+            color: var(--white);
+        }
+
         /* Error message */
         .error-msg {
             display: none;
@@ -446,6 +473,11 @@
             <span id="btn-text">Iniciar sesión</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
+
+        <a href="client_explore.html" class="btn-ghost-explore">
+            <span>Explorar sin cuenta</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </a>
 
         <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos. Intenta de nuevo.</div>
 
