@@ -1038,6 +1038,62 @@
               —</div>
             <input type="hidden" id="p-search-status">
           </div>
+          <div class="card">
+            <div class="card-title">📍 Mis zonas de interés
+              <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">
+      Agrega las zonas donde buscas inmuebles
+    </span>
+            </div>
+
+            <!-- Zonas seleccionadas -->
+            <div id="selected-zones" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;min-height:36px;">
+              <div style="color:var(--text-muted);font-size:13px;" id="no-zones-msg">Sin zonas de interés aún</div>
+            </div>
+
+            <!-- Formulario para agregar zona -->
+            <div style="background:var(--bg);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:14px;">
+              <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">
+                Agregar zona
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;">
+                <div class="form-group" style="margin:0">
+                  <label>Ciudad</label>
+                  <select id="z-city" class="form-group select" style="padding:9px 12px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
+                    <option value="ARMENIA">Armenia</option>
+                    <option value="BOGOTA">Bogotá</option>
+                    <option value="MEDELLIN">Medellín</option>
+                    <option value="CALI">Cali</option>
+                    <option value="BARRANQUILLA">Barranquilla</option>
+                    <option value="PEREIRA">Pereira</option>
+                    <option value="MANIZALES">Manizales</option>
+                    <option value="BUCARAMANGA">Bucaramanga</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label>Zona</label>
+                  <select id="z-zone" style="padding:9px 12px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
+                    <option value="NORTE">Norte</option>
+                    <option value="SUR">Sur</option>
+                    <option value="ORIENTE">Oriente</option>
+                    <option value="OCCIDENTE">Occidente</option>
+                    <option value="CENTRO">Centro</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label>Barrio (opcional)</label>
+                  <input type="text" id="z-neighborhood" placeholder="Ej: Laureles"
+                         style="padding:9px 12px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
+                </div>
+                <button class="btn btn-primary" onclick="addZone()" style="height:38px;white-space:nowrap;">
+                  + Agregar
+                </button>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;">
+              <button class="btn btn-primary" onclick="saveInterestZones()">Guardar zonas de interés</button>
+            </div>
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn btn-ghost" onclick="loadProfile()">Cancelar</button>
@@ -1128,6 +1184,74 @@
       if (el) el.classList.add('active');
     }
 
+    // Lista en memoria de zonas seleccionadas
+    let interestZones = []; // [{city, zone, nameNeighborhood}]
+
+    async function loadInterestZones() {
+      const res = await fetch(`${API}/clients/${user.cedula}/interest-zones`).catch(()=>null);
+      if (res?.ok) {
+        const zones = await res.json();
+        interestZones = zones.map(z => ({
+          city: z.city,
+          zone: z.zone,
+          nameNeighborhood: z.nameNeighborhood || ''
+        }));
+        renderSelectedZones();
+      }
+    }
+
+    function renderSelectedZones() {
+      const container = document.getElementById('selected-zones');
+      const noMsg = document.getElementById('no-zones-msg');
+      if (!interestZones.length) {
+        noMsg.style.display = 'block';
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;" id="no-zones-msg">Sin zonas de interés aún</div>';
+        return;
+      }
+      container.innerHTML = interestZones.map((z, i) => `
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;
+      background:rgba(74,111,227,0.1);border:1px solid rgba(74,111,227,0.2);
+      font-family:'Jost',sans-serif;font-size:12px;color:var(--accent);">
+      📍 ${z.nameNeighborhood ? z.nameNeighborhood + ' · ' : ''}${label(ZONE, z.zone)} · ${label(CITY, z.city)}
+      <button onclick="removeZone(${i})" style="background:none;border:none;cursor:pointer;
+        color:var(--accent);font-size:14px;line-height:1;padding:0;margin-left:2px;">×</button>
+    </div>`).join('');
+    }
+
+    function addZone() {
+      const city         = document.getElementById('z-city').value;
+      const zone         = document.getElementById('z-zone').value;
+      const neighborhood = document.getElementById('z-neighborhood').value.trim();
+
+      // Evitar duplicados
+      const exists = interestZones.some(z =>
+              z.city === city && z.zone === zone &&
+              (z.nameNeighborhood || '') === neighborhood
+      );
+      if (exists) { alert('Ya agregaste esa zona'); return; }
+
+      interestZones.push({ city, zone, nameNeighborhood: neighborhood || null });
+      document.getElementById('z-neighborhood').value = '';
+      renderSelectedZones();
+    }
+
+    function removeZone(index) {
+      interestZones.splice(index, 1);
+      renderSelectedZones();
+    }
+
+    async function saveInterestZones() {
+      const res = await fetch(`${API}/clients/${user.cedula}/interest-zones`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(interestZones)
+      });
+      if (res.ok) alert('Zonas de interés actualizadas exitosamente');
+      else { const e = await res.json(); alert(e.message || 'Error al guardar zonas'); }
+    }
+
+    // Agregar CITY y ZONE a proptech_utils.js
+
     // ── Modal de detalle de propiedad (inline, sin salir del dashboard) ──
     function openDetail(prop) {
       if (!prop) return;
@@ -1141,6 +1265,7 @@
       document.getElementById('d-baths').textContent = prop.numBathrooms ?? '—';
       document.getElementById('d-area').textContent = prop.area ? prop.area + 'm²' : '—';
 
+
       // Asesor
       const agentEl = document.getElementById('d-agent');
       if (prop.agent) {
@@ -1152,6 +1277,8 @@
       } else {
         agentEl.style.display = 'none';
       }
+
+
 
       // Acciones: Guardar + Solicitar info + Ir a Explorar
       const isSaved = savedProps.has(prop.code);
@@ -1460,6 +1587,7 @@
     loadHistory();
     loadClientVisits();
     loadProfile();
+    loadInterestZones();
   </script>
 </body>
 
