@@ -39,31 +39,22 @@
     .btn-sm{padding:5px 12px;font-size:12px;}
     .btn svg{width:14px;height:14px;}
     .content{flex:1;overflow-y:auto;padding:28px;}
-
-    /* Banner cola */
     .priority-banner{background:linear-gradient(135deg,rgba(239,159,39,0.08),rgba(239,159,39,0.03));border:1px solid rgba(239,159,39,0.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
     .priority-banner-left{display:flex;align-items:center;gap:12px;}
     .priority-icon{width:36px;height:36px;border-radius:9px;background:rgba(239,159,39,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;}
     .priority-title{font-size:14px;font-weight:500;color:var(--text);}
     .priority-sub{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
-
-    /* Tabs */
     .tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;}
     .tab{padding:7px 18px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--text-muted);transition:all 0.15s;border:none;background:none;}
     .tab.active{background:var(--accent);color:white;font-weight:500;}
-
-    /* Table */
     .table-wrap{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
     table{width:100%;border-collapse:collapse;}
     th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
     td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
     tr:last-child td{border-bottom:none;}
     tr:hover td{background:rgba(74,111,227,0.02);}
-
-    /* Fila "siguiente en cola" destacada */
     tr.is-next td{background:rgba(74,111,227,0.04);}
     tr.is-next td:first-child{border-left:3px solid var(--accent);}
-
     .td-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
     .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;display:inline-block;}
     .b-PENDING{background:rgba(74,111,227,0.1);color:var(--accent);}
@@ -74,8 +65,6 @@
     .vip-tag{font-size:10px;padding:2px 7px;border-radius:99px;background:rgba(239,159,39,0.15);color:#EF9F27;font-family:'Jost',sans-serif;font-weight:500;}
     .next-tag{font-size:10px;padding:2px 7px;border-radius:99px;background:rgba(74,111,227,0.15);color:var(--accent);font-family:'Jost',sans-serif;font-weight:600;}
     .locked-msg{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);font-style:italic;}
-
-    /* Modal */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
     .modal{background:white;border-radius:16px;padding:28px;width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:fadeUp 0.2s ease;}
@@ -87,6 +76,7 @@
     .form-group select,.form-group input{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;}
     .form-group select:focus,.form-group input:focus{border-color:var(--accent);}
     .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+    .empty-notice{font-family:'Jost',sans-serif;font-size:12px;color:#EF9F27;padding:8px 12px;background:rgba(239,159,39,0.08);border-radius:8px;border:1px solid rgba(239,159,39,0.2);}
   </style>
 </head>
 <body>
@@ -147,7 +137,7 @@
             <th>Inmueble</th><th>Cliente</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Notas post-visita</th><th>Acciones</th>
           </tr></thead>
           <tbody id="visits-tbody">
-          <tr><td colspan="6" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
+          <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -161,7 +151,11 @@
     <div class="modal-title">Agendar visita <button onclick="closeNewVisit()">×</button></div>
     <div class="form-group">
       <label>Inmueble</label>
+      <!-- Only ACTIVE or RESERVED properties are loaded here -->
       <select id="v-prop"></select>
+      <span id="v-prop-empty" class="empty-notice" style="display:none;">
+        No tienes inmuebles activos o reservados disponibles para agendar visitas.
+      </span>
     </div>
     <div class="form-group">
       <label>Cliente</label>
@@ -180,7 +174,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeNewVisit()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveVisit()">Agendar</button>
+      <button class="btn btn-primary" id="btn-save-visit" onclick="saveVisit()">Agendar</button>
     </div>
   </div>
 </div>
@@ -198,7 +192,6 @@
         <option value="CANCELED">Cancelar</option>
       </select>
     </div>
-    <!-- Notas post-visita: solo visible al marcar COMPLETED -->
     <div class="form-group" id="notes-group" style="display:none;">
       <label>Notas post-visita</label>
       <textarea id="post-visit-notes" rows="3"
@@ -212,7 +205,7 @@
   </div>
 </div>
 
-<!-- Modal reprogramar — solo fecha -->
+<!-- Modal reprogramar -->
 <div class="modal-overlay" id="modal-reschedule">
   <div class="modal">
     <div class="modal-title">Reprogramar visita <button onclick="closeReschedule()">×</button></div>
@@ -240,9 +233,8 @@
 
   let allVisits = [];
   let currentTab = 'all';
-  let peekId = null; // id de la visita en el frente de la cola
+  let peekId = null;
 
-  // ── Fallbacks por si proptech_utils no los define ────────────────
   if (typeof VISIT_STATUS === 'undefined') {
     window.VISIT_STATUS = { PENDING:'Pendiente', CONFIRMED:'Confirmada', COMPLETED:'Completada', CANCELED:'Cancelada', RESCHEDULED:'Reprogramada' };
   }
@@ -250,22 +242,17 @@
     window.label = (map, key) => map[key] || key;
   }
 
-  // ── Carga principal ──────────────────────────────────────────────
   async function loadVisits() {
     const res = await fetch(`${API}/visits/agent/${user.cedula}`).catch(()=>null);
     if (!res?.ok) return;
     allVisits = await res.json();
 
-    // Ordenar: primero por fecha, si misma fecha VIP antes que Normal
     allVisits.sort((a, b) => {
       const dateDiff = new Date(a.date) - new Date(b.date);
       if (dateDiff !== 0) return dateDiff;
-      const pa = a.visitType === 'VIP' ? 0 : 1;
-      const pb = b.visitType === 'VIP' ? 0 : 1;
-      return pa - pb;
+      return (a.visitType === 'VIP' ? 0 : 1) - (b.visitType === 'VIP' ? 0 : 1);
     });
 
-    // Peek: primera visita activa (PENDING, CONFIRMED o RESCHEDULED)
     const ACTIVE_STATUSES = ['PENDING', 'CONFIRMED', 'RESCHEDULED'];
     const peek = allVisits.find(v => ACTIVE_STATUSES.includes(v.status));
     peekId = peek?.id || null;
@@ -297,16 +284,14 @@
     }
 
     const ACTIVE_STATUSES = ['PENDING', 'CONFIRMED', 'RESCHEDULED'];
-
     tbody.innerHTML = visits.map(v => {
       const isVip  = v.visitType === 'VIP';
       const isNext = v.id === peekId;
-      const isDone = !ACTIVE_STATUSES.includes(v.status); // COMPLETED o CANCELED
+      const isDone = !ACTIVE_STATUSES.includes(v.status);
       const dt = v.date
               ? new Date(v.date).toLocaleDateString('es-CO', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})
               : '—';
 
-      // Acciones: solo la peek y si no está terminada
       let actions = '';
       if (isNext && !isDone) {
         actions = `
@@ -316,7 +301,6 @@
         actions = `<span class="locked-msg">En cola</span>`;
       }
 
-      // Notas post-visita
       const notes = v.postVisitNotes
               ? `<span style="font-size:12px;color:var(--text-muted);font-family:'Jost',sans-serif;" title="${v.postVisitNotes}">
              ${v.postVisitNotes.length > 50 ? v.postVisitNotes.slice(0, 50) + '…' : v.postVisitNotes}
@@ -339,21 +323,38 @@
   }
 
   // ── Selects para nueva visita ────────────────────────────────────
+  // Only loads the agent's own properties that are ACTIVE or RESERVED
   async function loadSelects() {
     const [propsRes, clientsRes] = await Promise.all([
-      fetch(`${API}/properties`).catch(()=>null),
+      fetch(`${API}/agents/${user.cedula}/properties`).catch(()=>null),
       fetch(`${API}/clients`).catch(()=>null)
     ]);
+
     if (propsRes?.ok) {
       const props = await propsRes.json();
-      const mine = props.filter(p => p.agent?.cedula === user.cedula);
-      document.getElementById('v-prop').innerHTML = mine.map(p =>
-              `<option value="${p.code}">${p.address || p.code}</option>`).join('');
+      // Only ACTIVE or RESERVED properties can receive visits (business rule)
+      const visitable = props.filter(p => p.status === 'ACTIVE' || p.status === 'RESERVED');
+      const propSelect  = document.getElementById('v-prop');
+      const emptyNotice = document.getElementById('v-prop-empty');
+      const saveBtn     = document.getElementById('btn-save-visit');
+
+      if (visitable.length === 0) {
+        propSelect.style.display  = 'none';
+        emptyNotice.style.display = 'block';
+        saveBtn.disabled = true;
+        saveBtn.style.opacity = '0.5';
+      } else {
+        propSelect.innerHTML = visitable.map(p =>
+                `<option value="${p.code}">${p.address || p.code} (${p.status})</option>`
+        ).join('');
+      }
     }
+
     if (clientsRes?.ok) {
       const clients = await clientsRes.json();
       document.getElementById('v-client').innerHTML = clients.map(c =>
-              `<option value="${c.cedula}">${c.name} (${c.cedula})</option>`).join('');
+              `<option value="${c.cedula}">${c.name} (${c.cedula})</option>`
+      ).join('');
     }
   }
 
@@ -369,14 +370,18 @@
       date:       document.getElementById('v-date').value,
       visitType:  document.getElementById('v-type').value
     };
-    const res = await fetch(`${API}/visits`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    // Calls AgentController.registerVisit — this is the correct entry point
+    // (it validates property status and enqueues the visit in the agent's priority queue)
+    const res = await fetch(`${API}/agents/${user.cedula}/visits`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
     });
     if (res.ok) { closeNewVisit(); loadVisits(); }
     else { const e = await res.json(); alert(e.message || 'Error al agendar'); }
   }
 
-  // ── Modal cambiar estado (solo peek) ────────────────────────────
+  // ── Modal cambiar estado ─────────────────────────────────────────
   function toggleNotes(status) {
     document.getElementById('notes-group').style.display = status === 'COMPLETED' ? 'flex' : 'none';
   }
@@ -395,11 +400,9 @@
     const status = document.getElementById('new-status').value;
     const notes  = document.getElementById('post-visit-notes').value.trim();
 
-    // 1. Cambiar estado
     const res = await fetch(`${API}/visits/${id}/status?status=${status}`, { method: 'PATCH' });
     if (!res.ok) { const e = await res.json(); alert(e.message || 'Error al cambiar estado'); return; }
 
-    // 2. Si es COMPLETED y hay notas, guardarlas con PATCH general
     if (status === 'COMPLETED' && notes) {
       await fetch(`${API}/visits/${id}`, {
         method: 'PATCH',
@@ -412,14 +415,14 @@
     loadVisits();
   }
 
-  // ── Modal reprogramar (solo fecha, solo peek) ────────────────────
+  // ── Modal reprogramar ────────────────────────────────────────────
   function openReschedule(id, currentDate) {
     document.getElementById('reschedule-visit-id').value = id;
     if (currentDate) {
       const dt = new Date(currentDate);
       const pad = n => String(n).padStart(2, '0');
-      const local = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
-      document.getElementById('reschedule-date').value = local;
+      document.getElementById('reschedule-date').value =
+              `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     }
     document.getElementById('modal-reschedule').classList.add('open');
   }
@@ -430,7 +433,6 @@
     const date = document.getElementById('reschedule-date').value;
     if (!date) { alert('Selecciona una fecha'); return; }
 
-    // 1. Actualizar la fecha
     const res = await fetch(`${API}/visits/${id}`, {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
@@ -438,7 +440,6 @@
     });
     if (!res.ok) { const e = await res.json(); alert(e.message || 'Error al reprogramar'); return; }
 
-    // 2. Cambiar estado a RESCHEDULED
     await fetch(`${API}/visits/${id}/status?status=RESCHEDULED`, { method: 'PATCH' });
 
     closeReschedule();

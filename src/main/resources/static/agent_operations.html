@@ -30,6 +30,7 @@
     .user-role{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);}
     .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
     .page-title{font-size:18px;font-weight:500;}
     .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
     .btn-primary{background:var(--accent);color:white;}
@@ -38,7 +39,6 @@
     .btn-ghost:hover{background:#eef0f8;}
     .btn-sm{padding:5px 12px;font-size:12px;}
     .btn-success{background:rgba(29,158,117,0.1);color:#1D9E75;border:1px solid rgba(29,158,117,0.2);}
-    .btn-danger{background:rgba(226,75,74,0.1);color:#E24B4A;border:1px solid rgba(226,75,74,0.2);}
     .btn svg{width:14px;height:14px;}
     .content{flex:1;overflow-y:auto;padding:28px;}
     .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
@@ -58,7 +58,6 @@
     .b-CLOSED{background:rgba(29,158,117,0.1);color:#1D9E75;}
     .b-CANCELLED{background:rgba(88,94,99,0.1);color:var(--text-muted);}
     .date-cell{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
-    .date-range{display:flex;flex-direction:column;gap:2px;}
     .date-end-missing{font-family:'Jost',sans-serif;font-size:11px;color:var(--border);}
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
@@ -69,12 +68,13 @@
     .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
     .form-group label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
     .form-group select,.form-group input{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;}
-    .form-group select:focus{border-color:var(--accent);}
-    .form-group input:disabled{opacity:0.6;}
+    .form-group select:focus,.form-group input:focus{border-color:var(--accent);}
+    .form-group input:disabled{opacity:0.5;cursor:not-allowed;}
     .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
     .comm-highlight{background:rgba(74,111,227,0.06);border-radius:8px;padding:10px 14px;margin-top:12px;display:flex;justify-content:space-between;align-items:center;}
     .comm-highlight-label{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
     .comm-highlight-val{font-size:14px;font-weight:600;color:var(--accent);}
+    .form-hint{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
   </style>
 </head>
 <body>
@@ -103,12 +103,18 @@
   <div class="main">
     <div class="topbar">
       <span class="page-title">Operaciones</span>
-      <select onchange="filterByStatus(this.value)" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;">
-        <option value="">Todos los estados</option>
-        <option value="CREATED">Creadas</option>
-        <option value="CLOSED">Cerradas</option>
-        <option value="CANCELLED">Canceladas</option>
-      </select>
+      <div class="topbar-right">
+        <select onchange="filterByStatus(this.value)" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:13px;background:var(--bg);color:var(--text);outline:none;">
+          <option value="">Todos los estados</option>
+          <option value="CREATED">Creadas</option>
+          <option value="CLOSED">Cerradas</option>
+          <option value="CANCELLED">Canceladas</option>
+        </select>
+        <button class="btn btn-primary" onclick="openNewOperation()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nueva operación
+        </button>
+      </div>
     </div>
 
     <div class="content">
@@ -149,11 +155,58 @@
   </div>
 </div>
 
+<!-- Modal nueva operación -->
+<div class="modal-overlay" id="modal-new-op">
+  <div class="modal">
+    <div class="modal-title">Nueva operación <button onclick="closeNewOperation()">×</button></div>
+    <div class="form-group">
+      <label>Tipo de operación</label>
+      <select id="op-type" onchange="onTypeChange(this.value)">
+        <option value="SALE">Venta</option>
+        <option value="RENT">Arriendo</option>
+        <option value="CONTRACT_RENEWAL">Renovación de contrato</option>
+        <option value="DEAL_CANCELLATION">Cancelación de negocio</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Inmueble</label>
+      <select id="op-prop"></select>
+    </div>
+    <div class="form-group">
+      <label>Cliente</label>
+      <select id="op-client"></select>
+    </div>
+    <div class="form-group">
+      <label>Fecha inicio</label>
+      <input type="date" id="op-date-start">
+    </div>
+    <div class="form-group" id="op-date-end-group" style="display:none;">
+      <label>Fecha fin <span style="color:#E24B4A;">*</span></label>
+      <input type="date" id="op-date-end">
+      <span class="form-hint">Obligatorio para renovaciones de contrato</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeNewOperation()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNewOperation()">Registrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal cambiar estado -->
+<!--
+  The PATCH /{id} endpoint calls operationMapper.toUpdate(dto) which tries to resolve
+  propertyId/clientId/agentId even when null, causing "key cannot be null".
+  Fix: send the existing property/client/agent IDs alongside the new status so the
+  mapper can resolve them without blowing up.
+  We cache the full operation object when opening this modal.
+-->
 <div class="modal-overlay" id="modal-status">
   <div class="modal">
     <div class="modal-title">Actualizar operación <button onclick="closeStatus()">×</button></div>
     <input type="hidden" id="op-id">
+    <input type="hidden" id="op-prop-id-cached">
+    <input type="hidden" id="op-client-id-cached">
+    <input type="hidden" id="op-agent-id-cached">
     <div class="form-group">
       <label>Inmueble</label>
       <input type="text" id="op-label" disabled>
@@ -186,12 +239,12 @@
   }
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-  // Fallbacks
-  if (typeof label === 'undefined')         window.label = (map, key) => map[key] || key;
+  if (typeof label === 'undefined')          window.label = (map, key) => map[key] || key;
   if (typeof OPERATION_TYPE === 'undefined') window.OPERATION_TYPE = { SALE:'Venta', RENT:'Arriendo', CONTRACT_RENEWAL:'Renovación', DEAL_CANCELLATION:'Cancelación' };
   if (typeof PROCESS_STATUS === 'undefined') window.PROCESS_STATUS  = { CREATED:'Creada', CLOSED:'Cerrada', CANCELLED:'Cancelada' };
 
   let allOps = [];
+  let agentProperties = [];
 
   function fmtDate(d) {
     if (!d) return '<span class="date-end-missing">—</span>';
@@ -233,9 +286,7 @@
         <td class="date-cell">${fmtDate(o.dateFinal)}</td>
         <td><span class="badge b-${o.processStatus}">${label(PROCESS_STATUS, o.processStatus)}</span></td>
         <td><div class="td-actions">
-          ${canChange
-              ? `<button class="btn btn-sm btn-success" onclick="openStatus('${o.id}','${o.property?.address || o.property?.code || '—'}',${o.commission || 0})">Cambiar estado</button>`
-              : '—'}
+          ${canChange ? `<button class="btn btn-sm btn-success" onclick="openStatus('${o.id}')">Cambiar estado</button>` : '—'}
         </div></td>
       </tr>`;
     }).join('');
@@ -245,24 +296,116 @@
     renderOps(s ? allOps.filter(o => o.processStatus === s) : allOps);
   }
 
-  function openStatus(id, lbl, comm) {
-    document.getElementById('op-id').value = id;
-    document.getElementById('op-label').value = lbl;
-    document.getElementById('op-comm-preview').textContent = '$' + Number(comm).toLocaleString();
+  // ── Modal nueva operación ────────────────────────────────────────
+  async function openNewOperation() {
+    if (agentProperties.length === 0) {
+      const res = await fetch(`${API}/agents/${user.cedula}/properties`).catch(()=>null);
+      if (res?.ok) agentProperties = await res.json();
+    }
+    const clientsRes = await fetch(`${API}/clients`).catch(()=>null);
+    if (clientsRes?.ok) {
+      const clients = await clientsRes.json();
+      document.getElementById('op-client').innerHTML = clients.map(c =>
+              `<option value="${c.cedula}">${c.name} (${c.cedula})</option>`
+      ).join('');
+    }
+    document.getElementById('op-type').value    = 'SALE';
+    document.getElementById('op-date-start').value = '';
+    document.getElementById('op-date-end').value   = '';
+    onTypeChange('SALE');
+    document.getElementById('modal-new-op').classList.add('open');
+  }
+
+  function closeNewOperation() { document.getElementById('modal-new-op').classList.remove('open'); }
+
+  function onTypeChange(type) {
+    const needsEndDate = type === 'CONTRACT_RENEWAL';
+    document.getElementById('op-date-end-group').style.display = needsEndDate ? 'flex' : 'none';
+
+    // assertPropertyOperatable rules:
+    // SALE / RENT               → ACTIVE only
+    // CONTRACT_RENEWAL          → RENTED only
+    // DEAL_CANCELLATION         → RENTED only
+    const allowedStatuses = (type === 'CONTRACT_RENEWAL' || type === 'DEAL_CANCELLATION')
+            ? ['RENTED']
+            : ['ACTIVE'];
+
+    const eligible = agentProperties.filter(p => allowedStatuses.includes(p.status));
+    const sel = document.getElementById('op-prop');
+    sel.innerHTML = eligible.length
+            ? eligible.map(p => `<option value="${p.code}">${p.address || p.code} (${p.status})</option>`).join('')
+            : `<option value="" disabled selected>Sin inmuebles disponibles para este tipo</option>`;
+  }
+
+  async function saveNewOperation() {
+    const type      = document.getElementById('op-type').value;
+    const propCode  = document.getElementById('op-prop').value;
+    const clientId  = document.getElementById('op-client').value;
+    const dateStart = document.getElementById('op-date-start').value;
+    const dateEnd   = document.getElementById('op-date-end').value;
+
+    if (!propCode)  { alert('Selecciona un inmueble'); return; }
+    if (!clientId)  { alert('Selecciona un cliente');  return; }
+    if (!dateStart) { alert('Ingresa la fecha de inicio'); return; }
+    if (type === 'CONTRACT_RENEWAL' && !dateEnd) {
+      alert('La fecha fin es obligatoria para renovaciones de contrato');
+      return;
+    }
+
+    const res = await fetch(`${API}/operations`, {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        propertyId:    propCode,
+        clientId:      clientId,
+        agentId:       user.cedula,
+        operationType: type,
+        dateInitial:   dateStart,
+        dateFinal:     dateEnd || null
+      })
+    });
+    if (res.ok) { closeNewOperation(); load(); }
+    else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al registrar la operación'); }
+  }
+
+  // ── Modal cambiar estado ─────────────────────────────────────────
+  // Opens with the full cached operation so we can send all required IDs
+  // (OperationMapper.toUpdate resolves property/client/agent by ID — they can't be null)
+  function openStatus(id) {
+    const op = allOps.find(o => o.id === id);
+    if (!op) return;
+    document.getElementById('op-id').value              = op.id;
+    document.getElementById('op-prop-id-cached').value  = op.property?.code  || '';
+    document.getElementById('op-client-id-cached').value= op.client?.cedula  || '';
+    document.getElementById('op-agent-id-cached').value = op.agent?.cedula   || '';
+    document.getElementById('op-label').value           = op.property?.address || op.property?.code || '—';
+    document.getElementById('op-comm-preview').textContent = '$' + Number(op.commission || 0).toLocaleString();
+    document.getElementById('new-status').value = 'CLOSED';
     document.getElementById('modal-status').classList.add('open');
   }
   function closeStatus() { document.getElementById('modal-status').classList.remove('open'); }
 
   async function saveStatus() {
-    const id     = document.getElementById('op-id').value;
-    const status = document.getElementById('new-status').value;
+    const id       = document.getElementById('op-id').value;
+    const status   = document.getElementById('new-status').value;
+    const propId   = document.getElementById('op-prop-id-cached').value;
+    const clientId = document.getElementById('op-client-id-cached').value;
+    const agentId  = document.getElementById('op-agent-id-cached').value;
+
+    // Send all required IDs so OperationMapper.toUpdate() can resolve entities without NPE
     const res = await fetch(`${API}/operations/${id}`, {
-      method: 'PATCH',
+      method:  'PATCH',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ id, processStatus: status })
+      body: JSON.stringify({
+        id,
+        propertyId:    propId,
+        clientId:      clientId,
+        agentId:       agentId,
+        processStatus: status
+      })
     });
     if (res.ok) { closeStatus(); load(); }
-    else { const e = await res.json(); alert(e.message || 'Error'); }
+    else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al actualizar la operación'); }
   }
 
   load();

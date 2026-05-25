@@ -35,18 +35,16 @@
         .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;}
         .btn-ghost{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
         .btn-ghost:hover{background:#eef0f8;}
+        .btn-primary{background:var(--accent);color:white;}
+        .btn-primary:hover{background:var(--accent-light);}
         .btn svg{width:14px;height:14px;}
         .content{flex:1;overflow-y:auto;padding:28px;}
-
-        /* Filters */
         .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
         .search-box{flex:1;min-width:200px;position:relative;}
         .search-box input{width:100%;padding:9px 14px 9px 36px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border 0.15s;}
         .search-box input:focus{border-color:var(--accent);}
         .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
         select{padding:9px 14px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
-
-        /* Property cards grid */
         .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
         .prop-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;}
         .prop-card:hover{box-shadow:0 4px 20px rgba(74,111,227,0.1);border-color:rgba(74,111,227,0.25);}
@@ -74,16 +72,14 @@
         .prop-btn svg{width:13px;height:13px;}
         .prop-btn-visit{background:rgba(74,111,227,0.08);color:var(--accent);}
         .prop-btn-visit:hover{background:rgba(74,111,227,0.15);}
+        .prop-btn-visit:disabled{opacity:0.4;cursor:not-allowed;}
         .prop-btn-op{background:rgba(29,158,117,0.08);color:#1D9E75;}
         .prop-btn-op:hover{background:rgba(29,158,117,0.15);}
-
-        /* Empty state */
+        .prop-btn-op:disabled{opacity:0.4;cursor:not-allowed;}
         .empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
         .empty-icon{font-size:48px;margin-bottom:12px;}
         .empty-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;}
         .empty-sub{font-size:13px;}
-
-        /* Modal */
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
         .modal-overlay.open{display:flex;}
         .modal{background:white;border-radius:16px;padding:28px;width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:fadeUp 0.2s ease;}
@@ -96,8 +92,7 @@
         .form-group input:focus,.form-group select:focus{border-color:var(--accent);}
         .form-group input:disabled{opacity:0.6;}
         .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
-        .btn-primary{background:var(--accent);color:white;}
-        .btn-primary:hover{background:var(--accent-light);}
+        .form-hint{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
     </style>
 </head>
 <body>
@@ -189,6 +184,7 @@
             <label>Inmueble</label>
             <input type="text" id="op-label" disabled>
             <input type="hidden" id="op-code">
+            <input type="hidden" id="op-status">
         </div>
         <div class="form-group">
             <label>Cliente</label>
@@ -196,20 +192,22 @@
         </div>
         <div class="form-group">
             <label>Tipo de operación</label>
-            <select id="op-type">
-                <option value="SALE">Venta (comisión 3%)</option>
-                <option value="RENT">Arriendo (comisión 8%)</option>
-                <option value="CONTRACT_RENEWAL">Renovación de contrato</option>
-                <option value="DEAL_CANCELLATION">Cancelación de trato</option>
-            </select>
+            <!--
+              Options are filtered dynamically in openOp() based on property status:
+              ACTIVE  → SALE, RENT
+              RENTED  → CONTRACT_RENEWAL, DEAL_CANCELLATION
+              RESERVED → DEAL_CANCELLATION only
+            -->
+            <select id="op-type"></select>
         </div>
         <div class="form-group">
             <label>Fecha inicio</label>
             <input type="date" id="op-init">
         </div>
-        <div class="form-group">
-            <label>Fecha fin</label>
+        <div class="form-group" id="op-end-group" style="display:none;">
+            <label>Fecha fin <span style="color:#E24B4A;">*</span></label>
             <input type="date" id="op-end">
+            <span class="form-hint">Obligatorio para renovaciones de contrato</span>
         </div>
         <div class="modal-actions">
             <button class="btn btn-ghost" onclick="closeOp()">Cancelar</button>
@@ -219,6 +217,17 @@
 </div>
 
 <script>
+    // Maps for status → allowed operation types (mirrors assertPropertyOperatable in PropertyService)
+    const OPS_BY_STATUS = {
+        ACTIVE:   [{ v:'SALE', l:'Venta' }, { v:'RENT', l:'Arriendo' }],
+        RENTED:   [{ v:'CONTRACT_RENEWAL', l:'Renovación de contrato' }, { v:'DEAL_CANCELLATION', l:'Cancelación de negocio' }],
+        RESERVED: [{ v:'DEAL_CANCELLATION', l:'Cancelación de negocio' }]
+    };
+    // Statuses that can receive visits (mirrors assertPropertyVisitableAndRequestable)
+    const VISITABLE = ['ACTIVE', 'RESERVED'];
+    // Statuses that can have new operations
+    const OPERABLE  = ['ACTIVE', 'RENTED', 'RESERVED'];
+
     const API = 'http://localhost:8080';
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     if (!user.role) window.location.href = 'proptech_login.html';
@@ -228,20 +237,25 @@
     }
     function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-    let allProps = [];
+    // Fallbacks in case proptech_utils hasn't loaded yet
+    if (typeof label === 'undefined')            window.label = (map, key) => map[key] || key;
+    if (typeof PROPERTY_TYPE === 'undefined')    window.PROPERTY_TYPE    = {};
+    if (typeof PROPERTY_STATUS === 'undefined')  window.PROPERTY_STATUS  = { ACTIVE:'Activo', NEW:'Nuevo', RESERVED:'Reservado', SOLD:'Vendido', INACTIVE:'Inactivo', RENTED:'Arrendado' };
+    if (typeof PROPERTY_PURPOSE === 'undefined') window.PROPERTY_PURPOSE = { RENT:'Arriendo', SALE:'Venta' };
+
+    let allProps   = [];
     let allClients = [];
 
     async function load() {
         const [propsRes, clientsRes] = await Promise.all([
-            fetch(`${API}/properties`),
-            fetch(`${API}/clients`)
+            fetch(`${API}/agents/${user.cedula}/properties`).catch(()=>null),
+            fetch(`${API}/clients`).catch(()=>null)
         ]);
-        if (propsRes.ok) {
-            const all = await propsRes.json();
-            allProps = all.filter(p => p.agent?.cedula === user.cedula);
+        if (propsRes?.ok) {
+            allProps = await propsRes.json();
             renderProps(allProps);
         }
-        if (clientsRes.ok) {
+        if (clientsRes?.ok) {
             allClients = await clientsRes.json();
             const opts = allClients.map(c=>`<option value="${c.cedula}">${c.name} (${c.cedula})</option>`).join('');
             document.getElementById('v-client').innerHTML = opts;
@@ -255,7 +269,10 @@
             grid.innerHTML = `<div class="empty"><div class="empty-icon">🏠</div><div class="empty-title">Sin inmuebles asignados</div><div class="empty-sub">El administrador aún no te ha asignado inmuebles</div></div>`;
             return;
         }
-        grid.innerHTML = props.map(p => `
+        grid.innerHTML = props.map(p => {
+            const canVisit = VISITABLE.includes(p.status);
+            const canOp    = OPERABLE.includes(p.status);
+            return `
       <div class="prop-card">
         <div class="prop-card-header">
           <div class="prop-card-type">${label(PROPERTY_TYPE, p.propertyType)}</div>
@@ -264,18 +281,9 @@
         </div>
         <div class="prop-card-body">
           <div class="prop-stats">
-            <div class="prop-stat">
-              <div class="prop-stat-val">${p.numBedrooms||'—'}</div>
-              <div class="prop-stat-label">Habitaciones</div>
-            </div>
-            <div class="prop-stat">
-              <div class="prop-stat-val">${p.numBathrooms||'—'}</div>
-              <div class="prop-stat-label">Baños</div>
-            </div>
-            <div class="prop-stat">
-              <div class="prop-stat-val">${p.area||'—'}</div>
-              <div class="prop-stat-label">m²</div>
-            </div>
+            <div class="prop-stat"><div class="prop-stat-val">${p.numBedrooms||'—'}</div><div class="prop-stat-label">Habitaciones</div></div>
+            <div class="prop-stat"><div class="prop-stat-val">${p.numBathrooms||'—'}</div><div class="prop-stat-label">Baños</div></div>
+            <div class="prop-stat"><div class="prop-stat-val">${p.area||'—'}</div><div class="prop-stat-label">m²</div></div>
           </div>
           <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
           <div class="prop-status">
@@ -283,17 +291,20 @@
             <span class="prop-purpose">${label(PROPERTY_PURPOSE, p.purpose)}</span>
           </div>
           <div class="prop-actions">
-            <button class="prop-btn prop-btn-visit" onclick="openVisit('${p.code}','${p.address||p.code}')">
+            <button class="prop-btn prop-btn-visit" onclick="openVisit('${p.code}','${(p.address||p.code).replace(/'/g,"\\'")}','${p.status}')"
+                    ${canVisit ? '' : 'disabled title="Solo se pueden agendar visitas a inmuebles Activos o Reservados"'}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
               Agendar visita
             </button>
-            <button class="prop-btn prop-btn-op" onclick="openOp('${p.code}','${p.address||p.code}')">
+            <button class="prop-btn prop-btn-op" onclick="openOp('${p.code}','${(p.address||p.code).replace(/'/g,"\\'")}','${p.status}')"
+                    ${canOp ? '' : 'disabled title="Este inmueble no admite nuevas operaciones en su estado actual"'}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>
               Nueva operación
             </button>
           </div>
         </div>
-      </div>`).join('');
+      </div>`;
+        }).join('');
     }
 
     function filterProps(q) {
@@ -304,32 +315,89 @@
         renderProps(s ? allProps.filter(p=>p.status===s) : allProps);
     }
 
-    function openVisit(code, lbl) {
-        document.getElementById('v-code').value = code;
+    // ── Modal visita ─────────────────────────────────────────────
+    function openVisit(code, lbl, status) {
+        if (!VISITABLE.includes(status)) return; // extra guard
+        document.getElementById('v-code').value  = code;
         document.getElementById('v-label').value = lbl;
+        document.getElementById('v-date').value  = '';
+        document.getElementById('v-type').value  = 'NORMAL';
         document.getElementById('modal-visit').classList.add('open');
     }
     function closeVisit() { document.getElementById('modal-visit').classList.remove('open'); }
 
     async function saveVisit() {
-        const body = { propertyId: document.getElementById('v-code').value, clientId: document.getElementById('v-client').value, agentId: user.cedula, date: document.getElementById('v-date').value, visitType: document.getElementById('v-type').value };
-        const res = await fetch(`${API}/visits`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        const body = {
+            propertyId: document.getElementById('v-code').value,
+            clientId:   document.getElementById('v-client').value,
+            agentId:    user.cedula,
+            date:       document.getElementById('v-date').value,
+            visitType:  document.getElementById('v-type').value
+        };
+        if (!body.date) { alert('Selecciona una fecha'); return; }
+        // Calls AgentController.registerVisit — validates status + enqueues in priority queue
+        const res = await fetch(`${API}/agents/${user.cedula}/visits`, {
+            method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+        });
         if (res.ok) { closeVisit(); alert('Visita agendada exitosamente'); }
-        else { const e = await res.json(); alert(e.message||'Error al agendar'); }
+        else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al agendar'); }
     }
 
-    function openOp(code, lbl) {
-        document.getElementById('op-code').value = code;
-        document.getElementById('op-label').value = lbl;
+    // ── Modal operación ──────────────────────────────────────────
+    function openOp(code, lbl, status) {
+        if (!OPERABLE.includes(status)) return;
+        document.getElementById('op-code').value   = code;
+        document.getElementById('op-label').value  = lbl;
+        document.getElementById('op-status').value = status;
+        document.getElementById('op-init').value   = '';
+        document.getElementById('op-end').value    = '';
+
+        // Populate type options based on property status
+        const types = OPS_BY_STATUS[status] || [];
+        document.getElementById('op-type').innerHTML = types.map(t =>
+            `<option value="${t.v}">${t.l}</option>`
+        ).join('');
+
+        // Show/hide end date based on first available type
+        onOpTypeChange(types[0]?.v || '');
+        document.getElementById('op-type').onchange = e => onOpTypeChange(e.target.value);
+
         document.getElementById('modal-op').classList.add('open');
     }
+
+    function onOpTypeChange(type) {
+        document.getElementById('op-end-group').style.display = type === 'CONTRACT_RENEWAL' ? 'flex' : 'none';
+    }
+
     function closeOp() { document.getElementById('modal-op').classList.remove('open'); }
 
     async function saveOp() {
-        const body = { propertyId: document.getElementById('op-code').value, clientId: document.getElementById('op-client').value, agentId: user.cedula, operationType: document.getElementById('op-type').value, dateInitial: document.getElementById('op-init').value, dateFinal: document.getElementById('op-end').value };
-        const res = await fetch(`${API}/operations`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
-        if (res.ok) { closeOp(); alert('Operación creada exitosamente'); }
-        else { const e = await res.json(); alert(e.message||'Error'); }
+        const type    = document.getElementById('op-type').value;
+        const propCode= document.getElementById('op-code').value;
+        const clientId= document.getElementById('op-client').value;
+        const dateInit= document.getElementById('op-init').value;
+        const dateEnd = document.getElementById('op-end').value;
+
+        if (!clientId) { alert('Selecciona un cliente');       return; }
+        if (!dateInit) { alert('Ingresa la fecha de inicio'); return; }
+        if (type === 'CONTRACT_RENEWAL' && !dateEnd) {
+            alert('La fecha fin es obligatoria para renovaciones de contrato');
+            return;
+        }
+
+        const body = {
+            propertyId:    propCode,
+            clientId:      clientId,
+            agentId:       user.cedula,
+            operationType: type,
+            dateInitial:   dateInit,
+            dateFinal:     dateEnd || null
+        };
+        const res = await fetch(`${API}/operations`, {
+            method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+        });
+        if (res.ok) { closeOp(); alert('Operación creada exitosamente'); load(); }
+        else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al crear la operación'); }
     }
 
     load();
