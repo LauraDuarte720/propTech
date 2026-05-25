@@ -78,7 +78,7 @@ public class AdminActionService {
         }
     }
 
-    public Queue<AdminActionLog> getHistory(AdminEntityType entityType) {
+    public Queue<AdminActionLog> getHistory() {
         return repository.getHistory();
     }
 }
