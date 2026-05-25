@@ -85,6 +85,10 @@ public class Agent extends User implements Comparable<Agent> {
         return !scheduledVisits.isEmpty();
     }
 
+    public void increaseClosedDeals() {
+        closedDeals++;
+    }
+
     public void enqueueSupportRequest(SupportRequest request) {
         supportRequests.enqueue(request);
     }
