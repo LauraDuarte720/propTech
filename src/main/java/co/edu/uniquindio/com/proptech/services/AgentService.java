@@ -1,11 +1,8 @@
 package co.edu.uniquindio.com.proptech.services;
 
-import co.edu.uniquindio.com.proptech.domain.enums.AdminActionType;
-import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
-import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.*;
 import co.edu.uniquindio.com.proptech.mappers.impl.PropertyMapper;
 import co.edu.uniquindio.com.proptech.domain.dtos.AffectedPropertyDto;
-import co.edu.uniquindio.com.proptech.domain.enums.SupportRequestStatus;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
 import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
@@ -87,6 +84,19 @@ public class AgentService {
         Agent agent = saved.getAgent();
         agent.enqueueVisit(saved);
         return saved;
+    }
+
+    public Visit attendVisit(String agentId) {
+        Agent agent = getAgentByCedula(agentId);
+        Visit visit = agent.dequeueVisit();
+        while (visit != null && visit.getStatus() == VisitStatus.CANCELED) {
+            visit = agent.dequeueVisit();
+        }
+        if (visit != null) {
+            visit.setStatus(VisitStatus.COMPLETED);
+        }
+        agentRepository.save(agent);
+        return visit;
     }
 
     public void deleteAgent(String cedula) {
