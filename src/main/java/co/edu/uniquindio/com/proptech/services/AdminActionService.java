@@ -53,6 +53,13 @@ public class AdminActionService {
         };
     }
 
+    public AdminActionLog peekLastAction() {
+        if (repository.isEmpty()) {
+            throw new NoAdminActionsToUndo("No admin actions to undo");
+        }
+        return repository.peekUndo();
+    }
+
     public void undoLastAction() {
         if (repository.isEmpty()) {
             throw new NoAdminActionsToUndo("No admin actions to undo");
@@ -65,6 +72,7 @@ public class AdminActionService {
                     case CREATE -> propertyService.deleteProperty(log.getEntityId());
                     case PUBLISH -> propertyService.unpublishProperty(log.getEntityId());
                     case UNPUBLISH -> propertyService.publishProperty(log.getEntityId());
+                    case UPDATE -> propertyService.undoLastChange(log.getEntityId());
                 }
             }
         }
