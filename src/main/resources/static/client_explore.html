@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropTech — Explora inmuebles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="/proptech_utils.js"></script>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        :root{
+            --navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;
+            --border:rgba(19,25,54,0.1);--text-muted:#8A90A0;
+            --bg:#F5F6FA;--text:#1a1d2e;--white:#fff;
+        }
+        html,body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
+
+        /* Nav */
+        .navbar{background:white;border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+        .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+        .nav-logo-icon{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+        .nav-logo-icon svg{width:16px;height:16px;fill:white;}
+        .nav-logo-name{font-size:16px;font-weight:600;color:var(--text);}
+        .nav-right{display:flex;align-items:center;gap:10px;}
+        .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;text-decoration:none;}
+        .btn-ghost{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+        .btn-ghost:hover{background:#eef0f8;}
+        .btn-primary{background:var(--accent);color:white;}
+        .btn-primary:hover{background:var(--accent-light);}
+        .btn-nav{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:6px;}
+        .btn-nav:hover{background:var(--bg);}
+        .btn svg{width:14px;height:14px;}
+
+        /* Hero */
+        .hero{background:linear-gradient(135deg,var(--navy) 0%,#1e2d6b 100%);padding:60px 40px;text-align:center;}
+        .hero-tag{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:16px;}
+        .hero-title{font-size:42px;font-weight:300;color:white;letter-spacing:-1px;line-height:1.2;margin-bottom:12px;}
+        .hero-title strong{font-weight:600;}
+        .hero-sub{font-family:'Jost',sans-serif;font-size:15px;color:rgba(255,255,255,0.6);margin-bottom:32px;}
+        .hero-stats{display:flex;justify-content:center;gap:40px;}
+        .hero-stat-val{font-size:24px;font-weight:600;color:white;}
+        .hero-stat-label{font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+        /* Filters bar */
+        .filters-bar{background:white;border-bottom:1px solid var(--border);padding:16px 40px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;position:sticky;top:60px;z-index:99;}
+        .search-box{flex:1;min-width:200px;position:relative;}
+        .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border 0.15s;}
+        .search-box input:focus{border-color:var(--accent);}
+        .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
+        .filter-select{padding:9px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+        .filter-select:focus{border-color:var(--accent);}
+        .price-range{display:flex;align-items:center;gap:6px;}
+        .price-range input{width:110px;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
+        .price-range input:focus{border-color:var(--accent);}
+        .price-range span{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+        .filter-count{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-left:auto;white-space:nowrap;}
+
+        /* Main content */
+        .main{padding:32px 40px;}
+        .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+        .section-title{font-size:16px;font-weight:500;}
+        .sort-select{padding:6px 12px;background:white;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);outline:none;cursor:pointer;}
+
+        /* Property grid */
+        .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+        .prop-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;cursor:pointer;}
+        .prop-card:hover{box-shadow:0 8px 32px rgba(74,111,227,0.12);border-color:rgba(74,111,227,0.3);transform:translateY(-2px);}
+
+        /* Card image placeholder */
+        .prop-img{height:160px;background:linear-gradient(135deg,#e8ecf8,#d4daf5);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+        .prop-img-icon{font-size:40px;opacity:0.4;}
+        .prop-img-type{position:absolute;top:10px;left:10px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;background:white;color:var(--accent);padding:3px 10px;border-radius:99px;}
+        .prop-img-purpose{position:absolute;top:10px;right:10px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;background:var(--accent);color:white;padding:3px 10px;border-radius:99px;}
+        .fav-btn{position:absolute;bottom:10px;right:10px;width:32px;height:32px;border-radius:50%;background:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:all 0.15s;font-size:16px;}
+        .fav-btn:hover{transform:scale(1.1);}
+        .fav-btn.saved{background:#fff0f0;}
+
+        /* Card body */
+        .prop-body{padding:16px;}
+        .prop-price{font-size:20px;font-weight:600;color:var(--accent);margin-bottom:4px;}
+        .prop-addr{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .prop-barrio{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;}
+        .prop-features{display:flex;gap:12px;margin-bottom:14px;}
+        .prop-feat{display:flex;align-items:center;gap:4px;font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+        .prop-feat svg{width:13px;height:13px;}
+        .prop-agent{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--border);}
+        .agent-av{width:24px;height:24px;border-radius:50%;background:rgba(74,111,227,0.15);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--accent);flex-shrink:0;}
+        .agent-name{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+        .prop-actions{display:flex;gap:6px;margin-top:12px;}
+        .prop-action-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.15s;}
+        .btn-consult{background:rgba(74,111,227,0.08);color:var(--accent);}
+        .btn-consult:hover{background:rgba(74,111,227,0.15);}
+        .btn-visit{background:rgba(29,158,117,0.08);color:#1D9E75;}
+        .btn-visit:hover{background:rgba(29,158,117,0.15);}
+
+        /* Empty */
+        .empty{text-align:center;padding:80px 20px;color:var(--text-muted);}
+        .empty-icon{font-size:48px;margin-bottom:12px;}
+        .empty-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;align-items:center;justify-content:center;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:white;border-radius:16px;padding:28px;width:460px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:fadeUp 0.2s ease;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .modal-title{font-size:16px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+        .modal-title button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+        .modal-sub{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:20px;}
+        .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+        .form-group label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
+        .form-group input,.form-group select,.form-group textarea{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
+        .form-group textarea{resize:vertical;min-height:80px;}
+        .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        .form-full{grid-column:1/-1;}
+        .divider{display:flex;align-items:center;gap:10px;margin:16px 0;}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+        .divider span{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+
+        /* Detail modal */
+        .detail-prop-price{font-size:28px;font-weight:600;color:var(--accent);margin-bottom:6px;}
+        .detail-prop-addr{font-size:16px;font-weight:500;margin-bottom:4px;}
+        .detail-prop-barrio{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:16px;}
+        .detail-features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+        .detail-feat{background:var(--bg);border-radius:8px;padding:10px;text-align:center;}
+        .detail-feat-val{font-size:16px;font-weight:600;color:var(--text);}
+        .detail-feat-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+        .detail-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+        /* Auth prompt */
+        .auth-prompt{background:rgba(74,111,227,0.06);border:1px solid rgba(74,111,227,0.15);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+        .auth-prompt-text{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);}
+        .auth-prompt-text strong{color:var(--text);}
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="client_explore.html" class="nav-logo">
+        <div class="nav-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+        <span class="nav-logo-name">PropTech</span>
+    </a>
+    <div class="nav-right" id="nav-right">
+        <button class="btn-nav" onclick="openRegisterModal()">Registrarse</button>
+        <a href="proptech_login.html" class="btn btn-primary">Iniciar sesión</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+    <div class="hero-tag">Portal inmobiliario</div>
+    <h1 class="hero-title">Encuentra tu<br><strong>inmueble ideal</strong></h1>
+    <p class="hero-sub">Miles de propiedades activas con asesores listos para ayudarte</p>
+    <div class="hero-stats">
+        <div><div class="hero-stat-val" id="h-props">—</div><div class="hero-stat-label">Inmuebles activos</div></div>
+        <div><div class="hero-stat-val" id="h-agents">—</div><div class="hero-stat-label">Asesores</div></div>
+        <div><div class="hero-stat-val" id="h-cities">—</div><div class="hero-stat-label">Ciudades</div></div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+    <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="f-search" placeholder="Buscar por dirección o barrio..." oninput="applyFilters()">
+    </div>
+    <select class="filter-select" id="f-type" onchange="applyFilters()">
+        <option value="">Tipo de inmueble</option>
+        <option value="APARTMENT">Apartamento</option>
+        <option value="HOUSE">Casa</option>
+        <option value="RETAIL_SPACE">Local comercial</option>
+        <option value="OFFICE">Oficina</option>
+        <option value="LOT">Lote</option>
+        <option value="WAREHOUSE">Bodega</option>
+    </select>
+    <select class="filter-select" id="f-purpose" onchange="applyFilters()">
+        <option value="">Venta o arriendo</option>
+        <option value="SALE">Venta</option>
+        <option value="RENT">Arriendo</option>
+    </select>
+    <select class="filter-select" id="f-city" onchange="applyFilters()">
+        <option value="">Ciudad</option>
+        <option value="ARMENIA">Armenia</option>
+        <option value="BOGOTA">Bogotá</option>
+        <option value="MEDELLIN">Medellín</option>
+        <option value="CALI">Cali</option>
+        <option value="BARRANQUILLA">Barranquilla</option>
+        <option value="PEREIRA">Pereira</option>
+        <option value="MANIZALES">Manizales</option>
+    </select>
+    <select class="filter-select" id="f-bedrooms" onchange="applyFilters()">
+        <option value="">Habitaciones</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+    </select>
+    <div class="price-range">
+        <input type="number" id="f-price-min" placeholder="Precio mín" oninput="applyFilters()">
+        <span>—</span>
+        <input type="number" id="f-price-max" placeholder="Precio máx" oninput="applyFilters()">
+    </div>
+    <span class="filter-count" id="filter-count">Cargando...</span>
+</div>
+
+<!-- Main -->
+<div class="main">
+    <div class="section-header">
+        <span class="section-title" id="section-title">Inmuebles disponibles</span>
+        <select class="sort-select" id="f-sort" onchange="applyFilters()">
+            <option value="default">Ordenar por</option>
+            <option value="price-asc">Precio: menor a mayor</option>
+            <option value="price-desc">Precio: mayor a menor</option>
+            <option value="area-desc">Mayor área</option>
+            <option value="bedrooms-desc">Más habitaciones</option>
+        </select>
+    </div>
+    <div class="props-grid" id="props-grid">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando inmuebles...</div>
+    </div>
+</div>
+
+<!-- Modal: detalle de propiedad -->
+<div class="modal-overlay" id="modal-detail">
+    <div class="modal" style="width:520px;">
+        <div class="modal-title">
+            <span id="d-title">Detalle del inmueble</span>
+            <button onclick="closeDetail()">×</button>
+        </div>
+        <div style="height:120px;background:linear-gradient(135deg,#e8ecf8,#d4daf5);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:16px;" id="d-icon">🏠</div>
+        <div class="detail-prop-price" id="d-price">$0</div>
+        <div class="detail-prop-addr" id="d-addr">—</div>
+        <div class="detail-prop-barrio" id="d-barrio">—</div>
+        <div class="detail-features">
+            <div class="detail-feat"><div class="detail-feat-val" id="d-beds">—</div><div class="detail-feat-label">Habitaciones</div></div>
+            <div class="detail-feat"><div class="detail-feat-val" id="d-baths">—</div><div class="detail-feat-label">Baños</div></div>
+            <div class="detail-feat"><div class="detail-feat-val" id="d-area">—</div><div class="detail-feat-label">m²</div></div>
+        </div>
+        <div id="d-auth-prompt" class="auth-prompt" style="display:none;">
+            <span class="auth-prompt-text"><strong>¿Te interesa este inmueble?</strong> Inicia sesión para guardar favoritos y recibir recomendaciones personalizadas.</span>
+            <a href="proptech_login.html" class="btn btn-primary" style="font-size:12px;padding:6px 12px;white-space:nowrap;">Iniciar sesión</a>
+        </div>
+        <div class="detail-actions" id="d-actions"></div>
+    </div>
+</div>
+
+<!-- Modal: registrarse -->
+<div class="modal-overlay" id="modal-register">
+    <div class="modal">
+        <div class="modal-title">
+            Crear cuenta
+            <button onclick="closeRegister()">×</button>
+        </div>
+        <div class="modal-sub">Regístrate para guardar favoritos y recibir recomendaciones personalizadas</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Cédula</label>
+                <input type="text" id="r-cedula" placeholder="Número de cédula">
+            </div>
+            <div class="form-group">
+                <label>Nombre completo</label>
+                <input type="text" id="r-name" placeholder="Tu nombre">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="r-username" placeholder="nombre.usuario">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="r-password" placeholder="Mínimo 8 caracteres">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="r-email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" id="r-phone" placeholder="+57 300 000 0000">
+            </div>
+            <div class="form-group">
+                <label>Presupuesto máximo</label>
+                <input type="number" id="r-budget" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Habitaciones mínimas</label>
+                <input type="number" id="r-bedrooms" value="1" min="0">
+            </div>
+            <div class="form-group">
+                <label>Tipo de cliente</label>
+                <select id="r-client-type">
+                    <option value="BUYER">Comprador</option>
+                    <option value="RENTER">Arrendatario</option>
+                    <option value="INVESTOR">Inversionista</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tipo de inmueble deseado</label>
+                <select id="r-prop-type">
+                    <option value="APARTMENT">Apartamento</option>
+                    <option value="HOUSE">Casa</option>
+                    <option value="RETAIL_SPACE">Local comercial</option>
+                    <option value="OFFICE">Oficina</option>
+                    <option value="LOT">Lote</option>
+                    <option value="WAREHOUSE">Bodega</option>
+                </select>
+            </div>
+            <div class="form-group form-full">
+                <label>Estado de búsqueda</label>
+                <select id="r-search-status">
+                    <option value="ACTIVE">Buscando activamente</option>
+                    <option value="PAUSED">En pausa</option>
+                    <option value="CLOSED">Búsqueda cerrada</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeRegister()">Cancelar</button>
+            <button class="btn btn-primary" onclick="registerClient()">Crear cuenta</button>
+        </div>
+        <div class="divider"><span>¿Ya tienes cuenta?</span></div>
+        <a href="proptech_login.html" class="btn btn-ghost" style="width:100%;justify-content:center;">Iniciar sesión</a>
+    </div>
+</div>
+
+<!-- Modal: solicitud de soporte -->
+<div class="modal-overlay" id="modal-support">
+    <div class="modal" style="width:420px;">
+        <div class="modal-title">
+            Solicitar información
+            <button onclick="closeSupport()">×</button>
+        </div>
+        <div class="modal-sub" id="support-prop-label">Envía tu consulta al asesor</div>
+        <input type="hidden" id="support-prop-code">
+        <input type="hidden" id="support-agent-id">
+        <div class="form-group">
+            <label>Tu mensaje</label>
+            <textarea id="support-msg" placeholder="Escribe tu consulta sobre este inmueble..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeSupport()">Cancelar</button>
+            <button class="btn btn-primary" onclick="sendSupport()">Enviar solicitud</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = 'http://localhost:8080';
+    const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+
+    // Update nav if logged in
+    if (user) {
+        document.getElementById('nav-right').innerHTML = `
+      <span style="font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted)">Hola, <strong style="color:var(--text)">${user.name}</strong></span>
+      <a href="client_dashboard.html" class="btn btn-primary">Mi cuenta</a>`;
+    }
+
+    let allProps = [];
+    let currentProp = null;
+
+    const typeIcons = { APARTMENT:'🏢', HOUSE:'🏠', RETAIL_SPACE:'🏪', OFFICE:'🏛️', LOT:'🌿', WAREHOUSE:'🏭' };
+
+    async function loadProps() {
+        const [propsRes, agentsRes] = await Promise.all([
+            fetch(`${API}/properties`),
+            fetch(`${API}/agents`)
+        ]);
+        if (propsRes.ok) {
+            const all = await propsRes.json();
+            allProps = all.filter(p => p.status === 'ACTIVE' && p.agent);
+            document.getElementById('h-props').textContent = allProps.length;
+            const cities = new Set(allProps.map(p=>p.neighborhood?.city).filter(Boolean));
+            document.getElementById('h-cities').textContent = cities.size;
+            applyFilters();
+        }
+        if (agentsRes.ok) {
+            const agents = await agentsRes.json();
+            document.getElementById('h-agents').textContent = agents.length;
+        }
+    }
+
+    function applyFilters() {
+        const q       = document.getElementById('f-search').value.toLowerCase();
+        const type    = document.getElementById('f-type').value;
+        const purpose = document.getElementById('f-purpose').value;
+        const city    = document.getElementById('f-city').value;
+        const beds    = document.getElementById('f-bedrooms').value;
+        const minP    = Number(document.getElementById('f-price-min').value) || 0;
+        const maxP    = Number(document.getElementById('f-price-max').value) || Infinity;
+        const sort    = document.getElementById('f-sort').value;
+
+        let filtered = allProps.filter(p => {
+            if (q && !(p.address||'').toLowerCase().includes(q) && !(p.neighborhood?.name||'').toLowerCase().includes(q)) return false;
+            if (type    && p.propertyType !== type)           return false;
+            if (purpose && p.purpose !== purpose)             return false;
+            if (city    && p.neighborhood?.city !== city)     return false;
+            if (beds    && (p.numBedrooms||0) < Number(beds)) return false;
+            if (p.price < minP || p.price > maxP)             return false;
+            return true;
+        });
+
+        if (sort === 'price-asc')      filtered.sort((a,b)=>a.price-b.price);
+        else if (sort === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
+        else if (sort === 'area-desc')  filtered.sort((a,b)=>(b.area||0)-(a.area||0));
+        else if (sort === 'bedrooms-desc') filtered.sort((a,b)=>(b.numBedrooms||0)-(a.numBedrooms||0));
+
+        document.getElementById('filter-count').textContent = `${filtered.length} inmueble${filtered.length!==1?'s':''}`;
+        document.getElementById('section-title').textContent = `${filtered.length} inmueble${filtered.length!==1?'s':''} disponible${filtered.length!==1?'s':''}`;
+        renderProps(filtered);
+    }
+
+    function renderProps(props) {
+        const grid = document.getElementById('props-grid');
+        if (!props.length) {
+            grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Sin resultados</div><p>Intenta ajustar los filtros</p></div>`;
+            return;
+        }
+        grid.innerHTML = props.map(p => {
+            const icon = typeIcons[p.propertyType] || '🏠';
+            const initials = (p.agent?.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+            return `<div class="prop-card" onclick="openDetail('${p.code}')">
+        <div class="prop-img">
+          <span class="prop-img-icon">${icon}</span>
+          <span class="prop-img-type">${label(PROPERTY_TYPE,p.propertyType)}</span>
+          <span class="prop-img-purpose">${label(PROPERTY_PURPOSE,p.purpose)}</span>
+          <button class="fav-btn" onclick="event.stopPropagation();toggleFav('${p.code}')" id="fav-${p.code}" title="Guardar favorito">🤍</button>
+        </div>
+        <div class="prop-body">
+          <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
+          <div class="prop-addr">${p.address||p.code}</div>
+          <div class="prop-barrio">${p.neighborhood?.name||'—'} · ${p.neighborhood?.city||'—'}</div>
+          <div class="prop-features">
+            ${p.numBedrooms!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h20M2 7h20v13H2z"/></svg>${p.numBedrooms} hab</span>`:''}
+            ${p.numBathrooms!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><rect x="2" y="6" width="20" height="10" rx="2"/></svg>${p.numBathrooms} baños</span>`:''}
+            ${p.area!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${p.area}m²</span>`:''}
+          </div>
+          <div class="prop-agent">
+            <div class="agent-av">${initials}</div>
+            <span class="agent-name">Asesor: ${p.agent?.name||'—'}</span>
+          </div>
+        </div>
+      </div>`;
+        }).join('');
+    }
+
+    function openDetail(code) {
+        currentProp = allProps.find(p=>p.code===code);
+        if (!currentProp) return;
+        const p = currentProp;
+        const icon = typeIcons[p.propertyType] || '🏠';
+        document.getElementById('d-icon').textContent = icon;
+        document.getElementById('d-price').textContent = '$' + Number(p.price||0).toLocaleString();
+        document.getElementById('d-title').textContent = `${label(PROPERTY_TYPE,p.propertyType)} · ${label(PROPERTY_PURPOSE,p.purpose)}`;
+        document.getElementById('d-addr').textContent = p.address || p.code;
+        document.getElementById('d-barrio').textContent = `${p.neighborhood?.name||'—'} · ${p.neighborhood?.city||'—'}`;
+        document.getElementById('d-beds').textContent = p.numBedrooms ?? '—';
+        document.getElementById('d-baths').textContent = p.numBathrooms ?? '—';
+        document.getElementById('d-area').textContent = p.area ? p.area+'m²' : '—';
+
+        const actions = document.getElementById('d-actions');
+        const authPrompt = document.getElementById('d-auth-prompt');
+
+        if (!user) {
+            authPrompt.style.display = 'flex';
+            actions.innerHTML = `
+        <button class="btn btn-ghost" style="flex:1" onclick="registerInteraction('${p.code}','CONSULTED')">👁 Ver detalles</button>`;
+        } else {
+            authPrompt.style.display = 'none';
+            actions.innerHTML = `
+        <button class="prop-action-btn btn-consult" onclick="registerInteraction('${p.code}','CONSULTED')">👁 Consultar</button>
+        <button class="prop-action-btn btn-consult" onclick="registerInteraction('${p.code}','SAVED');closeDetail()">🤍 Guardar</button>
+        <button class="prop-action-btn btn-visit" onclick="registerInteraction('${p.code}','VISITED')">📅 Visitar</button>
+        <button class="prop-action-btn btn-consult" onclick="openSupport('${p.code}','${p.address||p.code}','${p.agent?.cedula||''}')">💬 Solicitar info</button>`;
+        }
+
+        // Register CONSULTED automatically
+        if (user) registerInteraction(p.code, 'CONSULTED');
+        document.getElementById('modal-detail').classList.add('open');
+    }
+
+    function closeDetail() { document.getElementById('modal-detail').classList.remove('open'); }
+
+    async function toggleFav(code) {
+        if (!user) { window.location.href = 'proptech_login.html'; return; }
+        await registerInteraction(code, 'SAVED');
+        const btn = document.getElementById(`fav-${code}`);
+        btn.textContent = '❤️';
+        btn.classList.add('saved');
+    }
+
+    async function registerInteraction(propCode, interactionType) {
+        if (!user) return;
+        await fetch(`${API}/clients/${user.cedula}/interactions`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ clientId: user.cedula, propertyId: propCode, interactionType })
+        });
+    }
+
+    // Support modal
+    function openSupport(code, addr, agentId) {
+        document.getElementById('support-prop-code').value = code;
+        document.getElementById('support-agent-id').value = agentId;
+        document.getElementById('support-prop-label').textContent = `Consulta sobre: ${addr}`;
+        document.getElementById('modal-support').classList.add('open');
+    }
+    function closeSupport() { document.getElementById('modal-support').classList.remove('open'); }
+
+    async function sendSupport() {
+        if (!user) { window.location.href = 'proptech_login.html'; return; }
+        const body = {
+            clientId: user.cedula,
+            propertyId: document.getElementById('support-prop-code').value,
+            agentId: document.getElementById('support-agent-id').value,
+            message: document.getElementById('support-msg').value
+        };
+        const res = await fetch(`${API}/agents/${body.agentId}/support-requests`, {
+            method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+        });
+        if (res.ok) { closeSupport(); alert('Solicitud enviada al asesor exitosamente'); }
+        else { const e = await res.json(); alert(e.message||'Error al enviar solicitud'); }
+    }
+
+    // Register modal
+    function openRegisterModal() { document.getElementById('modal-register').classList.add('open'); }
+    function closeRegister() { document.getElementById('modal-register').classList.remove('open'); }
+
+    async function registerClient() {
+        const body = {
+            cedula: document.getElementById('r-cedula').value,
+            name: document.getElementById('r-name').value,
+            username: document.getElementById('r-username').value,
+            password: document.getElementById('r-password').value,
+            email: document.getElementById('r-email').value,
+            phone: document.getElementById('r-phone').value,
+            budget: Number(document.getElementById('r-budget').value),
+            minBedrooms: Number(document.getElementById('r-bedrooms').value),
+            clientType: document.getElementById('r-client-type').value,
+            desiredPropertyType: document.getElementById('r-prop-type').value,
+            searchStatus: document.getElementById('r-search-status').value
+        };
+        const res = await fetch(`${API}/clients`, {
+            method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+        });
+        if (res.ok) {
+            closeRegister();
+            alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
+            window.location.href = 'proptech_login.html';
+        } else {
+            const e = await res.json();
+            alert(e.message||'Error al crear cuenta');
+        }
+    }
+
+    loadProps();
+</script>
+</body>
+</html>
