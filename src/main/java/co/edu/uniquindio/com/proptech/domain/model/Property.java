@@ -38,10 +38,8 @@ public class Property implements Comparable<Property> {
     public boolean isAvailable() {
         return this.status == PropertyStatus.ACTIVE;
     }
-
-    @Override
-    public int compareTo(Property o) {
-        return Double.compare(price, o.getPrice());
+    public boolean isOperable(){
+        return !status.equals(PropertyStatus.SOLD);
     }
 
     public PropertySnapshot createSnapshot() {
@@ -88,5 +86,10 @@ public class Property implements Comparable<Property> {
 
     public boolean hasSnapshots() {
         return !history.isEmpty();
+    }
+
+    @Override
+    public int compareTo(Property o) {
+        return Double.compare(price, o.getPrice());
     }
 }
