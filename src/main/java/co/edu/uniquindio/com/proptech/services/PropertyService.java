@@ -250,8 +250,34 @@ public class PropertyService {
                 .orElseThrow(() -> new PropertyDoesNotExist("code", propertyCode));
 
         PropertySnapshot snapshot = property.getLastSnapshot();
-        property.restoreSnapshot(snapshot);
-        return property;
+        if (snapshot == null) {
+            throw new IllegalStateException("No hay cambios para deshacer en la propiedad: " + propertyCode);
+        }
+
+        if (property.getStatus() != snapshot.getStatus()) {
+            changePropertyState(property, snapshot.getStatus());
+        }
+
+        if (property.getPropertyType() != snapshot.getPropertyType()) {
+            changePropertyType(property, snapshot.getPropertyType());
+        }
+
+        if (property.getNeighborhood() != null &&
+                !property.getNeighborhood().equals(snapshot.getNeighborhood())) {
+            changePropertyNeighborhood(property, snapshot.getNeighborhood());
+        }
+        property.setAddress(snapshot.getAddress());
+        property.setPurpose(snapshot.getPurpose());
+        property.setPrice(snapshot.getPrice());
+        property.setArea(snapshot.getArea());
+        property.setNumBedrooms(snapshot.getNumBedrooms());
+        property.setNumBathrooms(snapshot.getNumBathrooms());
+        while (property.getPriceHistory().size() > snapshot.getPriceHistorySize()) {
+            property.getPriceHistory().removeLast();
+        }
+
+        // 6. Guardar los cambios finales en el repositorio (esto actualizará el AVLTree de precios si es necesario)
+        return propertyRepository.save(property);
     }
 
     public AVLTree<Property> getPropertiesOrderedByPrice() {

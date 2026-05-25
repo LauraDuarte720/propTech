@@ -1,6 +1,7 @@
 package co.edu.uniquindio.com.proptech.domain.model;
 
 import co.edu.uniquindio.com.proptech.domain.enums.PropertyStatus;
+import co.edu.uniquindio.com.proptech.domain.enums.PropertyType;
 import co.edu.uniquindio.com.proptech.domain.enums.Purpose;
 import lombok.*;
 
@@ -21,5 +22,6 @@ public class PropertySnapshot {
     private PropertyStatus status;
     private Agent agent;
     private int priceHistorySize;
+    private PropertyType propertyType;
 
 }
