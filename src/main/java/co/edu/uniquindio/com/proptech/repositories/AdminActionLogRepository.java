@@ -9,4 +9,5 @@ public interface AdminActionLogRepository {
     Queue<AdminActionLog> getHistory();
     boolean isEmpty();
     AdminActionLog pop();
+    AdminActionLog peekUndo();
 }
