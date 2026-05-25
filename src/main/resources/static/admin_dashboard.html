@@ -142,6 +142,10 @@
     <div class="topbar">
       <span class="page-title">Dashboard</span>
       <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="peekAndUndo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+          Deshacer último cambio
+        </button>
         <button class="btn btn-ghost" onclick="runAlerts()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
           Generar alertas
@@ -375,6 +379,29 @@
     await fetch(`${API}/abnormal-alerts/run`, { method: 'POST' });
     await fetch(`${API}/basic-alerts/generate`, { method: 'POST' });
     loadDashboard();
+  }
+
+  async function peekAndUndo() {
+    try {
+      const res = await fetch(`${API}/admin-actions/peek`);
+      if (!res.ok) {
+        alert('No hay acciones recientes para deshacer.');
+        return;
+      }
+      const action = await res.json();
+      if (confirm(`¿Estás seguro de deshacer esta acción?\n\nDetalle: ${action.description}`)) {
+        const undoRes = await fetch(`${API}/admin-actions/undo`, { method: 'POST' });
+        if (undoRes.ok) {
+          alert('Acción deshecha correctamente.');
+          loadDashboard();
+        } else {
+          alert('Error al deshacer la acción.');
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error al procesar la solicitud.');
+    }
   }
 
   loadDashboard();
