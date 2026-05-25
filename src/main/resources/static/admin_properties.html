@@ -157,6 +157,10 @@
     <div class="topbar">
       <span class="page-title">Inmuebles</span>
       <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="peekAndUndo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+          Deshacer último cambio
+        </button>
         <button class="btn btn-primary" onclick="openModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Registrar inmueble
@@ -834,6 +838,29 @@
       <div class="toast-body"><div class="toast-title">${title}</div>${msg ? `<div class="toast-msg">${msg}</div>` : ''}</div>`;
     document.getElementById('toast').appendChild(el);
     setTimeout(() => { el.style.animation='toastOut .3s ease forwards'; setTimeout(()=>el.remove(),300); }, 4000);
+  }
+
+  async function peekAndUndo() {
+    try {
+      const res = await fetch(`${API}/admin-actions/peek`);
+      if (!res.ok) {
+        showToast('info', 'Sin acciones', 'No hay acciones recientes para deshacer.');
+        return;
+      }
+      const action = await res.json();
+      if (confirm(`¿Estás seguro de deshacer esta acción?\n\nDetalle: ${action.description}`)) {
+        const undoRes = await fetch(`${API}/admin-actions/undo`, { method: 'POST' });
+        if (undoRes.ok) {
+          showToast('success', 'Deshecho', 'La acción fue deshecha correctamente.');
+          loadProps();
+        } else {
+          showToast('error', 'Error', 'Error al deshacer la acción.');
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('error', 'Error', 'Error al procesar la solicitud.');
+    }
   }
 
   // ── Init ─────────────────────────────────────────────────────

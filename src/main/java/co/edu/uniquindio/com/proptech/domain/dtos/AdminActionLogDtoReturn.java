@@ -24,4 +24,6 @@ public class AdminActionLogDtoReturn {
     private LocalDateTime timestamp;
 
     private String performedBy;
+
+    private String entityId;
 }

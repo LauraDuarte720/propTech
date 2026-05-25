@@ -46,27 +46,15 @@ public class Property implements Comparable<Property> {
         return PropertySnapshot.builder()
                 .address(address)
                 .neighborhood(neighborhood)
+                .propertyType(propertyType)
                 .purpose(purpose)
                 .price(price)
                 .area(area)
                 .numBedrooms(numBedrooms)
                 .numBathrooms(numBathrooms)
                 .status(status)
+                .priceHistorySize(priceHistory.size())
                 .build();
-    }
-
-    public void restoreSnapshot(PropertySnapshot snapshot) {
-        this.address = snapshot.getAddress();
-        this.neighborhood = snapshot.getNeighborhood();
-        this.purpose = snapshot.getPurpose();
-        this.price = snapshot.getPrice();
-        this.area = snapshot.getArea();
-        this.numBedrooms = snapshot.getNumBedrooms();
-        this.numBathrooms = snapshot.getNumBathrooms();
-        this.status = snapshot.getStatus();
-        while (priceHistory.size() > snapshot.getPriceHistorySize()) {
-            priceHistory.removeLast();
-        }
     }
 
     public void saveSnapshot() {

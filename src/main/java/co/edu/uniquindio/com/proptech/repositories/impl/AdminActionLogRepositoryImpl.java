@@ -39,4 +39,9 @@ public class AdminActionLogRepositoryImpl implements AdminActionLogRepository {
     public AdminActionLog pop() {
         return propTech.getAdminUndoHistory().pop();
     }
+
+    @Override
+    public AdminActionLog peekUndo() {
+        return propTech.getAdminUndoHistory().peek();
+    }
 }

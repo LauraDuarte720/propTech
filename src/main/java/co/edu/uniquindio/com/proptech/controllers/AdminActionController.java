@@ -1,0 +1,31 @@
+package co.edu.uniquindio.com.proptech.controllers;
+
+import co.edu.uniquindio.com.proptech.domain.dtos.AdminActionLogDtoReturn;
+import co.edu.uniquindio.com.proptech.mappers.impl.AdminActionLogMapper;
+import co.edu.uniquindio.com.proptech.services.AdminActionService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/admin-actions")
+public class AdminActionController {
+
+    private final AdminActionService adminActionService;
+    private final AdminActionLogMapper mapper;
+
+    public AdminActionController(AdminActionService adminActionService, AdminActionLogMapper mapper) {
+        this.adminActionService = adminActionService;
+        this.mapper = mapper;
+    }
+
+    @GetMapping("/peek")
+    public ResponseEntity<AdminActionLogDtoReturn> peekLastAction() {
+        return ResponseEntity.ok(mapper.toDto(adminActionService.peekLastAction()));
+    }
+
+    @PostMapping("/undo")
+    public ResponseEntity<Void> undoLastAction() {
+        adminActionService.undoLastAction();
+        return ResponseEntity.noContent().build();
+    }
+}
