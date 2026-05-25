@@ -8,10 +8,8 @@
   <script src="/proptech_utils.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.1);--text-muted:#8A90A0;--bg:#F5F6FA;--text:#1a1d2e;--white:#fff;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.1);--text-muted:#8A90A0;--bg:#F5F6FA;--text:#1a1d2e;}
     html,body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
-
-    /* Navbar */
     .navbar{background:white;border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
     .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
     .nav-logo-icon{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
@@ -30,15 +28,9 @@
     .btn-sm{padding:5px 12px;font-size:12px;}
     .btn svg{width:14px;height:14px;}
     .avatar-sm{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;}
-
-    /* Layout */
     .main{max-width:1100px;margin:0 auto;padding:32px 20px;}
-
-    /* Sections */
     .section{display:none;}
     .section.active{display:block;}
-
-    /* Profile header */
     .profile-header{background:linear-gradient(135deg,var(--navy),#1e2d6b);border-radius:16px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;gap:20px;}
     .profile-avatar{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:white;flex-shrink:0;}
     .profile-name{font-size:22px;font-weight:500;color:white;letter-spacing:-0.3px;}
@@ -46,13 +38,8 @@
     .profile-actions{margin-left:auto;display:flex;gap:8px;}
     .btn-white{background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);}
     .btn-white:hover{background:rgba(255,255,255,0.2);}
-
-    /* Cards */
     .card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
     .card-title{font-size:14px;font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-    .card-title a{font-family:'Jost',sans-serif;font-size:12px;color:var(--accent);text-decoration:none;}
-
-    /* Property grid */
     .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
     .prop-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.2s;cursor:pointer;}
     .prop-card:hover{box-shadow:0 4px 20px rgba(74,111,227,0.1);border-color:rgba(74,111,227,0.25);transform:translateY(-1px);}
@@ -62,8 +49,7 @@
     .prop-price{font-size:16px;font-weight:600;color:var(--accent);margin-bottom:2px;}
     .prop-addr{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .prop-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
-
-    /* Interaction history */
+    .prop-score{font-family:'Jost',sans-serif;font-size:10px;color:var(--accent);margin-top:4px;font-weight:500;}
     .interaction-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
     .interaction-item:last-child{border-bottom:none;}
     .interaction-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
@@ -71,14 +57,10 @@
     .interaction-prop{font-size:13px;font-weight:500;}
     .interaction-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
     .interaction-type{font-family:'Jost',sans-serif;font-size:11px;padding:2px 8px;border-radius:99px;}
-
-    /* Stats row */
     .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
     .stat-card{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
     .stat-val{font-size:22px;font-weight:600;color:var(--text);}
     .stat-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
-
-    /* Profile form */
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-group.full{grid-column:1/-1;}
@@ -86,32 +68,47 @@
     .form-group input,.form-group select{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
     .form-group input:focus,.form-group select:focus{border-color:var(--accent);}
     .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
-
-    /* Recommendation score */
-    .rec-score{display:inline-flex;align-items:center;gap:4px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;background:rgba(74,111,227,0.1);color:var(--accent);padding:2px 8px;border-radius:99px;margin-top:4px;}
-
-    /* Empty */
     .empty{text-align:center;padding:40px;color:var(--text-muted);}
     .empty-icon{font-size:36px;margin-bottom:8px;}
     .empty-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
-
-    /* Tabs indicator */
     .section-tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;}
     .stab{padding:6px 16px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--text-muted);border:none;background:none;transition:all 0.15s;}
     .stab.active{background:var(--accent);color:white;font-weight:500;}
-
-    /* Modal */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
+    /* Modal detalle inline */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:300;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
-    .modal{background:white;border-radius:16px;padding:28px;width:500px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:fadeUp 0.2s ease;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    .modal-title{font-size:16px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
-    .modal-title button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+    .modal{background:white;border-radius:16px;padding:28px;width:500px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);animation:fadeUp 0.2s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .modal-title{font-size:16px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+    .modal-title button{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);line-height:1;}
+    .modal-sub{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:20px;}
+    .detail-prop-icon{height:110px;background:linear-gradient(135deg,#e8ecf8,#d4daf5);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:16px;}
+    .detail-prop-price{font-size:26px;font-weight:600;color:var(--accent);margin-bottom:4px;}
+    .detail-prop-addr{font-size:15px;font-weight:500;margin-bottom:2px;}
+    .detail-prop-barrio{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:16px;}
+    .detail-features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+    .detail-feat{background:var(--bg);border-radius:8px;padding:10px;text-align:center;}
+    .detail-feat-val{font-size:15px;font-weight:600;color:var(--text);}
+    .detail-feat-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .detail-agent{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:8px;margin-bottom:16px;}
+    .agent-av{width:32px;height:32px;border-radius:50%;background:rgba(74,111,227,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent);flex-shrink:0;}
+    .detail-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .prop-action-btn{flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.15s;}
+    .btn-consult{background:rgba(74,111,227,0.08);color:var(--accent);}
+    .btn-consult:hover{background:rgba(74,111,227,0.15);}
+    .btn-consult:disabled{opacity:0.5;cursor:default;}
+    .btn-explore{background:var(--accent);color:white;}
+    .btn-explore:hover{background:var(--accent-light);}
+    /* Modal soporte */
+    .modal-support{width:420px;}
+    .form-group-modal{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+    .form-group-modal label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
+    .form-group-modal textarea{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;transition:border 0.15s;}
+    .form-group-modal textarea:focus{border-color:var(--accent);}
     .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
   </style>
 </head>
 <body>
-
 <nav class="navbar">
   <a href="client_explore.html" class="nav-logo">
     <div class="nav-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
@@ -131,8 +128,6 @@
 </nav>
 
 <div class="main">
-
-  <!-- Profile header -->
   <div class="profile-header">
     <div class="profile-avatar" id="ph-avatar">CL</div>
     <div>
@@ -140,12 +135,11 @@
       <div class="profile-sub" id="ph-sub">Cargando perfil...</div>
     </div>
     <div class="profile-actions">
-      <a href="client_explore.html" class="btn btn-white btn-sm">🔍 Explorar inmuebles</a>
+      <a href="client_explore.html" class="btn btn-white btn-sm">🔍 Explorar</a>
       <button class="btn btn-white btn-sm" onclick="showSection('profile',null)">✏️ Editar perfil</button>
     </div>
   </div>
 
-  <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card"><div class="stat-val" id="s-favs">—</div><div class="stat-label">Favoritos</div></div>
     <div class="stat-card"><div class="stat-val" id="s-consulted">—</div><div class="stat-label">Consultados</div></div>
@@ -153,55 +147,40 @@
     <div class="stat-card"><div class="stat-val" id="s-recs">—</div><div class="stat-label">Recomendaciones</div></div>
   </div>
 
-  <!-- SECTION: Recommendations -->
+  <!-- Recomendaciones -->
   <div class="section active" id="sec-recommendations">
     <div class="card">
-      <div class="card-title">
-        ⭐ Inmuebles recomendados para ti
-        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Basado en tu perfil e historial</span>
+      <div class="card-title">⭐ Inmuebles recomendados para ti
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Ordenados por relevancia para tu perfil</span>
       </div>
-      <div class="props-grid" id="recs-grid">
-        <div style="color:var(--text-muted);font-size:13px;">Cargando recomendaciones...</div>
-      </div>
+      <div class="props-grid" id="recs-grid"><div style="color:var(--text-muted);font-size:13px;">Cargando...</div></div>
     </div>
-
     <div class="card">
-      <div class="card-title">
-        🔥 Inmuebles con mayor demanda
-        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Los más consultados por otros clientes</span>
+      <div class="card-title">🔥 Inmuebles con mayor demanda
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Los más consultados</span>
       </div>
-      <div class="props-grid" id="demand-grid">
-        <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-      </div>
+      <div class="props-grid" id="demand-grid"><div style="color:var(--text-muted);font-size:13px;">Cargando...</div></div>
     </div>
   </div>
 
-  <!-- SECTION: Favorites -->
+  <!-- Favoritos -->
   <div class="section" id="sec-favorites">
     <div class="card">
       <div class="card-title">❤️ Mis favoritos</div>
-      <div class="props-grid" id="favs-grid">
-        <div style="color:var(--text-muted);font-size:13px;">Cargando favoritos...</div>
-      </div>
+      <div class="props-grid" id="favs-grid"><div style="color:var(--text-muted);font-size:13px;">Cargando...</div></div>
     </div>
-
     <div class="card">
-      <div class="card-title">
-        🔗 Propiedades relacionadas a tu historial
-        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Análisis estructural del grafo</span>
+      <div class="card-title">🔗 Propiedades relacionadas
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Análisis del grafo</span>
       </div>
-      <div class="props-grid" id="related-grid">
-        <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-      </div>
+      <div class="props-grid" id="related-grid"><div style="color:var(--text-muted);font-size:13px;">Cargando...</div></div>
     </div>
   </div>
 
-  <!-- SECTION: History -->
+  <!-- Historial -->
   <div class="section" id="sec-history">
     <div class="card">
-      <div class="card-title">
-        📋 Historial de interacciones
-      </div>
+      <div class="card-title">📋 Historial de interacciones</div>
       <div class="section-tabs">
         <button class="stab active" onclick="filterHistory('ALL',this)">Todas</button>
         <button class="stab" onclick="filterHistory('CONSULTED',this)">Consultados</button>
@@ -209,51 +188,29 @@
         <button class="stab" onclick="filterHistory('SAVED',this)">Guardados</button>
         <button class="stab" onclick="filterHistory('NEGOTIATED',this)">Negociados</button>
       </div>
-      <div id="history-list">
-        <div style="color:var(--text-muted);font-size:13px;">Cargando historial...</div>
-      </div>
+      <div id="history-list"><div style="color:var(--text-muted);font-size:13px;">Cargando historial...</div></div>
     </div>
   </div>
 
-  <!-- SECTION: Profile -->
+  <!-- Perfil -->
   <div class="section" id="sec-profile">
     <div class="card">
       <div class="card-title">👤 Mi información</div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Nombre</label>
-          <input type="text" id="p-name" placeholder="Tu nombre completo">
-        </div>
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="p-username" placeholder="nombre.usuario">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="p-email" placeholder="correo@ejemplo.com">
-        </div>
-        <div class="form-group">
-          <label>Teléfono</label>
-          <input type="text" id="p-phone" placeholder="+57 300 000 0000">
-        </div>
-        <div class="form-group">
-          <label>Presupuesto máximo</label>
-          <input type="number" id="p-budget" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label>Habitaciones mínimas</label>
-          <input type="number" id="p-bedrooms" min="0">
-        </div>
-        <div class="form-group">
-          <label>Tipo de cliente</label>
+        <div class="form-group"><label>Nombre</label><input type="text" id="p-name"></div>
+        <div class="form-group"><label>Username</label><input type="text" id="p-username"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="p-email"></div>
+        <div class="form-group"><label>Teléfono</label><input type="text" id="p-phone"></div>
+        <div class="form-group"><label>Presupuesto máximo</label><input type="number" id="p-budget"></div>
+        <div class="form-group"><label>Habitaciones mínimas</label><input type="number" id="p-bedrooms" min="0"></div>
+        <div class="form-group"><label>Tipo de cliente</label>
           <select id="p-client-type">
             <option value="BUYER">Comprador</option>
-            <option value="RENTER">Arrendatario</option>
+            <option value="TENANT">Arrendatario</option>
             <option value="INVESTOR">Inversionista</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Inmueble deseado</label>
+        <div class="form-group"><label>Inmueble deseado</label>
           <select id="p-prop-type">
             <option value="APARTMENT">Apartamento</option>
             <option value="HOUSE">Casa</option>
@@ -263,8 +220,7 @@
             <option value="WAREHOUSE">Bodega</option>
           </select>
         </div>
-        <div class="form-group full">
-          <label>Estado de búsqueda</label>
+        <div class="form-group full"><label>Estado de búsqueda</label>
           <select id="p-search-status">
             <option value="ACTIVE">Buscando activamente</option>
             <option value="PAUSED">En pausa</option>
@@ -280,7 +236,50 @@
   </div>
 </div>
 
+<!-- ═══ Modal detalle de propiedad (inline en dashboard) ═══ -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="d-title">Detalle del inmueble</span>
+      <button onclick="closeDetail()">×</button>
+    </div>
+    <div class="detail-prop-icon" id="d-icon">🏠</div>
+    <div class="detail-prop-price" id="d-price">$0</div>
+    <div class="detail-prop-addr" id="d-addr">—</div>
+    <div class="detail-prop-barrio" id="d-barrio">—</div>
+    <div class="detail-features">
+      <div class="detail-feat"><div class="detail-feat-val" id="d-beds">—</div><div class="detail-feat-label">Habitaciones</div></div>
+      <div class="detail-feat"><div class="detail-feat-val" id="d-baths">—</div><div class="detail-feat-label">Baños</div></div>
+      <div class="detail-feat"><div class="detail-feat-val" id="d-area">—</div><div class="detail-feat-label">m²</div></div>
+    </div>
+    <div class="detail-agent" id="d-agent"></div>
+    <div class="detail-actions" id="d-actions"></div>
+  </div>
+</div>
+
+<!-- ═══ Modal soporte ═══ -->
+<div class="modal-overlay" id="modal-support">
+  <div class="modal modal-support">
+    <div class="modal-title">Solicitar información <button onclick="closeSupport()">×</button></div>
+    <div class="modal-sub" id="support-prop-label">Envía tu consulta al asesor</div>
+    <input type="hidden" id="support-prop-code">
+    <input type="hidden" id="support-agent-id">
+    <div class="form-group-modal">
+      <label>Tu mensaje</label>
+      <textarea id="support-msg" placeholder="Escribe tu consulta sobre este inmueble..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSupport()">Cancelar</button>
+      <button class="btn btn-primary" onclick="sendSupport()">Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  if (typeof CLIENT_TYPE !== 'undefined') {
+    CLIENT_TYPE.TENANT = CLIENT_TYPE.TENANT || 'Arrendatario';
+  }
+
   const API = 'http://localhost:8080';
   const user = JSON.parse(sessionStorage.getItem('user') || 'null');
   if (!user) window.location.href = 'proptech_login.html';
@@ -291,8 +290,10 @@
 
   let allInteractions = [];
   let clientData = null;
+  // Cache de propiedades para el modal
+  let allPropsCache = {};
+  let savedProps = new Set();
 
-  // Init
   const initials = (user.name||'CL').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('nav-avatar').textContent = initials;
   document.getElementById('ph-avatar').textContent = initials;
@@ -307,82 +308,154 @@
     if (el) el.classList.add('active');
   }
 
-  function renderPropCard(p) {
+  // ── Modal de detalle de propiedad (inline, sin salir del dashboard) ──
+  function openDetail(prop) {
+    if (!prop) return;
+    const icon = typeIcons[prop.propertyType] || '🏠';
+    document.getElementById('d-icon').textContent = icon;
+    document.getElementById('d-price').textContent = '$' + Number(prop.price||0).toLocaleString();
+    document.getElementById('d-title').textContent = `${label(PROPERTY_TYPE, prop.propertyType)} · ${label(PROPERTY_PURPOSE, prop.purpose)}`;
+    document.getElementById('d-addr').textContent = prop.address || prop.code;
+    document.getElementById('d-barrio').textContent = `${prop.neighborhood?.name||'—'} · ${prop.neighborhood?.city||'—'}`;
+    document.getElementById('d-beds').textContent = prop.numBedrooms ?? '—';
+    document.getElementById('d-baths').textContent = prop.numBathrooms ?? '—';
+    document.getElementById('d-area').textContent = prop.area ? prop.area + 'm²' : '—';
+
+    // Asesor
+    const agentEl = document.getElementById('d-agent');
+    if (prop.agent) {
+      const agInitials = (prop.agent.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      agentEl.innerHTML = `<div class="agent-av">${agInitials}</div>
+        <div><div style="font-size:13px;font-weight:500;">${prop.agent.name||'—'}</div>
+        <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);">Asesor responsable · ${prop.agent.contact||''}</div></div>`;
+      agentEl.style.display = 'flex';
+    } else {
+      agentEl.style.display = 'none';
+    }
+
+    // Acciones: Guardar + Solicitar info + Ir a Explorar
+    const isSaved = savedProps.has(prop.code);
+    document.getElementById('d-actions').innerHTML = `
+      <button class="prop-action-btn btn-consult ${isSaved?'':''}\"
+        id="detail-fav-${prop.code}"
+        onclick="doSave('${prop.code}', this)"
+        ${isSaved ? 'disabled' : ''}>
+        ${isSaved ? '❤️ Guardado' : '🤍 Guardar'}
+      </button>
+      <button class="prop-action-btn btn-consult"
+        onclick="openSupport('${prop.code}','${(prop.address||prop.code).replace(/'/g,"\\'")}','${prop.agent?.cedula||''}')">
+        💬 Solicitar info
+      </button>
+      <a href="client_explore.html" class="prop-action-btn btn-explore" style="text-align:center;text-decoration:none;">
+        🔍 Ver en Explorar
+      </a>`;
+
+    // Registrar CONSULTED automáticamente
+    registerInteraction(prop.code, 'CONSULTED');
+
+    document.getElementById('modal-detail').classList.add('open');
+  }
+
+  function closeDetail() {
+    document.getElementById('modal-detail').classList.remove('open');
+  }
+
+  // ── Guardar favorito desde el modal ──
+  async function doSave(propCode, btn) {
+    if (savedProps.has(propCode)) return;
+    btn.disabled = true;
+    const ok = await registerInteraction(propCode, 'SAVED');
+    if (ok) {
+      savedProps.add(propCode);
+      btn.textContent = '❤️ Guardado';
+    } else {
+      btn.disabled = false;
+    }
+  }
+
+  async function registerInteraction(propCode, interactionType) {
+    if (!user) return false;
+    const res = await fetch(`${API}/clients/${user.cedula}/interactions`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ clientId: user.cedula, propertyId: propCode, interactionType })
+    });
+    return res.ok;
+  }
+
+  // ── Render de tarjeta de propiedad (abre modal inline) ──
+  function renderPropCard(p, score) {
     const icon = typeIcons[p.propertyType] || '🏠';
-    return `<div class="prop-card" onclick="window.location.href='client_explore.html'">
+    const scoreHtml = score != null
+            ? `<div class="prop-score">⭐ Score: ${Number(score).toFixed ? Number(score).toFixed(1) : score}</div>`
+            : '';
+    return `<div class="prop-card" onclick='openDetail(${JSON.stringify(p)})'>
       <div class="prop-img">
         <span>${icon}</span>
-        <span class="prop-img-badge">${label(PROPERTY_PURPOSE,p.purpose)}</span>
+        <span class="prop-img-badge">${label(PROPERTY_PURPOSE, p.purpose)}</span>
       </div>
       <div class="prop-body">
         <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
         <div class="prop-addr">${p.address||p.code}</div>
-        <div class="prop-meta">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE,p.propertyType)}</div>
+        <div class="prop-meta">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE, p.propertyType)}</div>
+        ${scoreHtml}
       </div>
     </div>`;
   }
 
   async function loadRecommendations() {
     const [recsRes, demandRes] = await Promise.all([
-      fetch(`${API}/recommendations/client/${user.cedula}`),
-      fetch(`${API}/recommendations/properties/demand`)
+      fetch(`${API}/recommendations/client/${user.cedula}`).catch(()=>null),
+      fetch(`${API}/recommendations/properties/demand`).catch(()=>null)
     ]);
-    if (recsRes.ok) {
+    if (recsRes?.ok) {
       const recs = await recsRes.json();
       document.getElementById('s-recs').textContent = recs.length;
       const grid = document.getElementById('recs-grid');
+      // Mostrar TODAS las recomendaciones, no solo 6
       grid.innerHTML = recs.length
-              ? recs.slice(0,6).map(renderPropCard).join('')
-              : '<div class="empty"><div class="empty-icon">⭐</div><div class="empty-title">Aún no hay recomendaciones</div><p>Interactúa con inmuebles para recibir sugerencias personalizadas</p></div>';
+              ? recs.map(p => renderPropCard(p, p.score ?? p.recommendationScore ?? null)).join('')
+              : '<div class="empty"><div class="empty-icon">⭐</div><div class="empty-title">Aún no hay recomendaciones</div><p>Interactúa con inmuebles para recibir sugerencias</p></div>';
     }
-    if (demandRes.ok) {
+    if (demandRes?.ok) {
       const demand = await demandRes.json();
       const grid = document.getElementById('demand-grid');
       grid.innerHTML = demand.length
-              ? demand.slice(0,6).map(renderPropCard).join('')
+              ? demand.slice(0,6).map(p => renderPropCard(p)).join('')
               : '<div class="empty"><div class="empty-icon">🔥</div><div class="empty-title">Sin datos de demanda aún</div></div>';
     }
   }
 
   async function loadFavorites() {
     const [favsRes, relatedRes] = await Promise.all([
-      fetch(`${API}/clients/${user.cedula}/favorites`),
-      fetch(`${API}/recommendations/client/${user.cedula}/related-properties`)
+      fetch(`${API}/clients/${user.cedula}/favorites`).catch(()=>null),
+      fetch(`${API}/recommendations/client/${user.cedula}/related-properties`).catch(()=>null)
     ]);
-    if (favsRes.ok) {
+    if (favsRes?.ok) {
       const favs = await favsRes.json();
+      favs.forEach(p => savedProps.add(p.code));
       document.getElementById('s-favs').textContent = favs.length;
       const grid = document.getElementById('favs-grid');
       grid.innerHTML = favs.length
-              ? favs.map(renderPropCard).join('')
-              : '<div class="empty"><div class="empty-icon">❤️</div><div class="empty-title">Sin favoritos aún</div><p>Guarda inmuebles que te interesen desde el explorador</p></div>';
+              ? favs.map(p => renderPropCard(p)).join('')
+              : '<div class="empty"><div class="empty-icon">❤️</div><div class="empty-title">Sin favoritos aún</div></div>';
     }
-    if (relatedRes.ok) {
+    if (relatedRes?.ok) {
       const related = await relatedRes.json();
       const grid = document.getElementById('related-grid');
       grid.innerHTML = related.length
-              ? related.map(renderPropCard).join('')
+              ? related.map(p => renderPropCard(p)).join('')
               : '<div class="empty"><div class="empty-icon">🔗</div><div class="empty-title">Sin propiedades relacionadas aún</div></div>';
     }
   }
 
   async function loadHistory() {
-    const res = await fetch(`${API}/clients/${user.cedula}/interactions`);
-    if (!res.ok) return;
-    const data = await res.json();
-    // Flatten all interactions from HashTable
-    allInteractions = [];
-    for (const type of Object.keys(data)) {
-      const list = data[type] || [];
-      list.forEach(i => allInteractions.push({...i, interactionType: type}));
-    }
+    const res = await fetch(`${API}/clients/${user.cedula}/interactions`).catch(()=>null);
+    if (!res?.ok) return;
+    allInteractions = await res.json();
     allInteractions.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-    const consulted = allInteractions.filter(i=>i.interactionType==='CONSULTED').length;
-    const visited   = allInteractions.filter(i=>i.interactionType==='VISITED').length;
-    document.getElementById('s-consulted').textContent = consulted;
-    document.getElementById('s-visited').textContent = visited;
-
+    document.getElementById('s-consulted').textContent = allInteractions.filter(i=>i.interactionType==='CONSULTED').length;
+    document.getElementById('s-visited').textContent   = allInteractions.filter(i=>i.interactionType==='VISITED').length;
     renderHistory(allInteractions);
   }
 
@@ -402,32 +475,38 @@
     list.innerHTML = interactions.slice(0,30).map(i => {
       const icon = interactionIcons[i.interactionType] || '📌';
       const bg   = interactionColors[i.interactionType] || 'rgba(0,0,0,0.05)';
-      const ts   = i.timestamp ? new Date(i.timestamp).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-      return `<div class="interaction-item">
+      const ts   = i.timestamp
+              ? new Date(i.timestamp).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+              : '—';
+      // Si tenemos datos de la propiedad, hacemos la fila clickeable para abrir modal
+      const propData = i.property ? `onclick='openDetail(${JSON.stringify(i.property)})' style="cursor:pointer;"` : '';
+      return `<div class="interaction-item" ${propData}>
         <div class="interaction-icon" style="background:${bg}">${icon}</div>
         <div class="interaction-info">
-          <div class="interaction-prop">${i.property?.address||i.property?.code||'—'}</div>
+          <div class="interaction-prop">${i.property?.address || i.property?.code || '—'}</div>
           <div class="interaction-meta">${ts} · ${i.property?.neighborhood?.name||'—'}</div>
         </div>
-        <span class="interaction-type" style="background:${bg};color:var(--text-muted)">${label(INTERACTION_TYPE,i.interactionType)}</span>
+        <span class="interaction-type" style="background:${bg};color:var(--text-muted)">${label(INTERACTION_TYPE, i.interactionType)}</span>
       </div>`;
     }).join('');
   }
 
   async function loadProfile() {
-    const res = await fetch(`${API}/clients/${user.cedula}`);
-    if (!res.ok) return;
+    const res = await fetch(`${API}/clients/${user.cedula}`).catch(()=>null);
+    if (!res?.ok) return;
     clientData = await res.json();
-    document.getElementById('ph-sub').textContent = `${clientData.email||'—'} · ${label(CLIENT_TYPE,clientData.clientType)} · ${label(SEARCH_STATUS,clientData.searchStatus)}`;
-    document.getElementById('p-name').value           = clientData.name || '';
-    document.getElementById('p-username').value       = clientData.username || '';
-    document.getElementById('p-email').value          = clientData.email || '';
-    document.getElementById('p-phone').value          = clientData.phone || '';
-    document.getElementById('p-budget').value         = clientData.budget || '';
-    document.getElementById('p-bedrooms').value       = clientData.minBedrooms || '';
-    document.getElementById('p-client-type').value    = clientData.clientType || 'BUYER';
-    document.getElementById('p-prop-type').value      = clientData.desiredPropertyType || 'APARTMENT';
-    document.getElementById('p-search-status').value  = clientData.searchStatus || 'ACTIVE';
+    const clientTypeLabel = (typeof CLIENT_TYPE !== 'undefined' ? CLIENT_TYPE[clientData.clientType] : null) || clientData.clientType || '—';
+    const searchLabel     = (typeof SEARCH_STATUS !== 'undefined' ? SEARCH_STATUS[clientData.searchStatus] : null) || clientData.searchStatus || '—';
+    document.getElementById('ph-sub').textContent = `${clientData.email||'—'} · ${clientTypeLabel} · ${searchLabel}`;
+    document.getElementById('p-name').value          = clientData.name || '';
+    document.getElementById('p-username').value      = clientData.username || '';
+    document.getElementById('p-email').value         = clientData.email || '';
+    document.getElementById('p-phone').value         = clientData.phone || '';
+    document.getElementById('p-budget').value        = clientData.budget || '';
+    document.getElementById('p-bedrooms').value      = clientData.minBedrooms || '';
+    document.getElementById('p-client-type').value   = clientData.clientType || 'BUYER';
+    document.getElementById('p-prop-type').value     = clientData.desiredPropertyType || 'APARTMENT';
+    document.getElementById('p-search-status').value = clientData.searchStatus || 'ACTIVE';
   }
 
   async function saveProfile() {
@@ -444,9 +523,7 @@
       searchStatus:        document.getElementById('p-search-status').value
     };
     const res = await fetch(`${API}/clients/${user.cedula}`, {
-      method: 'PATCH',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(body)
+      method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
     });
     if (res.ok) {
       const updated = await res.json();
@@ -460,7 +537,40 @@
     }
   }
 
-  // Load all data
+  // ── Soporte ──────────────────────────────────────────────────────
+  function openSupport(code, addr, agentId) {
+    document.getElementById('support-prop-code').value = code;
+    document.getElementById('support-agent-id').value = agentId;
+    document.getElementById('support-prop-label').textContent = `Consulta sobre: ${addr}`;
+    document.getElementById('support-msg').value = '';
+    // Cerrar modal de detalle y abrir modal de soporte
+    document.getElementById('modal-detail').classList.remove('open');
+    document.getElementById('modal-support').classList.add('open');
+  }
+  function closeSupport() { document.getElementById('modal-support').classList.remove('open'); }
+
+  async function sendSupport() {
+    const body = {
+      clientId:   user.cedula,
+      propertyId: document.getElementById('support-prop-code').value,
+      agentId:    document.getElementById('support-agent-id').value,
+      message:    document.getElementById('support-msg').value
+    };
+    const res = await fetch(`${API}/agents/${body.agentId}/support-requests`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    if (res.ok) { closeSupport(); alert('Solicitud enviada al asesor exitosamente'); }
+    else { const e = await res.json(); alert(e.message||'Error al enviar solicitud'); }
+  }
+
+  // Cerrar modales con clic fuera
+  document.getElementById('modal-detail').addEventListener('click', function(e){
+    if (e.target === this) closeDetail();
+  });
+  document.getElementById('modal-support').addEventListener('click', function(e){
+    if (e.target === this) closeSupport();
+  });
+
   loadRecommendations();
   loadFavorites();
   loadHistory();

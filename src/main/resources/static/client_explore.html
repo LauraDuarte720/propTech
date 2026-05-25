@@ -8,14 +8,8 @@
     <script src="/proptech_utils.js"></script>
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-        :root{
-            --navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;
-            --border:rgba(19,25,54,0.1);--text-muted:#8A90A0;
-            --bg:#F5F6FA;--text:#1a1d2e;--white:#fff;
-        }
+        :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.1);--text-muted:#8A90A0;--bg:#F5F6FA;--text:#1a1d2e;--white:#fff;}
         html,body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
-
-        /* Nav */
         .navbar{background:white;border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
         .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
         .nav-logo-icon{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
@@ -30,8 +24,6 @@
         .btn-nav{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:6px;}
         .btn-nav:hover{background:var(--bg);}
         .btn svg{width:14px;height:14px;}
-
-        /* Hero */
         .hero{background:linear-gradient(135deg,var(--navy) 0%,#1e2d6b 100%);padding:60px 40px;text-align:center;}
         .hero-tag{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:16px;}
         .hero-title{font-size:42px;font-weight:300;color:white;letter-spacing:-1px;line-height:1.2;margin-bottom:12px;}
@@ -40,8 +32,6 @@
         .hero-stats{display:flex;justify-content:center;gap:40px;}
         .hero-stat-val{font-size:24px;font-weight:600;color:white;}
         .hero-stat-label{font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
-
-        /* Filters bar */
         .filters-bar{background:white;border-bottom:1px solid var(--border);padding:16px 40px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;position:sticky;top:60px;z-index:99;}
         .search-box{flex:1;min-width:200px;position:relative;}
         .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border 0.15s;}
@@ -54,19 +44,13 @@
         .price-range input:focus{border-color:var(--accent);}
         .price-range span{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
         .filter-count{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-left:auto;white-space:nowrap;}
-
-        /* Main content */
         .main{padding:32px 40px;}
         .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
         .section-title{font-size:16px;font-weight:500;}
         .sort-select{padding:6px 12px;background:white;border:1px solid var(--border);border-radius:7px;font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);outline:none;cursor:pointer;}
-
-        /* Property grid */
         .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
         .prop-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s;cursor:pointer;}
         .prop-card:hover{box-shadow:0 8px 32px rgba(74,111,227,0.12);border-color:rgba(74,111,227,0.3);transform:translateY(-2px);}
-
-        /* Card image placeholder */
         .prop-img{height:160px;background:linear-gradient(135deg,#e8ecf8,#d4daf5);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
         .prop-img-icon{font-size:40px;opacity:0.4;}
         .prop-img-type{position:absolute;top:10px;left:10px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;background:white;color:var(--accent);padding:3px 10px;border-radius:99px;}
@@ -74,8 +58,7 @@
         .fav-btn{position:absolute;bottom:10px;right:10px;width:32px;height:32px;border-radius:50%;background:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:all 0.15s;font-size:16px;}
         .fav-btn:hover{transform:scale(1.1);}
         .fav-btn.saved{background:#fff0f0;}
-
-        /* Card body */
+        .fav-btn:disabled{opacity:0.5;cursor:default;transform:none;}
         .prop-body{padding:16px;}
         .prop-price{font-size:20px;font-weight:600;color:var(--accent);margin-bottom:4px;}
         .prop-addr{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -86,19 +69,9 @@
         .prop-agent{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--border);}
         .agent-av{width:24px;height:24px;border-radius:50%;background:rgba(74,111,227,0.15);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--accent);flex-shrink:0;}
         .agent-name{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
-        .prop-actions{display:flex;gap:6px;margin-top:12px;}
-        .prop-action-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.15s;}
-        .btn-consult{background:rgba(74,111,227,0.08);color:var(--accent);}
-        .btn-consult:hover{background:rgba(74,111,227,0.15);}
-        .btn-visit{background:rgba(29,158,117,0.08);color:#1D9E75;}
-        .btn-visit:hover{background:rgba(29,158,117,0.15);}
-
-        /* Empty */
         .empty{text-align:center;padding:80px 20px;color:var(--text-muted);}
         .empty-icon{font-size:48px;margin-bottom:12px;}
         .empty-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;}
-
-        /* Modal */
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;align-items:center;justify-content:center;}
         .modal-overlay.open{display:flex;}
         .modal{background:white;border-radius:16px;padding:28px;width:460px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:fadeUp 0.2s ease;}
@@ -117,8 +90,6 @@
         .divider{display:flex;align-items:center;gap:10px;margin:16px 0;}
         .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
         .divider span{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
-
-        /* Detail modal */
         .detail-prop-price{font-size:28px;font-weight:600;color:var(--accent);margin-bottom:6px;}
         .detail-prop-addr{font-size:16px;font-weight:500;margin-bottom:4px;}
         .detail-prop-barrio{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:16px;}
@@ -127,16 +98,19 @@
         .detail-feat-val{font-size:16px;font-weight:600;color:var(--text);}
         .detail-feat-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
         .detail-actions{display:flex;gap:8px;flex-wrap:wrap;}
-
-        /* Auth prompt */
         .auth-prompt{background:rgba(74,111,227,0.06);border:1px solid rgba(74,111,227,0.15);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
         .auth-prompt-text{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);}
         .auth-prompt-text strong{color:var(--text);}
+        .prop-action-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.15s;}
+        .btn-consult{background:rgba(74,111,227,0.08);color:var(--accent);}
+        .btn-consult:hover{background:rgba(74,111,227,0.15);}
+        .btn-visit{background:rgba(29,158,117,0.08);color:#1D9E75;}
+        .btn-visit:hover{background:rgba(29,158,117,0.15);}
+        .btn-consult:disabled,.btn-visit:disabled{opacity:0.5;cursor:default;}
     </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar">
     <a href="client_explore.html" class="nav-logo">
         <div class="nav-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
@@ -148,7 +122,6 @@
     </div>
 </nav>
 
-<!-- Hero -->
 <div class="hero">
     <div class="hero-tag">Portal inmobiliario</div>
     <h1 class="hero-title">Encuentra tu<br><strong>inmueble ideal</strong></h1>
@@ -160,7 +133,6 @@
     </div>
 </div>
 
-<!-- Filters -->
 <div class="filters-bar">
     <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -205,7 +177,6 @@
     <span class="filter-count" id="filter-count">Cargando...</span>
 </div>
 
-<!-- Main -->
 <div class="main">
     <div class="section-header">
         <span class="section-title" id="section-title">Inmuebles disponibles</span>
@@ -222,7 +193,7 @@
     </div>
 </div>
 
-<!-- Modal: detalle de propiedad -->
+<!-- Modal detalle -->
 <div class="modal-overlay" id="modal-detail">
     <div class="modal" style="width:520px;">
         <div class="modal-title">
@@ -239,64 +210,35 @@
             <div class="detail-feat"><div class="detail-feat-val" id="d-area">—</div><div class="detail-feat-label">m²</div></div>
         </div>
         <div id="d-auth-prompt" class="auth-prompt" style="display:none;">
-            <span class="auth-prompt-text"><strong>¿Te interesa este inmueble?</strong> Inicia sesión para guardar favoritos y recibir recomendaciones personalizadas.</span>
+            <span class="auth-prompt-text"><strong>¿Te interesa?</strong> Inicia sesión para guardar favoritos y recibir recomendaciones.</span>
             <a href="proptech_login.html" class="btn btn-primary" style="font-size:12px;padding:6px 12px;white-space:nowrap;">Iniciar sesión</a>
         </div>
         <div class="detail-actions" id="d-actions"></div>
     </div>
 </div>
 
-<!-- Modal: registrarse -->
+<!-- Modal registro -->
 <div class="modal-overlay" id="modal-register">
     <div class="modal">
-        <div class="modal-title">
-            Crear cuenta
-            <button onclick="closeRegister()">×</button>
-        </div>
+        <div class="modal-title">Crear cuenta <button onclick="closeRegister()">×</button></div>
         <div class="modal-sub">Regístrate para guardar favoritos y recibir recomendaciones personalizadas</div>
         <div class="form-grid">
-            <div class="form-group">
-                <label>Cédula</label>
-                <input type="text" id="r-cedula" placeholder="Número de cédula">
-            </div>
-            <div class="form-group">
-                <label>Nombre completo</label>
-                <input type="text" id="r-name" placeholder="Tu nombre">
-            </div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="r-username" placeholder="nombre.usuario">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="r-password" placeholder="Mínimo 8 caracteres">
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="r-email" placeholder="correo@ejemplo.com">
-            </div>
-            <div class="form-group">
-                <label>Teléfono</label>
-                <input type="text" id="r-phone" placeholder="+57 300 000 0000">
-            </div>
-            <div class="form-group">
-                <label>Presupuesto máximo</label>
-                <input type="number" id="r-budget" placeholder="0">
-            </div>
-            <div class="form-group">
-                <label>Habitaciones mínimas</label>
-                <input type="number" id="r-bedrooms" value="1" min="0">
-            </div>
-            <div class="form-group">
-                <label>Tipo de cliente</label>
+            <div class="form-group"><label>Cédula</label><input type="text" id="r-cedula" placeholder="Número de cédula"></div>
+            <div class="form-group"><label>Nombre completo</label><input type="text" id="r-name" placeholder="Tu nombre"></div>
+            <div class="form-group"><label>Username</label><input type="text" id="r-username" placeholder="nombre.usuario"></div>
+            <div class="form-group"><label>Contraseña</label><input type="password" id="r-password" placeholder="Mínimo 8 caracteres"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="r-email" placeholder="correo@ejemplo.com"></div>
+            <div class="form-group"><label>Teléfono</label><input type="text" id="r-phone" placeholder="+57 300 000 0000"></div>
+            <div class="form-group"><label>Presupuesto máximo</label><input type="number" id="r-budget" placeholder="0"></div>
+            <div class="form-group"><label>Habitaciones mínimas</label><input type="number" id="r-bedrooms" value="1" min="0"></div>
+            <div class="form-group"><label>Tipo de cliente</label>
                 <select id="r-client-type">
                     <option value="BUYER">Comprador</option>
-                    <option value="RENTER">Arrendatario</option>
+                    <option value="TENANT">Arrendatario</option>
                     <option value="INVESTOR">Inversionista</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Tipo de inmueble deseado</label>
+            <div class="form-group"><label>Tipo de inmueble deseado</label>
                 <select id="r-prop-type">
                     <option value="APARTMENT">Apartamento</option>
                     <option value="HOUSE">Casa</option>
@@ -306,8 +248,7 @@
                     <option value="WAREHOUSE">Bodega</option>
                 </select>
             </div>
-            <div class="form-group form-full">
-                <label>Estado de búsqueda</label>
+            <div class="form-group form-full"><label>Estado de búsqueda</label>
                 <select id="r-search-status">
                     <option value="ACTIVE">Buscando activamente</option>
                     <option value="PAUSED">En pausa</option>
@@ -324,18 +265,14 @@
     </div>
 </div>
 
-<!-- Modal: solicitud de soporte -->
+<!-- Modal soporte -->
 <div class="modal-overlay" id="modal-support">
     <div class="modal" style="width:420px;">
-        <div class="modal-title">
-            Solicitar información
-            <button onclick="closeSupport()">×</button>
-        </div>
+        <div class="modal-title">Solicitar información <button onclick="closeSupport()">×</button></div>
         <div class="modal-sub" id="support-prop-label">Envía tu consulta al asesor</div>
         <input type="hidden" id="support-prop-code">
         <input type="hidden" id="support-agent-id">
-        <div class="form-group">
-            <label>Tu mensaje</label>
+        <div class="form-group"><label>Tu mensaje</label>
             <textarea id="support-msg" placeholder="Escribe tu consulta sobre este inmueble..."></textarea>
         </div>
         <div class="modal-actions">
@@ -349,24 +286,41 @@
     const API = 'http://localhost:8080';
     const user = JSON.parse(sessionStorage.getItem('user') || 'null');
 
-    // Update nav if logged in
+    // Set guardados en memoria para evitar duplicados
+    const savedProps = new Set();
+
     if (user) {
         document.getElementById('nav-right').innerHTML = `
-      <span style="font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted)">Hola, <strong style="color:var(--text)">${user.name}</strong></span>
-      <a href="client_dashboard.html" class="btn btn-primary">Mi cuenta</a>`;
+            <span style="font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted)">Hola, <strong style="color:var(--text)">${user.name}</strong></span>
+            <a href="client_dashboard.html" class="btn btn-primary">Mi cuenta</a>`;
+        // Cargar favoritos existentes para no duplicar
+        loadExistingFavorites();
     }
 
     let allProps = [];
     let currentProp = null;
-
     const typeIcons = { APARTMENT:'🏢', HOUSE:'🏠', RETAIL_SPACE:'🏪', OFFICE:'🏛️', LOT:'🌿', WAREHOUSE:'🏭' };
+
+    // ── Cargar favoritos existentes al inicio ────────────────────────
+    async function loadExistingFavorites() {
+        if (!user) return;
+        const res = await fetch(`${API}/clients/${user.cedula}/favorites`).catch(()=>null);
+        if (!res?.ok) return;
+        const favs = await res.json();
+        favs.forEach(p => savedProps.add(p.code));
+        // Actualizar íconos si los cards ya están renderizados
+        savedProps.forEach(code => {
+            const btn = document.getElementById(`fav-${code}`);
+            if (btn) { btn.textContent = '❤️'; btn.classList.add('saved'); btn.disabled = true; }
+        });
+    }
 
     async function loadProps() {
         const [propsRes, agentsRes] = await Promise.all([
-            fetch(`${API}/properties`),
-            fetch(`${API}/agents`)
+            fetch(`${API}/properties`).catch(()=>null),
+            fetch(`${API}/agents`).catch(()=>null)
         ]);
-        if (propsRes.ok) {
+        if (propsRes?.ok) {
             const all = await propsRes.json();
             allProps = all.filter(p => p.status === 'ACTIVE' && p.agent);
             document.getElementById('h-props').textContent = allProps.length;
@@ -374,7 +328,7 @@
             document.getElementById('h-cities').textContent = cities.size;
             applyFilters();
         }
-        if (agentsRes.ok) {
+        if (agentsRes?.ok) {
             const agents = await agentsRes.json();
             document.getElementById('h-agents').textContent = agents.length;
         }
@@ -400,10 +354,10 @@
             return true;
         });
 
-        if (sort === 'price-asc')      filtered.sort((a,b)=>a.price-b.price);
-        else if (sort === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
-        else if (sort === 'area-desc')  filtered.sort((a,b)=>(b.area||0)-(a.area||0));
-        else if (sort === 'bedrooms-desc') filtered.sort((a,b)=>(b.numBedrooms||0)-(a.numBedrooms||0));
+        if (sort === 'price-asc')          filtered.sort((a,b)=>a.price-b.price);
+        else if (sort === 'price-desc')     filtered.sort((a,b)=>b.price-a.price);
+        else if (sort === 'area-desc')      filtered.sort((a,b)=>(b.area||0)-(a.area||0));
+        else if (sort === 'bedrooms-desc')  filtered.sort((a,b)=>(b.numBedrooms||0)-(a.numBedrooms||0));
 
         document.getElementById('filter-count').textContent = `${filtered.length} inmueble${filtered.length!==1?'s':''}`;
         document.getElementById('section-title').textContent = `${filtered.length} inmueble${filtered.length!==1?'s':''} disponible${filtered.length!==1?'s':''}`;
@@ -419,31 +373,38 @@
         grid.innerHTML = props.map(p => {
             const icon = typeIcons[p.propertyType] || '🏠';
             const initials = (p.agent?.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+            const isSaved = savedProps.has(p.code);
             return `<div class="prop-card" onclick="openDetail('${p.code}')">
-        <div class="prop-img">
-          <span class="prop-img-icon">${icon}</span>
-          <span class="prop-img-type">${label(PROPERTY_TYPE,p.propertyType)}</span>
-          <span class="prop-img-purpose">${label(PROPERTY_PURPOSE,p.purpose)}</span>
-          <button class="fav-btn" onclick="event.stopPropagation();toggleFav('${p.code}')" id="fav-${p.code}" title="Guardar favorito">🤍</button>
-        </div>
-        <div class="prop-body">
-          <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
-          <div class="prop-addr">${p.address||p.code}</div>
-          <div class="prop-barrio">${p.neighborhood?.name||'—'} · ${p.neighborhood?.city||'—'}</div>
-          <div class="prop-features">
-            ${p.numBedrooms!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h20M2 7h20v13H2z"/></svg>${p.numBedrooms} hab</span>`:''}
-            ${p.numBathrooms!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><rect x="2" y="6" width="20" height="10" rx="2"/></svg>${p.numBathrooms} baños</span>`:''}
-            ${p.area!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${p.area}m²</span>`:''}
-          </div>
-          <div class="prop-agent">
-            <div class="agent-av">${initials}</div>
-            <span class="agent-name">Asesor: ${p.agent?.name||'—'}</span>
-          </div>
-        </div>
-      </div>`;
+                <div class="prop-img">
+                    <span class="prop-img-icon">${icon}</span>
+                    <span class="prop-img-type">${label(PROPERTY_TYPE,p.propertyType)}</span>
+                    <span class="prop-img-purpose">${label(PROPERTY_PURPOSE,p.purpose)}</span>
+                    <button class="fav-btn ${isSaved?'saved':''}" id="fav-${p.code}"
+                        onclick="event.stopPropagation();toggleFav('${p.code}')"
+                        title="${isSaved?'Ya guardado':'Guardar favorito'}"
+                        ${isSaved?'disabled':''}>
+                        ${isSaved?'❤️':'🤍'}
+                    </button>
+                </div>
+                <div class="prop-body">
+                    <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
+                    <div class="prop-addr">${p.address||p.code}</div>
+                    <div class="prop-barrio">${p.neighborhood?.name||'—'} · ${p.neighborhood?.city||'—'}</div>
+                    <div class="prop-features">
+                        ${p.numBedrooms!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h20M2 7h20v13H2z"/></svg>${p.numBedrooms} hab</span>`:''}
+                        ${p.numBathrooms!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><rect x="2" y="6" width="20" height="10" rx="2"/></svg>${p.numBathrooms} baños</span>`:''}
+                        ${p.area!=null?`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${p.area}m²</span>`:''}
+                    </div>
+                    <div class="prop-agent">
+                        <div class="agent-av">${initials}</div>
+                        <span class="agent-name">Asesor: ${p.agent?.name||'—'}</span>
+                    </div>
+                </div>
+            </div>`;
         }).join('');
     }
 
+    // ── Detalle de propiedad ─────────────────────────────────────────
     function openDetail(code) {
         currentProp = allProps.find(p=>p.code===code);
         if (!currentProp) return;
@@ -460,45 +421,80 @@
 
         const actions = document.getElementById('d-actions');
         const authPrompt = document.getElementById('d-auth-prompt');
+        const isSaved = savedProps.has(p.code);
 
         if (!user) {
             authPrompt.style.display = 'flex';
-            actions.innerHTML = `
-        <button class="btn btn-ghost" style="flex:1" onclick="registerInteraction('${p.code}','CONSULTED')">👁 Ver detalles</button>`;
+            actions.innerHTML = '';
         } else {
             authPrompt.style.display = 'none';
             actions.innerHTML = `
-        <button class="prop-action-btn btn-consult" onclick="registerInteraction('${p.code}','CONSULTED')">👁 Consultar</button>
-        <button class="prop-action-btn btn-consult" onclick="registerInteraction('${p.code}','SAVED');closeDetail()">🤍 Guardar</button>
-        <button class="prop-action-btn btn-visit" onclick="registerInteraction('${p.code}','VISITED')">📅 Visitar</button>
-        <button class="prop-action-btn btn-consult" onclick="openSupport('${p.code}','${p.address||p.code}','${p.agent?.cedula||''}')">💬 Solicitar info</button>`;
+                <button class="prop-action-btn btn-consult" onclick="doInteraction('${p.code}','CONSULTED',this)">👁 Consultar</button>
+                <button class="prop-action-btn btn-consult ${isSaved?'saved':''}"
+                    id="detail-fav-${p.code}"
+                    onclick="doInteraction('${p.code}','SAVED',this)"
+                    ${isSaved?'disabled':''}>
+                    ${isSaved?'❤️ Guardado':'🤍 Guardar'}
+                </button>
+                <button class="prop-action-btn btn-visit" onclick="doInteraction('${p.code}','VISITED',this)">📅 Visitar</button>
+                <button class="prop-action-btn btn-consult" onclick="openSupport('${p.code}','${p.address||p.code}','${p.agent?.cedula||''}')">💬 Info</button>`;
+            // Registrar CONSULTED automáticamente
+            registerInteraction(p.code, 'CONSULTED');
         }
-
-        // Register CONSULTED automatically
-        if (user) registerInteraction(p.code, 'CONSULTED');
         document.getElementById('modal-detail').classList.add('open');
     }
-
     function closeDetail() { document.getElementById('modal-detail').classList.remove('open'); }
 
-    async function toggleFav(code) {
-        if (!user) { window.location.href = 'proptech_login.html'; return; }
-        await registerInteraction(code, 'SAVED');
-        const btn = document.getElementById(`fav-${code}`);
-        btn.textContent = '❤️';
-        btn.classList.add('saved');
-    }
-
+    // ── Interacciones ────────────────────────────────────────────────
     async function registerInteraction(propCode, interactionType) {
-        if (!user) return;
-        await fetch(`${API}/clients/${user.cedula}/interactions`, {
+        if (!user) return false;
+        const res = await fetch(`${API}/clients/${user.cedula}/interactions`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ clientId: user.cedula, propertyId: propCode, interactionType })
         });
+        return res.ok;
     }
 
-    // Support modal
+    // Botón con feedback visual
+    async function doInteraction(propCode, type, btn) {
+        if (!user) return;
+        if (type === 'SAVED') {
+            if (savedProps.has(propCode)) return; // ya guardado, no duplicar
+            btn.disabled = true;
+            const ok = await registerInteraction(propCode, 'SAVED');
+            if (ok) {
+                savedProps.add(propCode);
+                btn.textContent = '❤️ Guardado';
+                btn.classList.add('saved');
+                // Actualizar también el botón de la card
+                const cardBtn = document.getElementById(`fav-${propCode}`);
+                if (cardBtn) { cardBtn.textContent = '❤️'; cardBtn.classList.add('saved'); cardBtn.disabled = true; }
+            } else {
+                btn.disabled = false;
+            }
+        } else {
+            btn.disabled = true;
+            await registerInteraction(propCode, type);
+            setTimeout(() => { btn.disabled = false; }, 1000);
+        }
+    }
+
+    async function toggleFav(code) {
+        if (!user) { window.location.href = 'proptech_login.html'; return; }
+        if (savedProps.has(code)) return; // ya guardado, no duplicar
+        const btn = document.getElementById(`fav-${code}`);
+        if (btn) btn.disabled = true;
+        const ok = await registerInteraction(code, 'SAVED');
+        if (ok) {
+            savedProps.add(code);
+            if (btn) { btn.textContent = '❤️'; btn.classList.add('saved'); }
+        } else {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    // ── Soporte ──────────────────────────────────────────────────────
     function openSupport(code, addr, agentId) {
         document.getElementById('support-prop-code').value = code;
         document.getElementById('support-agent-id').value = agentId;
@@ -510,10 +506,10 @@
     async function sendSupport() {
         if (!user) { window.location.href = 'proptech_login.html'; return; }
         const body = {
-            clientId: user.cedula,
+            clientId:   user.cedula,
             propertyId: document.getElementById('support-prop-code').value,
-            agentId: document.getElementById('support-agent-id').value,
-            message: document.getElementById('support-msg').value
+            agentId:    document.getElementById('support-agent-id').value,
+            message:    document.getElementById('support-msg').value
         };
         const res = await fetch(`${API}/agents/${body.agentId}/support-requests`, {
             method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
@@ -522,30 +518,30 @@
         else { const e = await res.json(); alert(e.message||'Error al enviar solicitud'); }
     }
 
-    // Register modal
+    // ── Registro ─────────────────────────────────────────────────────
     function openRegisterModal() { document.getElementById('modal-register').classList.add('open'); }
     function closeRegister() { document.getElementById('modal-register').classList.remove('open'); }
 
     async function registerClient() {
         const body = {
-            cedula: document.getElementById('r-cedula').value,
-            name: document.getElementById('r-name').value,
-            username: document.getElementById('r-username').value,
-            password: document.getElementById('r-password').value,
-            email: document.getElementById('r-email').value,
-            phone: document.getElementById('r-phone').value,
-            budget: Number(document.getElementById('r-budget').value),
-            minBedrooms: Number(document.getElementById('r-bedrooms').value),
-            clientType: document.getElementById('r-client-type').value,
+            cedula:              document.getElementById('r-cedula').value,
+            name:                document.getElementById('r-name').value,
+            username:            document.getElementById('r-username').value,
+            password:            document.getElementById('r-password').value,
+            email:               document.getElementById('r-email').value,
+            phone:               document.getElementById('r-phone').value,
+            budget:              Number(document.getElementById('r-budget').value),
+            minBedrooms:         Number(document.getElementById('r-bedrooms').value),
+            clientType:          document.getElementById('r-client-type').value,
             desiredPropertyType: document.getElementById('r-prop-type').value,
-            searchStatus: document.getElementById('r-search-status').value
+            searchStatus:        document.getElementById('r-search-status').value
         };
         const res = await fetch(`${API}/clients`, {
             method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
         });
         if (res.ok) {
             closeRegister();
-            alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
+            alert('Cuenta creada. Ahora puedes iniciar sesión.');
             window.location.href = 'proptech_login.html';
         } else {
             const e = await res.json();

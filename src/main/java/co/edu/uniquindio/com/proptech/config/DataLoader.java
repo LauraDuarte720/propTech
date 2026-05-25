@@ -143,7 +143,7 @@ public class DataLoader {
                 .cedula("1094000005")
                 .name("Juliana Perez")
                 .username("juliana.perez")
-                    .password("Juliana123")
+                .password("Juliana123")
                 .contact("+57310111005")
                 .assignedZone(zonaSurArmenia)
                 .closedDeals(6)
@@ -244,6 +244,176 @@ public class DataLoader {
                         .build(),
                 agente2);
 
+        // ══════════════════════════════════════════════
+        // INMUEBLES EXTRA PARA RECOMENDACIONES
+        // ══════════════════════════════════════════════
+
+        // --- Norte Armenia (zona de Sofia y agente1) ---
+
+        Property prop9 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 18 # 12-50")
+                        .neighborhood(barrioElBosque)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.SALE)
+                        .price(290_000_000.0)
+                        .area(80.0)
+                        .numBedrooms(3)
+                        .numBathrooms(2)
+                        .build(),
+                agente1);
+
+        Property prop10 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 14 # 20-30")
+                        .neighborhood(barrioElBosque)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.SALE)
+                        .price(255_000_000.0)
+                        .area(68.0)
+                        .numBedrooms(2)
+                        .numBathrooms(2)
+                        .build(),
+                agente1);
+
+        Property prop11 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 22 # 11-15")
+                        .neighborhood(barrioElBosque)
+                        .propertyType(PropertyType.HOUSE)
+                        .purpose(Purpose.SALE)
+                        .price(310_000_000.0)
+                        .area(95.0)
+                        .numBedrooms(3)
+                        .numBathrooms(2)
+                        .build(),
+                agente1);
+
+        // --- Centro Armenia (zona de Sofia y agente2) ---
+
+        Property prop12 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 17 # 9-40")
+                        .neighborhood(barrioLaCastellana)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.SALE)
+                        .price(275_000_000.0)
+                        .area(72.0)
+                        .numBedrooms(3)
+                        .numBathrooms(2)
+                        .build(),
+                agente2);
+
+        Property prop13 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 12 # 16-22")
+                        .neighborhood(barrioLaCastellana)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.RENT)
+                        .price(1_500_000.0)
+                        .area(60.0)
+                        .numBedrooms(2)
+                        .numBathrooms(1)
+                        .build(),
+                agente2);
+
+        // --- Sur Armenia (zona de Valentina y agenteSur) ---
+
+        Property prop14 = registrarYPublicar(
+                Property.builder()
+                        .address("Avenida Centenario # 5-18")
+                        .neighborhood(barrioLaureles)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.RENT)
+                        .price(1_700_000.0)
+                        .area(58.0)
+                        .numBedrooms(2)
+                        .numBathrooms(1)
+                        .build(),
+                agenteSur);
+
+        Property prop15 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 3 # 8-55")
+                        .neighborhood(barrioLaureles)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.RENT)
+                        .price(1_950_000.0)
+                        .area(65.0)
+                        .numBedrooms(2)
+                        .numBathrooms(2)
+                        .build(),
+                agenteSur);
+
+        // --- Medellín El Poblado (zona de Felipe y agente3) ---
+
+        Property prop16 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 43A # 10-30")
+                        .neighborhood(barrioElPoblado)
+                        .propertyType(PropertyType.HOUSE)
+                        .purpose(Purpose.SALE)
+                        .price(650_000_000.0)
+                        .area(210.0)
+                        .numBedrooms(5)
+                        .numBathrooms(4)
+                        .build(),
+                agente3);
+
+        Property prop17 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 8 Sur # 42-80")
+                        .neighborhood(barrioElPoblado)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.RENT)
+                        .price(4_200_000.0)
+                        .area(110.0)
+                        .numBedrooms(3)
+                        .numBathrooms(3)
+                        .build(),
+                agente3);
+
+        // --- Cali Ciudad Jardín (zona de Felipe y Camila, agente4) ---
+
+        Property prop18 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 100 # 11-45")
+                        .neighborhood(barrioCiudadJardin)
+                        .propertyType(PropertyType.HOUSE)
+                        .purpose(Purpose.SALE)
+                        .price(580_000_000.0)
+                        .area(185.0)
+                        .numBedrooms(4)
+                        .numBathrooms(3)
+                        .build(),
+                agente4);
+
+        Property prop19 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 13 Oeste # 99-20")
+                        .neighborhood(barrioCiudadJardin)
+                        .propertyType(PropertyType.HOUSE)
+                        .purpose(Purpose.SALE)
+                        .price(690_000_000.0)
+                        .area(230.0)
+                        .numBedrooms(5)
+                        .numBathrooms(4)
+                        .build(),
+                agente4);
+
+        Property prop20 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 98 # 14-60")
+                        .neighborhood(barrioCiudadJardin)
+                        .propertyType(PropertyType.OFFICE)
+                        .purpose(Purpose.RENT)
+                        .price(5_500_000.0)
+                        .area(120.0)
+                        .numBedrooms(0)
+                        .numBathrooms(2)
+                        .build(),
+                agente4);
+
         // Inmueble sin publicar (INACTIVE) — confirm=true, sin agente
         propertyService.registerProperty(
                 Property.builder()
@@ -341,28 +511,39 @@ public class DataLoader {
 
         // ══════════════════════════════════════════════
         // 6. INTERACCIONES
+        // Regla: VISITED solo si hay visita real registrada en sección 7.
+        //        Las demás interacciones que antes eran VISITED pasan a CONSULTED.
         // ══════════════════════════════════════════════
 
-        registerInteraction(cliente1, prop1, InteractionType.VISITED,           LocalDateTime.now().minusDays(10));
-        registerInteraction(cliente1, prop1, InteractionType.SAVED,             LocalDateTime.now().minusDays(8));
-        registerInteraction(cliente1, prop1, InteractionType.BUYING_INTENTION,  LocalDateTime.now().minusDays(5));
-        registerInteraction(cliente1, prop3, InteractionType.VISITED,           LocalDateTime.now().minusDays(3));
+        // cliente1 → prop1: tiene visita real (agente1, -9 días) → CONSULTED + SAVED + BUYING_INTENTION
+        //            prop3: tiene visita real (agenteSur, +3 días) → CONSULTED
+        registerInteraction(cliente1, prop1, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(10));
+        registerInteraction(cliente1, prop1, InteractionType.SAVED,              LocalDateTime.now().minusDays(8));
+        registerInteraction(cliente1, prop1, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(5));
+        registerInteraction(cliente1, prop3, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(3));
 
-        registerInteraction(cliente2, prop2, InteractionType.VISITED,           LocalDateTime.now().minusDays(12));
-        registerInteraction(cliente2, prop2, InteractionType.NEGOTIATED,        LocalDateTime.now().minusDays(9));
-        registerInteraction(cliente2, prop2, InteractionType.BUYING_INTENTION,  LocalDateTime.now().minusDays(6));
-        registerInteraction(cliente2, prop5, InteractionType.BUYING_INTENTION,  LocalDateTime.now().minusDays(4));
+        // cliente2 → prop2: tiene visita real (agente2, -11 días) → CONSULTED + NEGOTIATED + BUYING_INTENTION
+        //            prop5: sin visita real → BUYING_INTENTION se mantiene (no era VISITED)
+        registerInteraction(cliente2, prop2, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(12));
+        registerInteraction(cliente2, prop2, InteractionType.NEGOTIATED,         LocalDateTime.now().minusDays(9));
+        registerInteraction(cliente2, prop2, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(6));
+        registerInteraction(cliente2, prop5, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(4));
 
-        registerInteraction(cliente3, prop3, InteractionType.VISITED,           LocalDateTime.now().minusDays(7));
-        registerInteraction(cliente3, prop3, InteractionType.RENTING_INTENTION, LocalDateTime.now().minusDays(2));
+        // cliente3 → prop3: tiene visita real (agenteSur, -6 días) → CONSULTED + RENTING_INTENTION
+        registerInteraction(cliente3, prop3, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(7));
+        registerInteraction(cliente3, prop3, InteractionType.RENTING_INTENTION,  LocalDateTime.now().minusDays(2));
 
-        registerInteraction(cliente4, prop5, InteractionType.VISITED,           LocalDateTime.now().minusDays(15));
-        registerInteraction(cliente4, prop5, InteractionType.SAVED,             LocalDateTime.now().minusDays(13));
-        registerInteraction(cliente4, prop5, InteractionType.BUYING_INTENTION,  LocalDateTime.now().minusDays(8));
-        registerInteraction(cliente4, prop4, InteractionType.CONSULTED,         LocalDateTime.now().minusDays(5));
+        // cliente4 → prop5: tiene visita real (agente4, -14 días) → CONSULTED + SAVED + BUYING_INTENTION
+        //            prop4: sin visita real → CONSULTED (era CONSULTED, se mantiene)
+        registerInteraction(cliente4, prop5, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(15));
+        registerInteraction(cliente4, prop5, InteractionType.SAVED,              LocalDateTime.now().minusDays(13));
+        registerInteraction(cliente4, prop5, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(8));
+        registerInteraction(cliente4, prop4, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(5));
 
-        registerInteraction(cliente5, prop5, InteractionType.VISITED,           LocalDateTime.now().minusDays(20));
-        registerInteraction(cliente5, prop2, InteractionType.VISITED,           LocalDateTime.now().minusDays(18));
+        // cliente5 → prop5: sin visita real → CONSULTED (era VISITED)
+        //            prop2: sin visita real → CONSULTED (era VISITED)
+        registerInteraction(cliente5, prop5, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(20));
+        registerInteraction(cliente5, prop2, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(18));
 
         // ══════════════════════════════════════════════
         // 7. VISITAS
@@ -408,9 +589,10 @@ public class DataLoader {
                 .date(LocalDateTime.now().plusDays(3))
                 .visitType(VisitType.NORMAL)
                 .build());
+
         // ══════════════════════════════════════════════
-// SUPPORT REQUESTS
-// ══════════════════════════════════════════════
+        // SUPPORT REQUESTS
+        // ══════════════════════════════════════════════
 
         agentService.registerSupportRequest(
                 SupportRequest.builder()
@@ -519,23 +701,23 @@ public class DataLoader {
                 .property(prop7)
                 .client(cliente2)
                 .agent(agente2)
-                .operationType(OperationType.CONTRACT_RENEWAL)   // ← tipo necesario
+                .operationType(OperationType.CONTRACT_RENEWAL)
                 .value(2_200_000.0)
                 .dateInitial(LocalDate.now().minusMonths(11))
-                .dateFinal(LocalDate.now().plusDays(15))          // ← vence en 15 días
+                .dateFinal(LocalDate.now().plusDays(15))
                 .build());
 
-// ─── RESERVE_NO_CLOSURE ─────────────────────────────────────────────
+        // ─── RESERVE_NO_CLOSURE ─────────────────────────────────────────────
         operationService.registerOperation(Operation.builder()
                 .property(prop6)
                 .client(cliente4)
                 .agent(agente1)
                 .operationType(OperationType.SALE)
                 .value(150_000_000.0)
-                .dateInitial(LocalDate.now().minusDays(35))       // ← más de 30 días, sin cerrar
+                .dateInitial(LocalDate.now().minusDays(35))
                 .build());
 
-// ─── INACTIVE_CLIENT ────────────────────────────────────────────────
+        // ─── INACTIVE_CLIENT ────────────────────────────────────────────────
         Client clienteInactivo = clientService.registerClient(Client.builder()
                 .cedula("1093000099")
                 .name("Juan Inactivo")
@@ -549,30 +731,25 @@ public class DataLoader {
                 .searchStatus(SearchStatus.PAUSED)
                 .desiredPropertyType(PropertyType.APARTMENT)
                 .build());
-// Sin interacciones → lleva "infinito" días inactivo
+        // Sin interacciones → lleva "infinito" días inactivo
 
         // Atender solicitudes
         agentService.attendSupportRequest(agente2.getCedula());
         agentService.attendSupportRequest(agente4.getCedula());
 
-// Cancelar solicitud
+        // Cancelar solicitud
         SupportRequest pending = agentService.getNextSupportRequest(agente1.getCedula());
-
         if (pending != null) {
-            agentService.cancelSupportRequest(
-                    agente1.getCedula(),
-                    pending.getId()
-            );
+            agentService.cancelSupportRequest(agente1.getCedula(), pending.getId());
         }
 
         System.out.println("✅ DataLoader: datos de prueba cargados correctamente.");
 
         // ══════════════════════════════════════════════
-// 9. DATOS EXTRA PARA DISPARAR ALERTAS ANÓMALAS
-// ══════════════════════════════════════════════
+        // 9. DATOS EXTRA PARA DISPARAR ALERTAS ANÓMALAS
+        // ══════════════════════════════════════════════
 
-// HIGH_VISITS_NO_CLOSING: prop6 necesita 5+ visitas COMPLETED sin operación
-// Usamos clientes existentes con agente1 (zona Norte Armenia = prop6)
+        // HIGH_VISITS_NO_CLOSING: prop6 necesita 5+ visitas COMPLETED sin operación
         for (int i = 0; i < 6; i++) {
             Client c = (i % 2 == 0) ? cliente1 : cliente3;
             registerVisitSafe(Visit.builder()
@@ -583,7 +760,7 @@ public class DataLoader {
                     .build());
         }
 
-// CLIENT_MULTIPLE_VISITS_NO_CONTINUITY: cliente5 hace 4 visitas en 30 días sin COMPLETED
+        // CLIENT_MULTIPLE_VISITS_NO_CONTINUITY: cliente5 hace visitas en 30 días sin COMPLETED
         registerVisitSafe(Visit.builder()
                 .client(cliente5).property(prop6).agent(agente1)
                 .date(LocalDateTime.now().minusDays(25))
@@ -597,7 +774,7 @@ public class DataLoader {
                 .date(LocalDateTime.now().minusDays(8))
                 .visitType(VisitType.NORMAL).build());
 
-// AGENT_EXCESSIVE_OVERLOAD: agente1 acumula 11 visitas PENDING/CONFIRMED
+        // AGENT_EXCESSIVE_OVERLOAD: agente1 acumula 11 visitas PENDING/CONFIRMED
         for (int i = 0; i < 10; i++) {
             registerVisitSafe(Visit.builder()
                     .client(cliente1).property(prop6).agent(agente1)
@@ -605,7 +782,7 @@ public class DataLoader {
                     .visitType(VisitType.NORMAL).build());
         }
 
-// ZONE_INTEREST_CONCENTRATION: 6 visitas en zona NORTE en menos de 7 días
+        // ZONE_INTEREST_CONCENTRATION: 6 visitas en zona NORTE en menos de 7 días
         for (int i = 0; i < 5; i++) {
             Client c = (i % 2 == 0) ? cliente2 : cliente4;
             registerVisitSafe(Visit.builder()
@@ -617,17 +794,9 @@ public class DataLoader {
 
     // ── helpers privados ──────────────────────────────────────────────────────
 
-    /**
-     * Registra un inmueble, asigna el agente en el objeto (via addPropertyToAgent)
-     * y luego lo publica. Workaround para que publishProperty no falle con
-     * "getAgent() == null" sin modificar el backend.
-     */
     private Property registrarYPublicar(Property property, Agent agente) {
-        // 1. Registrar con agentId → queda en NEW
         Property saved = propertyService.registerProperty(property, agente.getCedula(), false);
-        // 2. Asignar agente en el objeto Property via el servicio de agentes
         agentService.addPropertyToAgent(saved.getCode(), agente.getCedula());
-        // 3. Publicar — ahora getAgent() != null
         return propertyService.publishPropertyWithLog(saved.getCode());
     }
 
@@ -649,6 +818,4 @@ public class DataLoader {
             System.out.println("⚠️  Visita omitida por conflicto de agenda: " + e.getMessage());
         }
     }
-
-
 }
