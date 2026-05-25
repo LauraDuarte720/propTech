@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech — Mi cuenta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="/proptech_utils.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(19,25,54,0.1);--text-muted:#8A90A0;--bg:#F5F6FA;--text:#1a1d2e;--white:#fff;}
+    html,body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
+
+    /* Navbar */
+    .navbar{background:white;border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .nav-logo-icon{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .nav-logo-icon svg{width:16px;height:16px;fill:white;}
+    .nav-logo-name{font-size:16px;font-weight:600;color:var(--text);}
+    .nav-tabs{display:flex;gap:2px;}
+    .nav-tab{padding:8px 16px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);cursor:pointer;border:none;background:none;transition:all 0.15s;}
+    .nav-tab:hover{background:var(--bg);color:var(--text);}
+    .nav-tab.active{background:rgba(74,111,227,0.1);color:var(--accent);font-weight:500;}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+    .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;display:flex;align-items:center;gap:6px;text-decoration:none;}
+    .btn-ghost{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+    .btn-ghost:hover{background:#eef0f8;}
+    .btn-primary{background:var(--accent);color:white;}
+    .btn-primary:hover{background:var(--accent-light);}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .btn svg{width:14px;height:14px;}
+    .avatar-sm{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;}
+
+    /* Layout */
+    .main{max-width:1100px;margin:0 auto;padding:32px 20px;}
+
+    /* Sections */
+    .section{display:none;}
+    .section.active{display:block;}
+
+    /* Profile header */
+    .profile-header{background:linear-gradient(135deg,var(--navy),#1e2d6b);border-radius:16px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;gap:20px;}
+    .profile-avatar{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:white;flex-shrink:0;}
+    .profile-name{font-size:22px;font-weight:500;color:white;letter-spacing:-0.3px;}
+    .profile-sub{font-family:'Jost',sans-serif;font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;}
+    .profile-actions{margin-left:auto;display:flex;gap:8px;}
+    .btn-white{background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);}
+    .btn-white:hover{background:rgba(255,255,255,0.2);}
+
+    /* Cards */
+    .card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+    .card-title{font-size:14px;font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .card-title a{font-family:'Jost',sans-serif;font-size:12px;color:var(--accent);text-decoration:none;}
+
+    /* Property grid */
+    .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+    .prop-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.2s;cursor:pointer;}
+    .prop-card:hover{box-shadow:0 4px 20px rgba(74,111,227,0.1);border-color:rgba(74,111,227,0.25);transform:translateY(-1px);}
+    .prop-img{height:120px;background:linear-gradient(135deg,#e8ecf8,#d4daf5);display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
+    .prop-img-badge{position:absolute;top:8px;left:8px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;background:var(--accent);color:white;padding:2px 8px;border-radius:99px;}
+    .prop-body{padding:12px;}
+    .prop-price{font-size:16px;font-weight:600;color:var(--accent);margin-bottom:2px;}
+    .prop-addr{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .prop-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+
+    /* Interaction history */
+    .interaction-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .interaction-item:last-child{border-bottom:none;}
+    .interaction-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .interaction-info{flex:1;}
+    .interaction-prop{font-size:13px;font-weight:500;}
+    .interaction-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .interaction-type{font-family:'Jost',sans-serif;font-size:11px;padding:2px 8px;border-radius:99px;}
+
+    /* Stats row */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+    .stat-card{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+    .stat-val{font-size:22px;font-weight:600;color:var(--text);}
+    .stat-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+
+    /* Profile form */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-group.full{grid-column:1/-1;}
+    .form-group label{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);}
+    .form-group input,.form-group select{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.15s;}
+    .form-group input:focus,.form-group select:focus{border-color:var(--accent);}
+    .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+    /* Recommendation score */
+    .rec-score{display:inline-flex;align-items:center;gap:4px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;background:rgba(74,111,227,0.1);color:var(--accent);padding:2px 8px;border-radius:99px;margin-top:4px;}
+
+    /* Empty */
+    .empty{text-align:center;padding:40px;color:var(--text-muted);}
+    .empty-icon{font-size:36px;margin-bottom:8px;}
+    .empty-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
+
+    /* Tabs indicator */
+    .section-tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;}
+    .stab{padding:6px 16px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--text-muted);border:none;background:none;transition:all 0.15s;}
+    .stab.active{background:var(--accent);color:white;font-weight:500;}
+
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:300;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:16px;padding:28px;width:500px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:fadeUp 0.2s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .modal-title{font-size:16px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+    .modal-title button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="client_explore.html" class="nav-logo">
+    <div class="nav-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+    <span class="nav-logo-name">PropTech</span>
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('recommendations',this)">Recomendaciones</button>
+    <button class="nav-tab" onclick="showSection('favorites',this)">Favoritos</button>
+    <button class="nav-tab" onclick="showSection('history',this)">Historial</button>
+    <button class="nav-tab" onclick="showSection('profile',this)">Mi perfil</button>
+  </div>
+  <div class="nav-right">
+    <a href="client_explore.html" class="btn btn-ghost btn-sm">Explorar</a>
+    <div class="avatar-sm" id="nav-avatar">CL</div>
+    <button class="btn btn-ghost btn-sm" onclick="logout()">Salir</button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- Profile header -->
+  <div class="profile-header">
+    <div class="profile-avatar" id="ph-avatar">CL</div>
+    <div>
+      <div class="profile-name" id="ph-name">Cliente</div>
+      <div class="profile-sub" id="ph-sub">Cargando perfil...</div>
+    </div>
+    <div class="profile-actions">
+      <a href="client_explore.html" class="btn btn-white btn-sm">🔍 Explorar inmuebles</a>
+      <button class="btn btn-white btn-sm" onclick="showSection('profile',null)">✏️ Editar perfil</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="s-favs">—</div><div class="stat-label">Favoritos</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-consulted">—</div><div class="stat-label">Consultados</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-visited">—</div><div class="stat-label">Visitados</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-recs">—</div><div class="stat-label">Recomendaciones</div></div>
+  </div>
+
+  <!-- SECTION: Recommendations -->
+  <div class="section active" id="sec-recommendations">
+    <div class="card">
+      <div class="card-title">
+        ⭐ Inmuebles recomendados para ti
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Basado en tu perfil e historial</span>
+      </div>
+      <div class="props-grid" id="recs-grid">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando recomendaciones...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        🔥 Inmuebles con mayor demanda
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Los más consultados por otros clientes</span>
+      </div>
+      <div class="props-grid" id="demand-grid">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Favorites -->
+  <div class="section" id="sec-favorites">
+    <div class="card">
+      <div class="card-title">❤️ Mis favoritos</div>
+      <div class="props-grid" id="favs-grid">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando favoritos...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        🔗 Propiedades relacionadas a tu historial
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">Análisis estructural del grafo</span>
+      </div>
+      <div class="props-grid" id="related-grid">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: History -->
+  <div class="section" id="sec-history">
+    <div class="card">
+      <div class="card-title">
+        📋 Historial de interacciones
+      </div>
+      <div class="section-tabs">
+        <button class="stab active" onclick="filterHistory('ALL',this)">Todas</button>
+        <button class="stab" onclick="filterHistory('CONSULTED',this)">Consultados</button>
+        <button class="stab" onclick="filterHistory('VISITED',this)">Visitados</button>
+        <button class="stab" onclick="filterHistory('SAVED',this)">Guardados</button>
+        <button class="stab" onclick="filterHistory('NEGOTIATED',this)">Negociados</button>
+      </div>
+      <div id="history-list">
+        <div style="color:var(--text-muted);font-size:13px;">Cargando historial...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Profile -->
+  <div class="section" id="sec-profile">
+    <div class="card">
+      <div class="card-title">👤 Mi información</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="p-name" placeholder="Tu nombre completo">
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="p-username" placeholder="nombre.usuario">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="p-email" placeholder="correo@ejemplo.com">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="p-phone" placeholder="+57 300 000 0000">
+        </div>
+        <div class="form-group">
+          <label>Presupuesto máximo</label>
+          <input type="number" id="p-budget" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Habitaciones mínimas</label>
+          <input type="number" id="p-bedrooms" min="0">
+        </div>
+        <div class="form-group">
+          <label>Tipo de cliente</label>
+          <select id="p-client-type">
+            <option value="BUYER">Comprador</option>
+            <option value="RENTER">Arrendatario</option>
+            <option value="INVESTOR">Inversionista</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Inmueble deseado</label>
+          <select id="p-prop-type">
+            <option value="APARTMENT">Apartamento</option>
+            <option value="HOUSE">Casa</option>
+            <option value="RETAIL_SPACE">Local comercial</option>
+            <option value="OFFICE">Oficina</option>
+            <option value="LOT">Lote</option>
+            <option value="WAREHOUSE">Bodega</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Estado de búsqueda</label>
+          <select id="p-search-status">
+            <option value="ACTIVE">Buscando activamente</option>
+            <option value="PAUSED">En pausa</option>
+            <option value="CLOSED">Búsqueda cerrada</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="loadProfile()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveProfile()">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+  if (!user) window.location.href = 'proptech_login.html';
+
+  const typeIcons = { APARTMENT:'🏢', HOUSE:'🏠', RETAIL_SPACE:'🏪', OFFICE:'🏛️', LOT:'🌿', WAREHOUSE:'🏭' };
+  const interactionIcons = { CONSULTED:'👁', VISITED:'📅', SAVED:'❤️', DISCARDED:'🚫', NEGOTIATED:'🤝', BUYING_INTENTION:'🛒', RENTING_INTENTION:'🔑' };
+  const interactionColors = { CONSULTED:'rgba(74,111,227,0.1)', VISITED:'rgba(29,158,117,0.1)', SAVED:'rgba(239,159,39,0.1)', NEGOTIATED:'rgba(74,111,227,0.1)', BUYING_INTENTION:'rgba(29,158,117,0.1)', RENTING_INTENTION:'rgba(107,138,255,0.1)' };
+
+  let allInteractions = [];
+  let clientData = null;
+
+  // Init
+  const initials = (user.name||'CL').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('ph-avatar').textContent = initials;
+  document.getElementById('ph-name').textContent = user.name || 'Cliente';
+
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  function showSection(name, el) {
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('sec-'+name).classList.add('active');
+    if (el) el.classList.add('active');
+  }
+
+  function renderPropCard(p) {
+    const icon = typeIcons[p.propertyType] || '🏠';
+    return `<div class="prop-card" onclick="window.location.href='client_explore.html'">
+      <div class="prop-img">
+        <span>${icon}</span>
+        <span class="prop-img-badge">${label(PROPERTY_PURPOSE,p.purpose)}</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
+        <div class="prop-addr">${p.address||p.code}</div>
+        <div class="prop-meta">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE,p.propertyType)}</div>
+      </div>
+    </div>`;
+  }
+
+  async function loadRecommendations() {
+    const [recsRes, demandRes] = await Promise.all([
+      fetch(`${API}/recommendations/client/${user.cedula}`),
+      fetch(`${API}/recommendations/properties/demand`)
+    ]);
+    if (recsRes.ok) {
+      const recs = await recsRes.json();
+      document.getElementById('s-recs').textContent = recs.length;
+      const grid = document.getElementById('recs-grid');
+      grid.innerHTML = recs.length
+              ? recs.slice(0,6).map(renderPropCard).join('')
+              : '<div class="empty"><div class="empty-icon">⭐</div><div class="empty-title">Aún no hay recomendaciones</div><p>Interactúa con inmuebles para recibir sugerencias personalizadas</p></div>';
+    }
+    if (demandRes.ok) {
+      const demand = await demandRes.json();
+      const grid = document.getElementById('demand-grid');
+      grid.innerHTML = demand.length
+              ? demand.slice(0,6).map(renderPropCard).join('')
+              : '<div class="empty"><div class="empty-icon">🔥</div><div class="empty-title">Sin datos de demanda aún</div></div>';
+    }
+  }
+
+  async function loadFavorites() {
+    const [favsRes, relatedRes] = await Promise.all([
+      fetch(`${API}/clients/${user.cedula}/favorites`),
+      fetch(`${API}/recommendations/client/${user.cedula}/related-properties`)
+    ]);
+    if (favsRes.ok) {
+      const favs = await favsRes.json();
+      document.getElementById('s-favs').textContent = favs.length;
+      const grid = document.getElementById('favs-grid');
+      grid.innerHTML = favs.length
+              ? favs.map(renderPropCard).join('')
+              : '<div class="empty"><div class="empty-icon">❤️</div><div class="empty-title">Sin favoritos aún</div><p>Guarda inmuebles que te interesen desde el explorador</p></div>';
+    }
+    if (relatedRes.ok) {
+      const related = await relatedRes.json();
+      const grid = document.getElementById('related-grid');
+      grid.innerHTML = related.length
+              ? related.map(renderPropCard).join('')
+              : '<div class="empty"><div class="empty-icon">🔗</div><div class="empty-title">Sin propiedades relacionadas aún</div></div>';
+    }
+  }
+
+  async function loadHistory() {
+    const res = await fetch(`${API}/clients/${user.cedula}/interactions`);
+    if (!res.ok) return;
+    const data = await res.json();
+    // Flatten all interactions from HashTable
+    allInteractions = [];
+    for (const type of Object.keys(data)) {
+      const list = data[type] || [];
+      list.forEach(i => allInteractions.push({...i, interactionType: type}));
+    }
+    allInteractions.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    const consulted = allInteractions.filter(i=>i.interactionType==='CONSULTED').length;
+    const visited   = allInteractions.filter(i=>i.interactionType==='VISITED').length;
+    document.getElementById('s-consulted').textContent = consulted;
+    document.getElementById('s-visited').textContent = visited;
+
+    renderHistory(allInteractions);
+  }
+
+  function filterHistory(type, el) {
+    document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const filtered = type === 'ALL' ? allInteractions : allInteractions.filter(i=>i.interactionType===type);
+    renderHistory(filtered);
+  }
+
+  function renderHistory(interactions) {
+    const list = document.getElementById('history-list');
+    if (!interactions.length) {
+      list.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sin interacciones</div></div>';
+      return;
+    }
+    list.innerHTML = interactions.slice(0,30).map(i => {
+      const icon = interactionIcons[i.interactionType] || '📌';
+      const bg   = interactionColors[i.interactionType] || 'rgba(0,0,0,0.05)';
+      const ts   = i.timestamp ? new Date(i.timestamp).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div class="interaction-item">
+        <div class="interaction-icon" style="background:${bg}">${icon}</div>
+        <div class="interaction-info">
+          <div class="interaction-prop">${i.property?.address||i.property?.code||'—'}</div>
+          <div class="interaction-meta">${ts} · ${i.property?.neighborhood?.name||'—'}</div>
+        </div>
+        <span class="interaction-type" style="background:${bg};color:var(--text-muted)">${label(INTERACTION_TYPE,i.interactionType)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadProfile() {
+    const res = await fetch(`${API}/clients/${user.cedula}`);
+    if (!res.ok) return;
+    clientData = await res.json();
+    document.getElementById('ph-sub').textContent = `${clientData.email||'—'} · ${label(CLIENT_TYPE,clientData.clientType)} · ${label(SEARCH_STATUS,clientData.searchStatus)}`;
+    document.getElementById('p-name').value           = clientData.name || '';
+    document.getElementById('p-username').value       = clientData.username || '';
+    document.getElementById('p-email').value          = clientData.email || '';
+    document.getElementById('p-phone').value          = clientData.phone || '';
+    document.getElementById('p-budget').value         = clientData.budget || '';
+    document.getElementById('p-bedrooms').value       = clientData.minBedrooms || '';
+    document.getElementById('p-client-type').value    = clientData.clientType || 'BUYER';
+    document.getElementById('p-prop-type').value      = clientData.desiredPropertyType || 'APARTMENT';
+    document.getElementById('p-search-status').value  = clientData.searchStatus || 'ACTIVE';
+  }
+
+  async function saveProfile() {
+    const body = {
+      cedula:              user.cedula,
+      name:                document.getElementById('p-name').value,
+      username:            document.getElementById('p-username').value,
+      email:               document.getElementById('p-email').value,
+      phone:               document.getElementById('p-phone').value,
+      budget:              Number(document.getElementById('p-budget').value),
+      minBedrooms:         Number(document.getElementById('p-bedrooms').value),
+      clientType:          document.getElementById('p-client-type').value,
+      desiredPropertyType: document.getElementById('p-prop-type').value,
+      searchStatus:        document.getElementById('p-search-status').value
+    };
+    const res = await fetch(`${API}/clients/${user.cedula}`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      user.name = updated.name;
+      sessionStorage.setItem('user', JSON.stringify(user));
+      alert('Perfil actualizado exitosamente');
+      loadProfile();
+    } else {
+      const e = await res.json();
+      alert(e.message || 'Error al actualizar');
+    }
+  }
+
+  // Load all data
+  loadRecommendations();
+  loadFavorites();
+  loadHistory();
+  loadProfile();
+</script>
+</body>
+</html>
