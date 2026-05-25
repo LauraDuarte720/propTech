@@ -176,27 +176,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <input type="text" id="search-code" placeholder="Buscar por dirección o código..." oninput="applyLocalSearch()">
         </div>
-        <select id="filter-status" onchange="applyServerFilter()" title="Filtrar por estado">
-          <option value="">Todos los estados</option>
-          <option value="ACTIVE">Activo</option>
-          <option value="NEW">Nuevo</option>
-          <option value="INACTIVE">Inactivo</option>
-          <option value="RESERVED">Reservado</option>
-          <option value="SOLD">Vendido</option>
-          <option value="RENTED">Arrendado</option>
-        </select>
-        <select id="filter-type" onchange="applyServerFilter()" title="Filtrar por tipo">
-          <option value="">Todos los tipos</option>
-          <option value="APARTMENT">Apartamento</option>
-          <option value="HOUSE">Casa</option>
-          <option value="RETAIL_SPACE">Local</option>
-          <option value="OFFICE">Oficina</option>
-          <option value="LOT">Lote</option>
-          <option value="WAREHOUSE">Bodega</option>
-        </select>
-        <select id="filter-city" onchange="applyServerFilter()" title="Filtrar por ciudad">
-          <option value="">Todas las ciudades</option>
-        </select>
+        <select id="filter-status" onchange="applyServerFilter()" title="Filtrar por estado"></select>
+        <select id="filter-type" onchange="applyServerFilter()" title="Filtrar por tipo"></select>
+        <select id="filter-city" onchange="applyServerFilter()" title="Filtrar por ciudad"></select>
       </div>
 
       <!-- Fila 2: ordenamiento + reset -->
@@ -241,21 +223,11 @@
       </div>
       <div class="form-group">
         <label>Tipo de inmueble</label>
-        <select class="form-select" id="f-type">
-          <option value="APARTMENT">Apartamento</option>
-          <option value="HOUSE">Casa</option>
-          <option value="RETAIL_SPACE">Local comercial</option>
-          <option value="OFFICE">Oficina</option>
-          <option value="LOT">Lote</option>
-          <option value="WAREHOUSE">Bodega</option>
-        </select>
+        <select class="form-select" id="f-type"></select>
       </div>
       <div class="form-group">
         <label>Propósito</label>
-        <select class="form-select" id="f-purpose">
-          <option value="SALE">Venta</option>
-          <option value="RENT">Arriendo</option>
-        </select>
+        <select class="form-select" id="f-purpose"></select>
       </div>
       <div class="form-group">
         <label>Precio</label>
@@ -390,15 +362,13 @@
 
   // ── Poblar selects ───────────────────────────────────────────
   function populateFormSelects() {
-    // Ciudad en formulario (id diferente al del filtro)
-    document.getElementById('f-city-form').innerHTML =
-            Object.entries(CITY).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
-    document.getElementById('f-zone').innerHTML =
-            Object.entries(ZONE).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
-    // Ciudad en filtro
-    document.getElementById('filter-city').innerHTML =
-            '<option value="">Todas las ciudades</option>' +
-            Object.entries(CITY).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+    populateSelect('filter-status', PROPERTY_STATUS, 'Todos los estados');
+    populateSelect('filter-type', PROPERTY_TYPE, 'Todos los tipos');
+    populateSelect('filter-city', CITY, 'Todas las ciudades');
+    populateSelect('f-type', PROPERTY_TYPE);
+    populateSelect('f-purpose', PROPERTY_PURPOSE);
+    populateSelect('f-zone', ZONE);
+    populateSelect('f-city-form', CITY);
   }
 
   // ── Cargar asesores ──────────────────────────────────────────

@@ -460,10 +460,7 @@
     </div>
     <div class="form-group">
       <label>Tipo de visita</label>
-      <select id="v-type">
-        <option value="NORMAL">Normal</option>
-        <option value="VIP">VIP</option>
-      </select>
+      <select id="v-type"></select>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeVisitModal()">Cancelar</button>
@@ -490,12 +487,7 @@
     </div>
     <div class="form-group">
       <label>Tipo de operación</label>
-      <select id="op-type">
-        <option value="SALE">Venta</option>
-        <option value="RENT">Arriendo</option>
-        <option value="CONTRACT_RENEWAL">Renovación de contrato</option>
-        <option value="DEAL_CANCELLATION">Cancelación</option>
-      </select>
+      <select id="op-type"></select>
     </div>
     <div class="form-group">
       <label>Fecha inicio</label>
@@ -526,27 +518,7 @@
   let agentProps = [];
   let allClients = [];
 
-  // ── Labels propios de alertas (el resto viene de proptech_utils.js) ──
-  const ALERT_TYPE_BASIC = {
-    CONTRACT_EXPIRING:         'Contrato próximo a vencer',
-    PROPERTY_NO_VISITS:        'Inmueble sin visitas recientes',
-    HIGH_DEMAND:               'Inmueble con alta demanda',
-    PENDING_VISIT_CONFIRMATION:'Visita pendiente de confirmación',
-    RESERVE_NO_CLOSURE:        'Reserva sin cierre',
-    INACTIVE_CLIENT:           'Cliente inactivo'
-  };
-  const PRIORITY_TYPE = 'CONTRACT_EXPIRING';
-
-  // Fallback por si proptech_utils.js no define label()
-  if (typeof label === 'undefined') {
-    window.label = (map, key) => map[key] || key;
-  }
-  if (typeof PROPERTY_TYPE === 'undefined') {
-    window.PROPERTY_TYPE = { APARTMENT:'Apartamento', HOUSE:'Casa', OFFICE:'Oficina', LOT:'Lote', RETAIL_SPACE:'Local', WAREHOUSE:'Bodega' };
-  }
-  if (typeof VISIT_STATUS === 'undefined') {
-    window.VISIT_STATUS = { PENDING:'Pendiente', CONFIRMED:'Confirmada', COMPLETED:'Completada', CANCELLED:'Cancelada' };
-  }
+  // ── Arranque ─────────────────────────────────────────────────────
 
   // ── Dashboard principal ─────────────────────────────────────────
   async function loadDashboard() {
@@ -911,6 +883,9 @@
   }
 
   // ── Arranque ─────────────────────────────────────────────────────
+  populateSelect('v-type', VISIT_TYPE);
+  populateSelect('op-type', OPERATION_TYPE);
+
   loadDashboard();
 </script>
 </body>

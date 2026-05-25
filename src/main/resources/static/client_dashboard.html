@@ -1016,21 +1016,10 @@
           <div class="form-group"><label>Presupuesto máximo</label><input type="number" id="p-budget"></div>
           <div class="form-group"><label>Habitaciones mínimas</label><input type="number" id="p-bedrooms" min="0"></div>
           <div class="form-group"><label>Tipo de cliente</label>
-            <select id="p-client-type">
-              <option value="BUYER">Comprador</option>
-              <option value="TENANT">Arrendatario</option>
-              <option value="INVESTOR">Inversionista</option>
-            </select>
+            <select id="p-client-type"></select>
           </div>
           <div class="form-group"><label>Inmueble deseado</label>
-            <select id="p-prop-type">
-              <option value="APARTMENT">Apartamento</option>
-              <option value="HOUSE">Casa</option>
-              <option value="RETAIL_SPACE">Local comercial</option>
-              <option value="OFFICE">Oficina</option>
-              <option value="LOT">Lote</option>
-              <option value="WAREHOUSE">Bodega</option>
-            </select>
+            <select id="p-prop-type"></select>
           </div>
           <div class="form-group full"><label>Estado de búsqueda</label>
             <div id="p-search-status-display"
@@ -1059,24 +1048,11 @@
                 <div class="form-group" style="margin:0">
                   <label>Ciudad</label>
                   <select id="z-city" class="form-group select" style="padding:9px 12px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
-                    <option value="ARMENIA">Armenia</option>
-                    <option value="BOGOTA">Bogotá</option>
-                    <option value="MEDELLIN">Medellín</option>
-                    <option value="CALI">Cali</option>
-                    <option value="BARRANQUILLA">Barranquilla</option>
-                    <option value="PEREIRA">Pereira</option>
-                    <option value="MANIZALES">Manizales</option>
-                    <option value="BUCARAMANGA">Bucaramanga</option>
                   </select>
                 </div>
                 <div class="form-group" style="margin:0">
                   <label>Zona</label>
                   <select id="z-zone" style="padding:9px 12px;background:white;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
-                    <option value="NORTE">Norte</option>
-                    <option value="SUR">Sur</option>
-                    <option value="ORIENTE">Oriente</option>
-                    <option value="OCCIDENTE">Occidente</option>
-                    <option value="CENTRO">Centro</option>
                   </select>
                 </div>
                 <div class="form-group" style="margin:0">
@@ -1581,6 +1557,11 @@
         </div>`;
       }).join('');
     }
+
+    populateSelect('p-client-type', CLIENT_TYPE);
+    populateSelect('p-prop-type', PROPERTY_TYPE);
+    populateSelect('z-city', CITY);
+    populateSelect('z-zone', ZONE);
 
     loadRecommendations();
     loadFavorites();

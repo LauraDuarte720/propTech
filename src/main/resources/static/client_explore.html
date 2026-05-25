@@ -139,28 +139,10 @@
         <input type="text" id="f-search" placeholder="Buscar por dirección o barrio..." oninput="applyFilters()">
     </div>
     <select class="filter-select" id="f-type" onchange="applyFilters()">
-        <option value="">Tipo de inmueble</option>
-        <option value="APARTMENT">Apartamento</option>
-        <option value="HOUSE">Casa</option>
-        <option value="RETAIL_SPACE">Local comercial</option>
-        <option value="OFFICE">Oficina</option>
-        <option value="LOT">Lote</option>
-        <option value="WAREHOUSE">Bodega</option>
     </select>
     <select class="filter-select" id="f-purpose" onchange="applyFilters()">
-        <option value="">Venta o arriendo</option>
-        <option value="SALE">Venta</option>
-        <option value="RENT">Arriendo</option>
     </select>
     <select class="filter-select" id="f-city" onchange="applyFilters()">
-        <option value="">Ciudad</option>
-        <option value="ARMENIA">Armenia</option>
-        <option value="BOGOTA">Bogotá</option>
-        <option value="MEDELLIN">Medellín</option>
-        <option value="CALI">Cali</option>
-        <option value="BARRANQUILLA">Barranquilla</option>
-        <option value="PEREIRA">Pereira</option>
-        <option value="MANIZALES">Manizales</option>
     </select>
     <select class="filter-select" id="f-bedrooms" onchange="applyFilters()">
         <option value="">Habitaciones</option>
@@ -232,28 +214,13 @@
             <div class="form-group"><label>Presupuesto máximo</label><input type="number" id="r-budget" placeholder="0"></div>
             <div class="form-group"><label>Habitaciones mínimas</label><input type="number" id="r-bedrooms" value="1" min="0"></div>
             <div class="form-group"><label>Tipo de cliente</label>
-                <select id="r-client-type">
-                    <option value="BUYER">Comprador</option>
-                    <option value="TENANT">Arrendatario</option>
-                    <option value="INVESTOR">Inversionista</option>
-                </select>
+                <select id="r-client-type"></select>
             </div>
             <div class="form-group"><label>Tipo de inmueble deseado</label>
-                <select id="r-prop-type">
-                    <option value="APARTMENT">Apartamento</option>
-                    <option value="HOUSE">Casa</option>
-                    <option value="RETAIL_SPACE">Local comercial</option>
-                    <option value="OFFICE">Oficina</option>
-                    <option value="LOT">Lote</option>
-                    <option value="WAREHOUSE">Bodega</option>
-                </select>
+                <select id="r-prop-type"></select>
             </div>
             <div class="form-group form-full"><label>Estado de búsqueda</label>
-                <select id="r-search-status">
-                    <option value="ACTIVE">Buscando activamente</option>
-                    <option value="PAUSED">En pausa</option>
-                    <option value="CLOSED">Búsqueda cerrada</option>
-                </select>
+                <select id="r-search-status"></select>
             </div>
         </div>
         <div class="modal-actions">
@@ -548,6 +515,13 @@
             alert(e.message||'Error al crear cuenta');
         }
     }
+
+    populateSelect('f-type', PROPERTY_TYPE, 'Tipo de inmueble');
+    populateSelect('f-purpose', PROPERTY_PURPOSE, 'Venta o arriendo');
+    populateSelect('f-city', CITY, 'Ciudad');
+    populateSelect('r-client-type', CLIENT_TYPE);
+    populateSelect('r-prop-type', PROPERTY_TYPE);
+    populateSelect('r-search-status', SEARCH_STATUS);
 
     loadProps();
 </script>
