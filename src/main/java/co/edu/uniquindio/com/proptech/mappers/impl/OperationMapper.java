@@ -63,9 +63,9 @@ public class OperationMapper implements MapperCrud<Operation, OperationDtoCreate
     public Operation toUpdate(OperationDtoUpdate dto) {
         return Operation.builder()
                 .id(dto.getId())
-                .property(propertyService.getPropertyByCode(dto.getPropertyId()))
-                .client(clientService.getClientByCedula(dto.getClientId()))
-                .agent(agentService.getAgentByCedula(dto.getAgentId()))
+                .property(dto.getPropertyId() != null && !dto.getPropertyId().isEmpty() ? propertyService.getPropertyByCode(dto.getPropertyId()) : null)
+                .client(dto.getClientId() != null && !dto.getClientId().isEmpty() ? clientService.getClientByCedula(dto.getClientId()) : null)
+                .agent(dto.getAgentId() != null && !dto.getAgentId().isEmpty() ? agentService.getAgentByCedula(dto.getAgentId()) : null)
                 .dateInitial(dto.getDateInitial())
                 .dateFinal(dto.getDateFinal())
                 .operationType(dto.getOperationType())
