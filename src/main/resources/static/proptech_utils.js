@@ -98,7 +98,8 @@ const VISIT_STATUS = {
     COMPLETED: 'Completada',
     CANCELED: 'Cancelada',
     RESCHEDULED: 'Reagendada',
-    PENDINGRESCHEDULE: 'Pendiente de reagendar'
+    PENDINGRESCHEDULE: 'Pendiente de reagendar',
+    EXPIRED: 'Vencida'
 };
 
 const VISIT_TYPE = {
