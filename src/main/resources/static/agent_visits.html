@@ -12,7 +12,7 @@
       --navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;
       --border:rgba(19,25,54,0.12);--text-muted:#8A90A0;
       --sidebar-w:220px;--bg:#F5F6FA;--text:#1a1d2e;
-      --green:#1D9E75;--amber:#EF9F27;--red:#E24B4A;--blue:#378ADD;
+      --green:#1D9E75;--amber:#EF9F27;--red:#E24B4A;
       --expired:#7B61FF;
     }
     html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
@@ -47,13 +47,15 @@
     .btn-success{background:rgba(29,158,117,0.1);color:var(--green);border:none;}
     .btn-success:hover{background:rgba(29,158,117,0.18);}
     .btn-sm{padding:5px 11px;font-size:11px;border-radius:6px;}
-    .btn svg{width:14px;height:14px;}
+    .btn-disabled{opacity:.45;cursor:not-allowed;}
     .content{flex:1;overflow-y:auto;padding:24px 28px;}
 
     /* attend banner */
     .attend-banner{background:linear-gradient(135deg,rgba(74,111,227,0.07),rgba(74,111,227,0.02));border:1px solid rgba(74,111,227,0.18);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .attend-banner.needs-confirm{background:linear-gradient(135deg,rgba(239,159,39,0.07),rgba(239,159,39,0.02));border-color:rgba(239,159,39,0.25);}
     .attend-left{display:flex;align-items:center;gap:12px;}
     .attend-icon{width:36px;height:36px;border-radius:9px;background:rgba(74,111,227,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .attend-banner.needs-confirm .attend-icon{background:rgba(239,159,39,0.12);}
     .attend-title{font-size:13px;font-weight:500;}
     .attend-sub{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
 
@@ -67,32 +69,28 @@
     .cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);background:var(--bg);}
     .cal-days-header span{text-align:center;padding:8px 4px;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);}
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
-    .cal-cell{min-height:88px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;position:relative;vertical-align:top;}
+    .cal-cell{min-height:88px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;}
     .cal-cell:nth-child(7n){border-right:none;}
     .cal-cell.other-month .day-num{color:var(--border);}
-    .cal-cell.today .day-num{background:var(--accent);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+    .cal-cell.today .day-num{background:var(--accent);color:white;border-radius:50%;}
     .day-num{font-size:12px;font-weight:500;margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
-    .visit-chip{border-radius:5px;padding:2px 6px;font-size:10px;font-family:'Jost',sans-serif;font-weight:500;margin-bottom:2px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:.12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .visit-chip{border-radius:5px;padding:2px 6px;font-size:10px;font-family:'Jost',sans-serif;font-weight:500;margin-bottom:2px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:.12s;overflow:hidden;}
     .visit-chip:hover{filter:brightness(.93);}
     .visit-chip.vip{background:rgba(239,159,39,0.15);color:#a06300;}
     .visit-chip.normal{background:rgba(74,111,227,0.11);color:#2a4db0;}
+    .visit-chip.confirmed{background:rgba(29,158,117,0.11);color:#1a7a5a;}
     .visit-chip.displaced{background:rgba(239,159,39,0.06);color:#c98a00;opacity:.65;}
     .visit-chip.completed{background:rgba(88,94,99,0.08);color:#8A90A0;}
     .visit-chip.canceled{background:rgba(226,75,74,0.07);color:#b03030;opacity:.55;}
     .visit-chip.expired{background:rgba(123,97,255,0.08);color:#7B61FF;opacity:.7;text-decoration:line-through;}
     .vip-dot{width:5px;height:5px;border-radius:50%;background:#EF9F27;flex-shrink:0;}
     .displaced-warning{font-size:9px;background:rgba(239,159,39,0.18);color:#a06300;border-radius:4px;padding:1px 4px;margin-top:1px;display:inline-block;}
-
-    /* legend */
     .legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
     .legend-item{display:flex;align-items:center;gap:5px;font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
     .legend-dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
 
-    /* section */
+    /* section & table */
     .section-title{font-size:14px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
-    .section-title svg{width:16px;height:16px;color:var(--text-muted);}
-
-    /* history table */
     .table-wrap{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
     table{width:100%;border-collapse:collapse;}
     th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);}
@@ -113,37 +111,63 @@
     /* popup */
     .popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.22);z-index:400;align-items:center;justify-content:center;}
     .popup-overlay.open{display:flex;}
-    .popup{background:white;border-radius:14px;padding:24px;width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.13);animation:fadeUp .18s ease;}
+    .popup{background:white;border-radius:14px;padding:24px;width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.13);animation:fadeUp .18s ease;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .popup-title{font-size:15px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
     .popup-title button{background:none;border:none;font-size:19px;cursor:pointer;color:var(--text-muted);line-height:1;}
     .popup-prop{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:16px;}
-    .popup-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+    .popup-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
     .popup-section{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;margin-top:14px;}
     .popup-actions{display:flex;flex-direction:column;gap:7px;}
     .popup-sep{border:none;border-top:1px solid var(--border);margin:14px 0 0;}
-    .displaced-alert{background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.22);border-radius:8px;padding:9px 12px;font-family:'Jost',sans-serif;font-size:11px;color:#8b5500;margin-bottom:14px;}
-    .expired-alert{background:rgba(123,97,255,0.08);border:1px solid rgba(123,97,255,0.2);border-radius:8px;padding:9px 12px;font-family:'Jost',sans-serif;font-size:11px;color:#7B61FF;margin-bottom:14px;}
+    .alert-box{border-radius:8px;padding:10px 13px;font-family:'Jost',sans-serif;font-size:11px;margin-bottom:12px;line-height:1.5;}
+    .alert-displaced{background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.22);color:#8b5500;}
+    .alert-expired{background:rgba(123,97,255,0.08);border:1px solid rgba(123,97,255,0.2);color:#7B61FF;}
+    .alert-completed{background:rgba(29,158,117,0.07);border:1px solid rgba(29,158,117,0.2);color:#1a7a5a;}
+    .alert-warning{background:rgba(239,159,39,0.07);border:1px solid rgba(239,159,39,0.2);color:#8b5500;}
 
-    /* edit form inside popup */
-    .edit-form{display:none;}
+    /* form rows */
     .form-row{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
     .form-row label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);}
-    .form-row select,.form-row input,.form-row textarea{padding:8px 11px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
-    .form-row select:focus,.form-row input:focus,.form-row textarea:focus{border-color:var(--accent);}
-    .form-row textarea{resize:vertical;min-height:60px;}
+    .form-row input,.form-row textarea,.form-row select{padding:8px 11px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
+    .form-row input:focus,.form-row textarea:focus,.form-row select:focus{border-color:var(--accent);}
+    .form-row textarea{resize:vertical;min-height:64px;}
 
-    /* modal nueva visita */
+    /* searchable picker */
+    .picker-wrap{position:relative;}
+    .picker-search{width:100%;padding:8px 11px;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;color:var(--text);}
+    .picker-search:focus{border-color:var(--accent);}
+    .picker-dropdown{display:none;position:absolute;z-index:500;top:calc(100% + 4px);left:0;right:0;background:white;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.1);max-height:220px;overflow-y:auto;}
+    .picker-dropdown.open{display:block;}
+    .picker-item{padding:9px 12px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border);}
+    .picker-item:last-child{border-bottom:none;}
+    .picker-item:hover{background:rgba(74,111,227,0.05);}
+    .picker-item.selected{background:rgba(74,111,227,0.08);}
+    .picker-item-main{font-size:12px;font-weight:500;color:var(--text);}
+    .picker-item-sub{font-size:11px;color:var(--text-muted);font-family:'Jost',sans-serif;margin-top:2px;}
+    .picker-item-badges{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap;}
+    .picker-badge{font-size:9px;padding:1px 7px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+    .picker-badge-active{background:rgba(29,158,117,0.1);color:#1D9E75;}
+    .picker-badge-reserved{background:rgba(239,159,39,0.1);color:#a06300;}
+    .picker-empty{padding:16px;text-align:center;font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+
+    /* modal */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.22);z-index:300;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
-    .modal{background:white;border-radius:14px;padding:26px;width:400px;box-shadow:0 16px 48px rgba(0,0,0,0.13);animation:fadeUp .18s ease;}
+    .modal{background:white;border-radius:14px;padding:26px;width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.13);animation:fadeUp .18s ease;}
     .modal-title{font-size:15px;font-weight:500;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
     .modal-title button{background:none;border:none;font-size:19px;cursor:pointer;color:var(--text-muted);}
-    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:13px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
     .form-group label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);}
     .form-group select,.form-group input{padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
     .form-group select:focus,.form-group input:focus{border-color:var(--accent);}
     .modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px;}
+
+    /* selected card */
+    .selected-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:6px;font-size:12px;display:none;}
+    .selected-card.show{display:block;}
+    .selected-card-title{font-weight:500;font-size:13px;margin-bottom:3px;}
+    .selected-card-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
   </style>
 </head>
 <body>
@@ -155,21 +179,11 @@
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Mi gestión</div>
-      <a href="agent_dashboard.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
-      </a>
-      <a href="agent_properties.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Mis inmuebles
-      </a>
-      <a href="agent_visits.html" class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas
-      </a>
-      <a href="agent_operations.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones
-      </a>
-      <a href="agent_support.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes
-      </a>
+      <a href="agent_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="agent_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Mis inmuebles</a>
+      <a href="agent_visits.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas</a>
+      <a href="agent_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
+      <a href="agent_support.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes</a>
     </div>
     <div class="sidebar-footer">
       <div class="user-card" onclick="logout()">
@@ -193,16 +207,19 @@
       <!-- Attend banner -->
       <div class="attend-banner" id="attend-banner" style="display:none;">
         <div class="attend-left">
-          <div class="attend-icon">📋</div>
+          <div class="attend-icon" id="attend-icon">📋</div>
           <div>
             <div class="attend-title" id="attend-title">Próxima visita en cola</div>
             <div class="attend-sub" id="attend-sub">—</div>
           </div>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="attendNext()">Atender visita</button>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <button class="btn btn-primary btn-sm" id="attend-btn" onclick="attendNext()">Atender visita</button>
+          <div id="attend-warn" style="font-family:'Jost',sans-serif;font-size:10px;color:var(--amber);display:none;">⚠ Debe confirmarse antes de atender</div>
+        </div>
       </div>
 
-      <!-- Calendar nav -->
+      <!-- Calendar -->
       <div class="cal-header">
         <div class="cal-nav">
           <button onclick="changeMonth(-1)">&#8592;</button>
@@ -211,13 +228,12 @@
         </div>
         <div class="legend">
           <div class="legend-item"><span class="legend-dot" style="background:rgba(239,159,39,0.15);"></span>VIP</div>
-          <div class="legend-item"><span class="legend-dot" style="background:rgba(74,111,227,0.11);"></span>Normal</div>
+          <div class="legend-item"><span class="legend-dot" style="background:rgba(74,111,227,0.11);"></span>Pendiente</div>
+          <div class="legend-item"><span class="legend-dot" style="background:rgba(29,158,117,0.11);"></span>Confirmada</div>
           <div class="legend-item"><span class="legend-dot" style="background:rgba(239,159,39,0.06);opacity:.7;"></span>A reprogramar</div>
           <div class="legend-item"><span class="legend-dot" style="background:rgba(123,97,255,0.12);"></span>Vencida</div>
         </div>
       </div>
-
-      <!-- Calendar -->
       <div class="cal-wrap">
         <div class="cal-days-header">
           <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
@@ -227,7 +243,7 @@
 
       <!-- History -->
       <div class="section-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;color:var(--text-muted)"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
         Historial de visitas
       </div>
       <div class="table-wrap">
@@ -236,7 +252,7 @@
             <th>Inmueble</th><th>Cliente</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Notas</th><th>Acciones</th>
           </tr></thead>
           <tbody id="history-tbody">
-          <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:28px;font-family:'Jost',sans-serif;font-size:12px;">Cargando historial...</td></tr>
+          <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:28px;font-family:'Jost',sans-serif;font-size:12px;">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -244,7 +260,7 @@
   </div>
 </div>
 
-<!-- Visit popup -->
+<!-- ── Visit popup ── -->
 <div class="popup-overlay" id="popup-visit">
   <div class="popup">
     <div class="popup-title">
@@ -254,17 +270,19 @@
     <div class="popup-prop" id="popup-meta">—</div>
     <div class="popup-badges" id="popup-badges"></div>
 
-    <div id="popup-displaced-alert" class="displaced-alert" style="display:none;">
+    <div id="popup-displaced-alert" class="alert-box alert-displaced" style="display:none;">
       ⚠️ Esta visita fue desplazada por una VIP y debe ser reprogramada.
     </div>
-    <div id="popup-expired-alert" class="expired-alert" style="display:none;">
+    <div id="popup-expired-alert" class="alert-box alert-expired" style="display:none;">
       🕐 Esta visita venció sin ser atendida. Solo puedes cancelarla o reprogramarla.
     </div>
+    <div id="popup-completed-alert" class="alert-box alert-completed" style="display:none;">
+      ✓ Esta visita ya fue completada. Solo puedes editar las notas post-visita.
+    </div>
 
-    <!-- Acciones rápidas -->
     <div id="popup-actions-wrap"></div>
 
-    <!-- Formulario de reprogramar -->
+    <!-- reprogramar -->
     <div id="popup-reschedule-form" style="display:none;">
       <hr class="popup-sep">
       <div class="popup-section">Nueva fecha</div>
@@ -278,13 +296,19 @@
       </div>
     </div>
 
-    <!-- Formulario de edición -->
-    <div class="edit-form" id="popup-edit-form">
+    <!-- editar datos -->
+    <div id="popup-edit-form" style="display:none;">
       <hr class="popup-sep">
-      <div class="popup-section">Editar datos de la visita</div>
+      <div class="popup-section">Editar datos</div>
       <div class="form-row">
         <label>Cliente</label>
-        <select id="edit-client"></select>
+        <div class="picker-wrap">
+          <input class="picker-search" id="edit-client-search" placeholder="Buscar por nombre o cédula…" autocomplete="off"
+                 oninput="filterPicker('edit-client')" onfocus="openPicker('edit-client')" onblur="delayClosePicker('edit-client')">
+          <div class="picker-dropdown" id="edit-client-dropdown"></div>
+        </div>
+        <div class="selected-card" id="edit-client-card"></div>
+        <input type="hidden" id="edit-client-val">
       </div>
       <div class="form-row">
         <label>Tipo de visita</label>
@@ -293,29 +317,68 @@
           <option value="VIP">VIP</option>
         </select>
       </div>
-      <div class="form-row">
-        <label>Notas post-visita</label>
-        <textarea id="edit-notes" placeholder="Observaciones..."></textarea>
-      </div>
       <div style="display:flex;gap:8px;margin-top:6px;">
         <button class="btn btn-ghost btn-sm" onclick="hideEditForm()">Cancelar</button>
         <button class="btn btn-primary btn-sm" onclick="saveEdit()">Guardar cambios</button>
       </div>
     </div>
+
+    <!-- notas (solo completadas) -->
+    <div id="popup-notes-form" style="display:none;">
+      <hr class="popup-sep">
+      <div class="popup-section">Notas post-visita</div>
+      <div class="form-row">
+        <textarea id="notes-input" placeholder="Escribe tus observaciones…" rows="4"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <button class="btn btn-ghost btn-sm" onclick="hideNotesForm()">Cancelar</button>
+        <button class="btn btn-primary btn-sm" onclick="saveNotes()">Guardar notas</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Modal nueva visita -->
+<!-- ── Modal atender visita ── -->
+<div class="modal-overlay" id="modal-attend">
+  <div class="modal">
+    <div class="modal-title">Atender visita <button onclick="closeAttendModal()">×</button></div>
+    <div class="alert-box alert-completed" style="margin-bottom:14px;">
+      ✓ Al atender esta visita quedará <strong>completada</strong>. No podrás modificar ningún campo después, solo las notas post-visita.
+    </div>
+    <div class="form-group">
+      <label>Notas post-visita <span style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text-muted);">(opcional, puedes agregarlas después)</span></label>
+      <textarea id="attend-notes" rows="3" style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Observaciones sobre la visita…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAttendModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmAttend()">Confirmar atención</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal nueva visita ── -->
 <div class="modal-overlay" id="modal-visit">
   <div class="modal">
     <div class="modal-title">Agendar visita <button onclick="closeNewVisit()">×</button></div>
     <div class="form-group">
-      <label>Inmueble</label>
-      <select id="v-prop"></select>
+      <label>Inmueble <span style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text-muted);">(solo activos o reservados)</span></label>
+      <div class="picker-wrap">
+        <input class="picker-search" id="v-prop-search" placeholder="Buscar por código, dirección o barrio…" autocomplete="off"
+               oninput="filterPicker('v-prop')" onfocus="openPicker('v-prop')" onblur="delayClosePicker('v-prop')">
+        <div class="picker-dropdown" id="v-prop-dropdown"></div>
+      </div>
+      <div class="selected-card" id="v-prop-card"></div>
+      <input type="hidden" id="v-prop-val">
     </div>
     <div class="form-group">
       <label>Cliente</label>
-      <select id="v-client"></select>
+      <div class="picker-wrap">
+        <input class="picker-search" id="v-client-search" placeholder="Buscar por nombre o cédula…" autocomplete="off"
+               oninput="filterPicker('v-client')" onfocus="openPicker('v-client')" onblur="delayClosePicker('v-client')">
+        <div class="picker-dropdown" id="v-client-dropdown"></div>
+      </div>
+      <div class="selected-card" id="v-client-card"></div>
+      <input type="hidden" id="v-client-val">
     </div>
     <div class="form-group">
       <label>Fecha y hora</label>
@@ -343,191 +406,222 @@
     document.getElementById('uname').textContent = user.name;
     document.getElementById('av').textContent = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   }
-  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+  function logout(){ sessionStorage.clear(); window.location.href='proptech_login.html'; }
 
-  const ACTIVE   = ['PENDING','CONFIRMED','RESCHEDULED','PENDINGRESCHEDULE'];
-  const TERMINAL = ['COMPLETED','CANCELED'];
+  // ── Reglas de negocio (espejo del back) ───────────────────────────
+  const TERMINAL  = ['COMPLETED','CANCELED'];
+  // Estados desde los que se puede CONFIRMAR
+  const CAN_CONFIRM  = ['PENDING','RESCHEDULED'];
+  // Estados desde los que se puede REPROGRAMAR
+  const CAN_RESCHEDULE = ['PENDING','CONFIRMED','RESCHEDULED','PENDINGRESCHEDULE','EXPIRED'];
+  // Estados desde los que se puede CANCELAR
+  const CAN_CANCEL = ['PENDING','CONFIRMED','RESCHEDULED','PENDINGRESCHEDULE','EXPIRED'];
+  // Solo CONFIRMED puede ser atendida (completada)
+  const CAN_ATTEND = ['CONFIRMED'];
+  // Estados activos en cola
+  const ACTIVE = ['PENDING','CONFIRMED','RESCHEDULED','PENDINGRESCHEDULE'];
+
   const STATUS_LABEL = {
     PENDING:'Pendiente', CONFIRMED:'Confirmada', COMPLETED:'Completada',
     CANCELED:'Cancelada', RESCHEDULED:'Reprogramada',
     PENDINGRESCHEDULE:'Pendiente reprog.', EXPIRED:'Vencida'
   };
 
-  let queueVisits   = [];
-  let historyVisits = [];
-  let allClients    = [];
-  let currentPopupVisit = null;
-  let calYear, calMonth;
+  let queueVisits=[], historyVisits=[], allClients=[], allProps=[];
+  let currentPopupVisit=null, calYear, calMonth;
+  const now=new Date(); calYear=now.getFullYear(); calMonth=now.getMonth();
 
-  const now = new Date();
-  calYear = now.getFullYear();
-  calMonth = now.getMonth();
+  // ── Picker ────────────────────────────────────────────────────────
+  const pickers={};
+  function registerPicker(id,items,renderItem,onSelect){
+    pickers[id]={items,selectedValue:null,renderItem,onSelect};
+    renderPickerDropdown(id,'');
+  }
+  function renderPickerDropdown(id,query){
+    const p=pickers[id]; if(!p)return;
+    const dd=document.getElementById(`${id}-dropdown`); if(!dd)return;
+    const q=query.toLowerCase().trim();
+    const filtered=q?p.items.filter(i=>p.renderItem(i).searchText.toLowerCase().includes(q)):p.items;
+    if(!filtered.length){dd.innerHTML=`<div class="picker-empty">Sin resultados</div>`;return;}
+    dd.innerHTML=filtered.map(i=>{
+      const r=p.renderItem(i);
+      return `<div class="picker-item${p.selectedValue===r.value?' selected':''}" onmousedown="selectPickerItem('${id}','${r.value.replace(/'/g,'\\\'')}')" >
+      <div class="picker-item-main">${r.main}</div>
+      ${r.sub?`<div class="picker-item-sub">${r.sub}</div>`:''}
+      ${r.badges?`<div class="picker-item-badges">${r.badges}</div>`:''}
+    </div>`;
+    }).join('');
+  }
+  function filterPicker(id){renderPickerDropdown(id,document.getElementById(`${id}-search`).value);}
+  function openPicker(id){document.getElementById(`${id}-dropdown`).classList.add('open');renderPickerDropdown(id,document.getElementById(`${id}-search`).value);}
+  function delayClosePicker(id){setTimeout(()=>{const d=document.getElementById(`${id}-dropdown`);if(d)d.classList.remove('open');},200);}
+  function selectPickerItem(id,value){
+    const p=pickers[id];if(!p)return;
+    p.selectedValue=value;
+    const item=p.items.find(i=>p.renderItem(i).value===value);if(!item)return;
+    const r=p.renderItem(item);
+    document.getElementById(`${id}-search`).value=r.main;
+    document.getElementById(`${id}-val`).value=value;
+    const d=document.getElementById(`${id}-dropdown`);if(d)d.classList.remove('open');
+    const card=document.getElementById(`${id}-card`);
+    if(card){card.innerHTML=`<div class="selected-card-title">${r.main}</div><div class="selected-card-meta">${r.sub||''}</div>${r.badges?`<div class="picker-item-badges" style="margin-top:6px;">${r.badges}</div>`:''}`;card.classList.add('show');}
+    if(p.onSelect)p.onSelect(value,item);
+  }
+  function clearPicker(id){
+    if(pickers[id])pickers[id].selectedValue=null;
+    const s=document.getElementById(`${id}-search`);if(s)s.value='';
+    const v=document.getElementById(`${id}-val`);if(v)v.value='';
+    const c=document.getElementById(`${id}-card`);if(c){c.innerHTML='';c.classList.remove('show');}
+    renderPickerDropdown(id,'');
+  }
+  function clientRender(c){return{value:c.cedula,main:c.name,sub:`Cédula: ${c.cedula}${c.clientType?' · '+label(CLIENT_TYPE,c.clientType):''}`,searchText:`${c.name} ${c.cedula}`,badges:''};}
+  function propRender(p){
+    const sb=p.status==='ACTIVE'?`<span class="picker-badge picker-badge-active">Activo</span>`:`<span class="picker-badge picker-badge-reserved">Reservado</span>`;
+    return{value:p.code,main:p.address||p.code,sub:`${p.code}${p.neighborhood?.name?' · '+p.neighborhood.name:''}${p.city?' · '+p.city:''}`,searchText:`${p.code} ${p.address||''} ${p.neighborhood?.name||''} ${p.city||''}`,badges:sb};
+  }
 
-  // ── Carga principal ────────────────────────────────────────────────
-  async function loadData() {
-    const [qRes, hRes] = await Promise.all([
+  // ── Load ──────────────────────────────────────────────────────────
+  async function loadData(){
+    const [qRes,hRes]=await Promise.all([
       fetch(`${API}/agents/${user.cedula}/visits`).catch(()=>null),
       fetch(`${API}/visits/agent/${user.cedula}`).catch(()=>null)
     ]);
-
-    queueVisits   = qRes?.ok  ? await qRes.json()  : getMockQueue();
-    historyVisits = hRes?.ok  ? await hRes.json()  : getMockHistory();
-
-    const peek = queueVisits.find(v => ACTIVE.includes(v.status));
+    queueVisits = qRes?.ok ? await qRes.json() : getMockQueue();
+    historyVisits= hRes?.ok ? await hRes.json() : getMockHistory();
+    const peek=queueVisits.find(v=>ACTIVE.includes(v.status));
     renderAttendBanner(peek);
     renderCalendar();
     renderHistory();
   }
+  async function loadSelects(){
+    const [propsRes,clientsRes]=await Promise.all([
+      fetch(`${API}/agents/${user.cedula}/properties`).catch(()=>null),
+      fetch(`${API}/clients`).catch(()=>null)
+    ]);
+    allProps=propsRes?.ok?(await propsRes.json()).filter(p=>p.status==='ACTIVE'||p.status==='RESERVED'):[
+      {code:'P01',address:'Cra 15 #42-10',status:'ACTIVE',neighborhood:{name:'El Café'},city:'Armenia'},
+      {code:'P02',address:'Cll 50 #22-5', status:'RESERVED',neighborhood:{name:'La Castellana'},city:'Armenia'}
+    ];
+    allClients=clientsRes?.ok?await clientsRes.json():[
+      {cedula:'C01',name:'Laura Gómez',clientType:'BUYER'},
+      {cedula:'C02',name:'Carlos Ríos',clientType:'TENANT'},
+      {cedula:'C03',name:'Sofía Torres',clientType:'INVESTOR'}
+    ];
+    registerPicker('v-prop',allProps,propRender,null);
+    registerPicker('v-client',allClients,clientRender,null);
+    registerPicker('edit-client',allClients,clientRender,null);
+  }
 
-  function getMockQueue() {
-    const d = new Date();
+  // ── Mocks ─────────────────────────────────────────────────────────
+  function getMockQueue(){
+    const d=new Date();
     return [
       {id:'V001',property:{code:'P01',address:'Cra 15 #42-10'},client:{cedula:'C01',name:'Laura Gómez'},  date:new Date(d.getFullYear(),d.getMonth(),d.getDate()+2,10,0).toISOString(),  visitType:'VIP',   status:'CONFIRMED'},
-      {id:'V002',property:{code:'P02',address:'Cll 50 #22-5'}, client:{cedula:'C02',name:'Carlos Ríos'},  date:new Date(d.getFullYear(),d.getMonth(),d.getDate()+2,10,30).toISOString(),visitType:'NORMAL',status:'PENDINGRESCHEDULE'},
-      {id:'V003',property:{code:'P01',address:'Cra 15 #42-10'},client:{cedula:'C03',name:'Sofía Torres'}, date:new Date(d.getFullYear(),d.getMonth(),d.getDate()+5,14,0).toISOString(),  visitType:'NORMAL',status:'PENDING'},
-      {id:'V004',property:{code:'P03',address:'Av 30 #18-90'}, client:{cedula:'C04',name:'Marcos Vela'},  date:new Date(d.getFullYear(),d.getMonth(),d.getDate()+7,9,0).toISOString(),   visitType:'VIP',   status:'PENDING'},
+      {id:'V002',property:{code:'P02',address:'Cll 50 #22-5'}, client:{cedula:'C02',name:'Carlos Ríos'},  date:new Date(d.getFullYear(),d.getMonth(),d.getDate()+3,10,30).toISOString(),visitType:'NORMAL',status:'PENDING'},
+      {id:'V003',property:{code:'P01',address:'Cra 15 #42-10'},client:{cedula:'C03',name:'Sofía Torres'}, date:new Date(d.getFullYear(),d.getMonth(),d.getDate()+5,14,0).toISOString(),  visitType:'NORMAL',status:'PENDINGRESCHEDULE'},
     ];
   }
-  function getMockHistory() {
-    const d = new Date();
+  function getMockHistory(){
+    const d=new Date();
     return [
       ...getMockQueue(),
-      {id:'V005',property:{code:'P01',address:'Cra 15 #42-10'},client:{cedula:'C05',name:'Paula Jiménez'},date:new Date(d.getFullYear(),d.getMonth(),d.getDate()-5,11,0).toISOString(), visitType:'NORMAL',status:'COMPLETED',postVisitNotes:'Cliente muy interesado.'},
-      {id:'V006',property:{code:'P02',address:'Cll 50 #22-5'}, client:{cedula:'C06',name:'Andrés Luna'},  date:new Date(d.getFullYear(),d.getMonth(),d.getDate()-8,15,0).toISOString(), visitType:'VIP',   status:'CANCELED'},
-      {id:'V007',property:{code:'P03',address:'Av 30 #18-90'}, client:{cedula:'C02',name:'Carlos Ríos'},  date:new Date(d.getFullYear(),d.getMonth(),d.getDate()-1,9,0).toISOString(),  visitType:'NORMAL',status:'EXPIRED'},
+      {id:'V005',property:{code:'P01',address:'Cra 15 #42-10'},client:{cedula:'C01',name:'Laura Gómez'},date:new Date(d.getFullYear(),d.getMonth(),d.getDate()-5,11,0).toISOString(),visitType:'NORMAL',status:'COMPLETED',postVisitNotes:'Cliente muy interesado.'},
+      {id:'V006',property:{code:'P02',address:'Cll 50 #22-5'}, client:{cedula:'C02',name:'Carlos Ríos'}, date:new Date(d.getFullYear(),d.getMonth(),d.getDate()-8,15,0).toISOString(),visitType:'VIP',   status:'CANCELED'},
+      {id:'V007',property:{code:'P01',address:'Cra 15 #42-10'},client:{cedula:'C03',name:'Sofía Torres'},date:new Date(d.getFullYear(),d.getMonth(),d.getDate()-1,9,0).toISOString(), visitType:'NORMAL',status:'EXPIRED'},
     ];
   }
 
-  // ── Attend banner ──────────────────────────────────────────────────
-  function renderAttendBanner(peek) {
-    const banner = document.getElementById('attend-banner');
-    if (!peek) { banner.style.display='none'; return; }
+  // ── Attend banner ─────────────────────────────────────────────────
+  function renderAttendBanner(peek){
+    const banner=document.getElementById('attend-banner');
+    if(!peek){banner.style.display='none';return;}
     banner.style.display='flex';
-    document.getElementById('attend-title').textContent = `Siguiente en cola · ${peek.property?.address||peek.property?.code||'—'}`;
-    const dt = new Date(peek.date);
-    document.getElementById('attend-sub').textContent =
+    const canAttend=CAN_ATTEND.includes(peek.status);
+    banner.classList.toggle('needs-confirm',!canAttend);
+    document.getElementById('attend-icon').textContent=canAttend?'📋':'⏳';
+    document.getElementById('attend-title').textContent=`Siguiente en cola · ${peek.property?.address||peek.property?.code||'—'}`;
+    const dt=new Date(peek.date);
+    document.getElementById('attend-sub').textContent=
             `${dt.toLocaleDateString('es-CO',{day:'2-digit',month:'short'})} · ${dt.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})} · ${peek.client?.name||'—'} · ${STATUS_LABEL[peek.status]||peek.status}`;
-  }
-
-  // ── Calendar ───────────────────────────────────────────────────────
-  function changeMonth(delta) {
-    calMonth += delta;
-    if (calMonth > 11) { calMonth=0; calYear++; }
-    if (calMonth < 0)  { calMonth=11; calYear--; }
-    renderCalendar();
-  }
-
-  function renderCalendar() {
-    const label = new Date(calYear,calMonth,1).toLocaleDateString('es-CO',{month:'long',year:'numeric'});
-    document.getElementById('cal-month-label').textContent = label.charAt(0).toUpperCase()+label.slice(1);
-
-    const firstDay    = new Date(calYear,calMonth,1).getDay();
-    const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
-    const daysInPrev  = new Date(calYear,calMonth,0).getDate();
-    const grid = document.getElementById('cal-grid');
-    grid.innerHTML = '';
-
-    const today    = new Date();
-    const todayStr = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-
-    // Mapa de visitas por día — se usan TODAS (cola + historial) para mostrar en el calendario
-    const allForCal = [...queueVisits];
-    // Añadir del historial las que no estén ya en la cola
-    const qIds = new Set(queueVisits.map(v=>v.id));
-    for (const v of historyVisits) { if (!qIds.has(v.id)) allForCal.push(v); }
-
-    const visitMap = {};
-    for (const v of allForCal) {
-      const vd  = new Date(v.date);
-      const key = `${vd.getFullYear()}-${vd.getMonth()}-${vd.getDate()}`;
-      if (!visitMap[key]) visitMap[key] = [];
-      visitMap[key].push(v);
+    const btn=document.getElementById('attend-btn');
+    const warn=document.getElementById('attend-warn');
+    if(canAttend){
+      btn.disabled=false; btn.classList.remove('btn-disabled');
+      warn.style.display='none';
+    } else {
+      btn.disabled=true; btn.classList.add('btn-disabled');
+      warn.style.display='block';
     }
+  }
 
-    const totalCells = Math.ceil((firstDay+daysInMonth)/7)*7;
-    for (let i=0; i<totalCells; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'cal-cell';
-      let day, month, year, isOther=false;
-      if (i < firstDay) {
-        day=daysInPrev-firstDay+i+1; month=calMonth-1; year=calYear;
-        if (month<0){month=11;year--;}
-        isOther=true;
-      } else if (i < firstDay+daysInMonth) {
-        day=i-firstDay+1; month=calMonth; year=calYear;
-      } else {
-        day=i-firstDay-daysInMonth+1; month=calMonth+1; year=calYear;
-        if (month>11){month=0;year++;}
-        isOther=true;
-      }
-      if (isOther) cell.classList.add('other-month');
-      const cellStr = `${year}-${month}-${day}`;
-      if (cellStr===todayStr && !isOther) cell.classList.add('today');
-
-      const numDiv = document.createElement('div');
-      numDiv.className='day-num'; numDiv.textContent=day;
-      cell.appendChild(numDiv);
-
-      if (!isOther && visitMap[cellStr]) {
-        visitMap[cellStr].forEach(v => {
-          const isVip      = v.visitType==='VIP';
-          const isDisplaced= v.status==='PENDINGRESCHEDULE';
-          const isExpired  = v.status==='EXPIRED';
-          const isCompleted= v.status==='COMPLETED';
-          const isCanceled = v.status==='CANCELED';
-
-          const chip = document.createElement('div');
-          let chipClass = 'visit-chip ';
-          if (isExpired)   chipClass += 'expired';
-          else if (isCanceled) chipClass += 'canceled';
-          else if (isCompleted) chipClass += 'completed';
-          else if (isDisplaced) chipClass += 'displaced';
-          else if (isVip)  chipClass += 'vip';
-          else             chipClass += 'normal';
-          chip.className = chipClass;
-
-          const vd   = new Date(v.date);
-          const time = vd.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
-          if (isVip && !isExpired && !isCanceled) {
-            const dot = document.createElement('span'); dot.className='vip-dot'; chip.appendChild(dot);
-          }
-          const txt = document.createElement('span');
-          txt.textContent = `${time} ${v.property?.address||v.property?.code||'—'}`;
+  // ── Calendar ──────────────────────────────────────────────────────
+  function changeMonth(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+  function renderCalendar(){
+    const lbl=new Date(calYear,calMonth,1).toLocaleDateString('es-CO',{month:'long',year:'numeric'});
+    document.getElementById('cal-month-label').textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+    const firstDay=new Date(calYear,calMonth,1).getDay();
+    const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+    const daysInPrev=new Date(calYear,calMonth,0).getDate();
+    const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+    const today=new Date();
+    const todayStr=`${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+    const allForCal=[...queueVisits];
+    const qIds=new Set(queueVisits.map(v=>v.id));
+    for(const v of historyVisits){if(!qIds.has(v.id))allForCal.push(v);}
+    const visitMap={};
+    for(const v of allForCal){const vd=new Date(v.date);const k=`${vd.getFullYear()}-${vd.getMonth()}-${vd.getDate()}`;if(!visitMap[k])visitMap[k]=[];visitMap[k].push(v);}
+    const total=Math.ceil((firstDay+daysInMonth)/7)*7;
+    for(let i=0;i<total;i++){
+      const cell=document.createElement('div'); cell.className='cal-cell';
+      let day,month,year,isOther=false;
+      if(i<firstDay){day=daysInPrev-firstDay+i+1;month=calMonth-1;year=calYear;if(month<0){month=11;year--;}isOther=true;}
+      else if(i<firstDay+daysInMonth){day=i-firstDay+1;month=calMonth;year=calYear;}
+      else{day=i-firstDay-daysInMonth+1;month=calMonth+1;year=calYear;if(month>11){month=0;year++;}isOther=true;}
+      if(isOther)cell.classList.add('other-month');
+      const cs=`${year}-${month}-${day}`;
+      if(cs===todayStr&&!isOther)cell.classList.add('today');
+      const num=document.createElement('div');num.className='day-num';num.textContent=day;cell.appendChild(num);
+      if(!isOther&&visitMap[cs]){
+        visitMap[cs].forEach(v=>{
+          const isVip=v.visitType==='VIP';
+          const chip=document.createElement('div');
+          let cc='visit-chip ';
+          if(v.status==='EXPIRED')cc+='expired';
+          else if(v.status==='CANCELED')cc+='canceled';
+          else if(v.status==='COMPLETED')cc+='completed';
+          else if(v.status==='PENDINGRESCHEDULE')cc+='displaced';
+          else if(v.status==='CONFIRMED')cc+='confirmed';
+          else if(isVip)cc+='vip';
+          else cc+='normal';
+          chip.className=cc;
+          const vd2=new Date(v.date);
+          const time=vd2.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+          if(isVip&&!['EXPIRED','CANCELED','COMPLETED'].includes(v.status)){const dot=document.createElement('span');dot.className='vip-dot';chip.appendChild(dot);}
+          const txt=document.createElement('span');txt.textContent=`${time} ${v.property?.address||v.property?.code||'—'}`;
           txt.style.cssText='overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;';
-          chip.appendChild(txt);
-          chip.onclick = () => openPopup(v);
-          cell.appendChild(chip);
-
-          if (isDisplaced) {
-            const warn=document.createElement('div'); warn.className='displaced-warning';
-            warn.textContent='⚠ reprogramar'; cell.appendChild(warn);
-          }
+          chip.appendChild(txt); chip.onclick=()=>openPopup(v); cell.appendChild(chip);
+          if(v.status==='PENDINGRESCHEDULE'){const w=document.createElement('div');w.className='displaced-warning';w.textContent='⚠ reprogramar';cell.appendChild(w);}
         });
       }
       grid.appendChild(cell);
     }
   }
 
-  // ── History table ──────────────────────────────────────────────────
-  function renderHistory() {
-    const tbody = document.getElementById('history-tbody');
-    if (!historyVisits.length) {
-      tbody.innerHTML='<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:28px;font-family:\'Jost\',sans-serif;font-size:12px;">Sin historial</td></tr>';
-      return;
-    }
+  // ── History table ─────────────────────────────────────────────────
+  function renderHistory(){
+    const tbody=document.getElementById('history-tbody');
+    if(!historyVisits.length){tbody.innerHTML='<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:28px;">Sin historial</td></tr>';return;}
     const sorted=[...historyVisits].sort((a,b)=>new Date(b.date)-new Date(a.date));
     tbody.innerHTML=sorted.map(v=>{
-      const isVip    = v.visitType==='VIP';
-      const terminal = TERMINAL.includes(v.status) || v.status==='EXPIRED';
-      const dt = v.date ? new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
-      const notes = v.postVisitNotes
-              ? `<span title="${v.postVisitNotes}">${v.postVisitNotes.length>40?v.postVisitNotes.slice(0,40)+'…':v.postVisitNotes}</span>`
-              : '<span style="color:var(--border)">—</span>';
-      const vid = v.id;
-      const canEdit = !TERMINAL.includes(v.status);
-      const actions = canEdit
-              ? `<button class="btn btn-sm btn-ghost" onclick='openPopup(historyVisits.find(x=>x.id==="${vid}"))'>Gestionar</button>`
-              : (v.status==='EXPIRED' ? `<button class="btn btn-sm btn-ghost" onclick='openPopup(historyVisits.find(x=>x.id==="${vid}"))'>Ver</button>` : '');
+      const isVip=v.visitType==='VIP';
+      const completed=v.status==='COMPLETED';
+      const terminal=TERMINAL.includes(v.status);
+      const dt=v.date?new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+      const notes=v.postVisitNotes?`<span title="${v.postVisitNotes}">${v.postVisitNotes.length>40?v.postVisitNotes.slice(0,40)+'…':v.postVisitNotes}</span>`:'<span style="color:var(--border)">—</span>';
+      const vid=v.id;
+      const showBtn=!terminal||completed||v.status==='EXPIRED';
+      const btnLabel=completed?'Notas':(!terminal?'Gestionar':'Ver');
+      const actions=showBtn?`<button class="btn btn-sm btn-ghost" onclick='openPopup(historyVisits.find(x=>x.id==="${vid}"))' >${btnLabel}</button>`:'';
       return `<tr>
       <td style="font-weight:500">${v.property?.address||v.property?.code||'—'}</td>
       <td style="color:var(--text-muted)">${v.client?.name||'—'}</td>
@@ -540,107 +634,95 @@
     }).join('');
   }
 
-  // ── Popup ──────────────────────────────────────────────────────────
-  function openPopup(v) {
-    if (!v) return;
-    currentPopupVisit = v;
-    document.getElementById('popup-prop-addr').textContent = v.property?.address||v.property?.code||'Visita';
-    const vd = new Date(v.date);
-    document.getElementById('popup-meta').textContent =
+  // ── Popup ─────────────────────────────────────────────────────────
+  function openPopup(v){
+    if(!v)return;
+    currentPopupVisit=v;
+    document.getElementById('popup-prop-addr').textContent=v.property?.address||v.property?.code||'Visita';
+    const vd=new Date(v.date);
+    document.getElementById('popup-meta').textContent=
             `${vd.toLocaleDateString('es-CO',{weekday:'long',day:'2-digit',month:'long'})} · ${vd.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})} · ${v.client?.name||'—'}`;
-
-    document.getElementById('popup-badges').innerHTML =
+    document.getElementById('popup-badges').innerHTML=
             `<span class="badge b-${v.status}">${STATUS_LABEL[v.status]||v.status}</span>`+
             (v.visitType==='VIP'?'<span class="vip-tag" style="font-size:10px;padding:3px 8px;">VIP</span>':'');
 
-    document.getElementById('popup-displaced-alert').style.display = v.status==='PENDINGRESCHEDULE'?'block':'none';
-    document.getElementById('popup-expired-alert').style.display   = v.status==='EXPIRED'?'block':'none';
+    document.getElementById('popup-displaced-alert').style.display=v.status==='PENDINGRESCHEDULE'?'block':'none';
+    document.getElementById('popup-expired-alert').style.display=v.status==='EXPIRED'?'block':'none';
+    document.getElementById('popup-completed-alert').style.display=v.status==='COMPLETED'?'block':'none';
 
-    hideRescheduleForm();
-    hideEditForm();
+    hideRescheduleForm(); hideEditForm(); hideNotesForm();
 
-    const wrap    = document.getElementById('popup-actions-wrap');
-    const terminal= TERMINAL.includes(v.status);
-    const expired = v.status==='EXPIRED';
+    const wrap=document.getElementById('popup-actions-wrap');
+    const completed=v.status==='COMPLETED';
+    const terminal=TERMINAL.includes(v.status);
+    const expired=v.status==='EXPIRED';
 
-    if (terminal) {
+    if(completed){
+      wrap.innerHTML=`<div class="popup-section">Acciones</div><div class="popup-actions">
+      <button class="btn btn-ghost btn-sm" onclick="showNotesForm()">✎ ${v.postVisitNotes?'Editar notas':'Agregar notas post-visita'}</button>
+    </div>`;
+    } else if(terminal){
       wrap.innerHTML=`<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);font-style:italic;">Esta visita está en estado terminal y no puede modificarse.</div>`;
     } else {
-      let html='<div class="popup-section">Acciones</div><div class="popup-actions" id="popup-actions">';
-      if (!expired) {
-        if (v.status==='PENDING') {
-          html+=`<button class="btn btn-success btn-sm" onclick="doAction('confirm')">✓ Confirmar visita</button>`;
-        }
+      let html='<div class="popup-section">Acciones</div><div class="popup-actions">';
+      // Confirmar: solo desde PENDING o RESCHEDULED
+      if(CAN_CONFIRM.includes(v.status)){
+        html+=`<button class="btn btn-success btn-sm" onclick="doAction('confirm')">✓ Confirmar visita</button>`;
+      }
+      // Editar: no para expired
+      if(!expired){
         html+=`<button class="btn btn-ghost btn-sm" onclick="showEditForm()">✎ Editar visita</button>`;
       }
-      html+=`<button class="btn btn-ghost btn-sm" onclick="showRescheduleForm()">↻ Reprogramar</button>`;
-      html+=`<button class="btn btn-danger btn-sm" onclick="doAction('cancel')">✕ Cancelar visita</button>`;
+      // Reprogramar: siempre que no sea terminal (incluye expired)
+      if(CAN_RESCHEDULE.includes(v.status)){
+        html+=`<button class="btn btn-ghost btn-sm" onclick="showRescheduleForm()">↻ Reprogramar</button>`;
+      }
+      // Cancelar
+      if(CAN_CANCEL.includes(v.status)){
+        html+=`<button class="btn btn-danger btn-sm" onclick="doAction('cancel')">✕ Cancelar visita</button>`;
+      }
       html+='</div>';
       wrap.innerHTML=html;
     }
-
     document.getElementById('popup-visit').classList.add('open');
   }
+  function closePopup(){document.getElementById('popup-visit').classList.remove('open');currentPopupVisit=null;}
 
-  function closePopup() {
-    document.getElementById('popup-visit').classList.remove('open');
-    currentPopupVisit=null;
-  }
-
-  // ── Reschedule ─────────────────────────────────────────────────────
-  function showRescheduleForm() {
+  // ── Reschedule ────────────────────────────────────────────────────
+  function showRescheduleForm(){
     document.getElementById('popup-reschedule-form').style.display='block';
-    if (currentPopupVisit?.date) {
-      const d=new Date(currentPopupVisit.date);
-      const p=n=>String(n).padStart(2,'0');
-      document.getElementById('reschedule-input').value=
-              `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+    if(currentPopupVisit?.date){
+      const d=new Date(currentPopupVisit.date);const p=n=>String(n).padStart(2,'0');
+      document.getElementById('reschedule-input').value=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
     }
   }
-  function hideRescheduleForm() {
-    const f=document.getElementById('popup-reschedule-form');
-    if(f) f.style.display='none';
-  }
-  async function confirmReschedule() {
-    if(!currentPopupVisit) return;
+  function hideRescheduleForm(){const f=document.getElementById('popup-reschedule-form');if(f)f.style.display='none';}
+  async function confirmReschedule(){
+    if(!currentPopupVisit)return;
     const date=document.getElementById('reschedule-input').value;
     if(!date){ptToast('warning','Fecha requerida','Selecciona una nueva fecha');return;}
     const res=await fetch(`${API}/visits/${currentPopupVisit.id}/reschedule`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({date:date})
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date})
     }).catch(()=>null);
     if(res?.ok){ptToast('success','Reprogramada','La visita fue reprogramada');closePopup();loadData();}
     else if(res){const e=await res.json().catch(()=>({}));ptToast('error','Error',e.message||'No se pudo reprogramar');}
     else{closePopup();loadData();}
   }
 
-  // ── Edit ───────────────────────────────────────────────────────────
-  function showEditForm() {
-    const v=currentPopupVisit; if(!v) return;
-    // Llenar select de clientes
-    const sel=document.getElementById('edit-client');
-    if(allClients.length){
-      sel.innerHTML=allClients.map(c=>`<option value="${c.cedula}">${c.name}</option>`).join('');
-      if(v.client?.cedula) sel.value=v.client.cedula;
-    } else {
-      sel.innerHTML=`<option value="${v.client?.cedula||''}">${v.client?.name||'—'}</option>`;
-    }
-    document.getElementById('edit-type').value  = v.visitType||'NORMAL';
-    document.getElementById('edit-notes').value = v.postVisitNotes||'';
+  // ── Edit ──────────────────────────────────────────────────────────
+  function showEditForm(){
+    const v=currentPopupVisit;if(!v)return;
+    registerPicker('edit-client',allClients,clientRender,null);
+    if(v.client){selectPickerItem('edit-client',v.client.cedula);}
+    document.getElementById('edit-type').value=v.visitType||'NORMAL';
     document.getElementById('popup-edit-form').style.display='block';
   }
-  function hideEditForm() {
-    const f=document.getElementById('popup-edit-form');
-    if(f) f.style.display='none';
-  }
-  async function saveEdit() {
-    if(!currentPopupVisit) return;
-    const body={
-      id:       currentPopupVisit.id,
-      clientId: document.getElementById('edit-client').value,
-      visitType:document.getElementById('edit-type').value,
-      postVisitNotes: document.getElementById('edit-notes').value.trim()||null
-    };
+  function hideEditForm(){const f=document.getElementById('popup-edit-form');if(f)f.style.display='none';}
+  async function saveEdit(){
+    if(!currentPopupVisit)return;
+    const clientId=document.getElementById('edit-client-val').value;
+    if(!clientId){ptToast('warning','Cliente requerido','Selecciona un cliente');return;}
+    const body={id:currentPopupVisit.id,clientId,visitType:document.getElementById('edit-type').value};
     const res=await fetch(`${API}/visits/${currentPopupVisit.id}`,{
       method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
     }).catch(()=>null);
@@ -649,75 +731,103 @@
     else{closePopup();loadData();}
   }
 
-  // ── Status actions ─────────────────────────────────────────────────
-  async function doAction(action) {
-    if(!currentPopupVisit) return;
+  // ── Notes ─────────────────────────────────────────────────────────
+  function showNotesForm(){
+    document.getElementById('notes-input').value=currentPopupVisit?.postVisitNotes||'';
+    document.getElementById('popup-notes-form').style.display='block';
+  }
+  function hideNotesForm(){const f=document.getElementById('popup-notes-form');if(f)f.style.display='none';}
+  async function saveNotes(){
+    if(!currentPopupVisit)return;
+    const notes=document.getElementById('notes-input').value.trim();
+    const res=await fetch(`${API}/visits/${currentPopupVisit.id}`,{
+      method:'PATCH',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:currentPopupVisit.id,postVisitNotes:notes||null})
+    }).catch(()=>null);
+    if(res?.ok){ptToast('success','Notas guardadas','');closePopup();loadData();}
+    else if(res){const e=await res.json().catch(()=>({}));ptToast('error','Error',e.message||'No se pudo guardar');}
+    else{closePopup();loadData();}
+  }
+
+  // ── Status actions ────────────────────────────────────────────────
+  async function doAction(action){
+    if(!currentPopupVisit)return;
     const id=currentPopupVisit.id;
+    // Validación front antes de llamar al back
+    if(action==='confirm'&&!CAN_CONFIRM.includes(currentPopupVisit.status)){
+      ptToast('warning','No permitido',`No puedes confirmar una visita en estado "${STATUS_LABEL[currentPopupVisit.status]}"`);return;
+    }
+    if(action==='cancel'&&!CAN_CANCEL.includes(currentPopupVisit.status)){
+      ptToast('warning','No permitido','Esta visita no puede cancelarse en su estado actual');return;
+    }
     if(action==='cancel'){
       const ok=await ptConfirm({title:'Cancelar visita',message:'¿Confirmas la cancelación de esta visita?',tone:'danger',confirmText:'Sí, cancelar'});
-      if(!ok) return;
+      if(!ok)return;
     }
-    const url=`${API}/visits/${id}/${action}`;
-    const res=await fetch(url,{method:'POST'}).catch(()=>null);
+    const res=await fetch(`${API}/visits/${id}/${action}`,{method:'POST'}).catch(()=>null);
     if(res?.ok){
-      const lbl={confirm:'Confirmada',cancel:'Cancelada'}[action];
-      ptToast('success',lbl,'La visita fue actualizada');
-      closePopup(); loadData();
+      ptToast('success',action==='confirm'?'Confirmada':'Cancelada','La visita fue actualizada');
+      closePopup();loadData();
     } else if(res){
-      const e=await res.json().catch(()=>({})); ptToast('error','Error',e.message||'No se pudo realizar la acción');
-    } else { closePopup(); loadData(); }
+      const e=await res.json().catch(()=>({}));ptToast('error','Error',e.message||'No se pudo realizar la acción');
+    } else{closePopup();loadData();}
   }
 
-  async function attendNext() {
-    const ok=await ptConfirm({title:'Atender visita',message:'¿Atender la siguiente visita en cola y marcarla como completada?',tone:'info',confirmText:'Atender'});
-    if(!ok) return;
+  // ── Attend ────────────────────────────────────────────────────────
+  function attendNext(){
+    // Validar que la visita al tope sea CONFIRMED
+    const peek=queueVisits.find(v=>ACTIVE.includes(v.status));
+    if(!peek){
+      ptToast('warning','Sin visitas','No hay visitas activas en tu cola');return;
+    }
+    if(!CAN_ATTEND.includes(peek.status)){
+      ptToast('warning','Visita sin confirmar',`La siguiente visita está en estado "${STATUS_LABEL[peek.status]}". Debes confirmarla antes de atenderla.`);return;
+    }
+    document.getElementById('attend-notes').value='';
+    document.getElementById('modal-attend').classList.add('open');
+  }
+  function closeAttendModal(){document.getElementById('modal-attend').classList.remove('open');}
+  async function confirmAttend(){
+    const notes=document.getElementById('attend-notes').value.trim();
     const res=await fetch(`${API}/agents/${user.cedula}/visits/attend`,{method:'POST'}).catch(()=>null);
-    if(res?.ok){ptToast('success','Atendida','Visita completada y removida de la cola');loadData();}
-    else if(res){const e=await res.json().catch(()=>({}));ptToast('error','Error',e.message||'Error al atender');}
-    else loadData();
+    if(res?.ok){
+      if(notes){
+        const attended=await res.json().catch(()=>null);
+        if(attended?.id){
+          await fetch(`${API}/visits/${attended.id}`,{
+            method:'PATCH',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({id:attended.id,postVisitNotes:notes})
+          }).catch(()=>null);
+        }
+      }
+      ptToast('success','Atendida','Visita completada y removida de la cola');
+      closeAttendModal();loadData();
+    } else if(res){
+      const e=await res.json().catch(()=>({}));
+      ptToast('error','Error',e.message||'Error al atender');
+    } else{closeAttendModal();loadData();}
   }
 
-  // ── Nueva visita ───────────────────────────────────────────────────
-  function openNewVisit() { document.getElementById('modal-visit').classList.add('open'); }
-  function closeNewVisit() { document.getElementById('modal-visit').classList.remove('open'); }
-
-  async function loadSelects() {
-    const [propsRes,clientsRes]=await Promise.all([
-      fetch(`${API}/agents/${user.cedula}/properties`).catch(()=>null),
-      fetch(`${API}/clients`).catch(()=>null)
-    ]);
-    if(propsRes?.ok){
-      const props=await propsRes.json();
-      const visitable=props.filter(p=>p.status==='ACTIVE'||p.status==='RESERVED');
-      document.getElementById('v-prop').innerHTML=visitable.length
-              ? visitable.map(p=>`<option value="${p.code}">${p.address||p.code} (${p.status})</option>`).join('')
-              : '<option disabled>Sin inmuebles disponibles</option>';
-    } else {
-      document.getElementById('v-prop').innerHTML='<option value="P01">Cra 15 #42-10 (demo)</option><option value="P02">Cll 50 #22-5 (demo)</option>';
-    }
-    if(clientsRes?.ok){
-      allClients=await clientsRes.json();
-      const opts=allClients.map(c=>`<option value="${c.cedula}">${c.name} (${c.cedula})</option>`).join('');
-      document.getElementById('v-client').innerHTML=opts;
-    } else {
-      allClients=[{cedula:'C01',name:'Laura Gómez'},{cedula:'C02',name:'Carlos Ríos'}];
-      document.getElementById('v-client').innerHTML='<option value="C01">Laura Gómez (demo)</option><option value="C02">Carlos Ríos (demo)</option>';
-    }
+  // ── Nueva visita ──────────────────────────────────────────────────
+  function openNewVisit(){
+    clearPicker('v-prop');clearPicker('v-client');
+    document.getElementById('v-date').value='';
+    document.getElementById('v-type').value='NORMAL';
+    document.getElementById('modal-visit').classList.add('open');
   }
-
-  async function saveVisit() {
-    const body={
-      propertyId:document.getElementById('v-prop').value,
-      clientId:  document.getElementById('v-client').value,
-      date:      document.getElementById('v-date').value,
-      visitType: document.getElementById('v-type').value,
-      agentId: user.cedula
-
-    };
+  function closeNewVisit(){document.getElementById('modal-visit').classList.remove('open');}
+  async function saveVisit(){
+    const propId=document.getElementById('v-prop-val').value;
+    const clientId=document.getElementById('v-client-val').value;
+    const date=document.getElementById('v-date').value;
+    if(!propId){ptToast('warning','Inmueble requerido','Selecciona un inmueble');return;}
+    if(!clientId){ptToast('warning','Cliente requerido','Selecciona un cliente');return;}
+    if(!date){ptToast('warning','Fecha requerida','Selecciona una fecha');return;}
+    const body={propertyId:propId,clientId,date,visitType:document.getElementById('v-type').value,agentId:user.cedula};
     const res=await fetch(`${API}/agents/${user.cedula}/visits`,{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
     }).catch(()=>null);
-    if(res?.ok){ptToast('success','Visita agendada','La visita ha sido agendada correctamente');closeNewVisit();loadData();}
+    if(res?.ok){ptToast('success','Visita agendada','Se añadió a tu cola de prioridad');closeNewVisit();loadData();}
     else if(res){const e=await res.json().catch(()=>({}));ptToast('error','Error al agendar',e.message||JSON.stringify(e.details||{}));}
     else{closeNewVisit();loadData();}
   }
