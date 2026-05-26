@@ -64,21 +64,23 @@ public class ReportService {
     // REPORTE POR PRECIO
     // ══════════════════════════════════════════════
 
-    // En ReportService — cambiar el tipo de retorno
+
     public HashTable<String, ArrayList<Property>> getReportByPriceRange() {
         HashTable<String, ArrayList<Property>> report = new HashTable<>();
-
-        for (Property property : propertyService.getAllProperties().values()) {
-            if (property.getPrice() == null) continue;
+        ArrayList<Property> all = propertyService.getPropertiesByPriceRange(
+                0.0, Double.MAX_VALUE
+        );
+        for (Property property : all) {
             String range = getPriceRange(property.getPrice());
+
             ArrayList<Property> list = report.get(range);
             if (list == null) {
                 list = new ArrayList<>();
                 report.put(range, list);
             }
+
             list.add(property);
         }
-
         return report;
     }
 

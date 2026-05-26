@@ -128,4 +128,15 @@ public class PropertyRepositoryImpl implements PropertyRepository {
     public ArrayList<Property> getPropertiesByStatus(PropertyStatus propertyStatus) {
         return getPropertiesByStatus().get(propertyStatus);
     }
+
+    @Override
+    public ArrayList<Property> getPropertiesByPriceRange(double min, double max) {
+        Property minP = new Property();
+        Property maxP = new Property();
+
+        minP.setPrice(min);
+        maxP.setPrice(max);
+
+        return propTech.getPropertiesTree().rangeSearch(minP, maxP);
+    }
 }
