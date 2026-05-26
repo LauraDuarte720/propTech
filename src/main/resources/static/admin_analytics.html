@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PropTech Admin — Analítica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="/proptech_utils.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;}
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:#fff;}
+    .app{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-icon svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:16px;font-weight:600;}
+    .sidebar-section{padding:16px 12px 8px;}
+    .sidebar-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:0 8px;margin-bottom:6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.15s;text-decoration:none;margin-bottom:2px;}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:#fff;}
+    .nav-item.active{background:rgba(74,111,227,0.15);color:#fff;font-weight:500;}
+    .sidebar-footer{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border);}
+    .user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;}
+    .user-card:hover{background:rgba(255,255,255,0.05);}
+    .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;}
+    .user-name{font-size:13px;font-weight:500;}
+    .user-role{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(19,25,54,0.4);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .page-title{font-size:18px;font-weight:500;}
+    .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+    .btn-ghost{background:rgba(255,255,255,0.06);color:#fff;border:1px solid var(--border);}
+    .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .content{flex:1;overflow-y:auto;padding:28px;}
+
+    /* Tabs */
+    .tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;}
+    .tab{padding:7px 18px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:rgba(255,255,255,0.5);border:none;background:none;transition:all 0.15s;}
+    .tab.active{background:var(--accent);color:white;font-weight:500;}
+
+    /* Section */
+    .section{display:none;}
+    .section.active{display:block;}
+
+    /* Cards */
+    .card{background:var(--navy);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+    .card-title{font-size:14px;font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .card-sub{font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);}
+
+    /* Table */
+    .table-wrap{border-radius:10px;overflow:hidden;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+    td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(255,255,255,0.02);}
+
+    /* Agent load bar */
+    .load-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:99px;margin-top:4px;width:120px;}
+    .load-fill{height:6px;border-radius:99px;background:var(--accent);}
+
+    /* Client chip */
+    .budget-badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+    .b-high{background:rgba(29,158,117,0.15);color:#3DD68C;}
+    .b-mid{background:rgba(74,111,227,0.15);color:var(--accent-light);}
+    .b-low{background:rgba(88,94,99,0.2);color:var(--text-muted);}
+
+    /* Property demand */
+    .demand-bar{height:8px;background:rgba(255,255,255,0.06);border-radius:99px;flex:1;}
+    .demand-fill{height:8px;border-radius:99px;}
+
+    /* Mobility */
+    .pattern-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+    .pattern-from{font-size:13px;font-weight:500;flex:1;}
+    .pattern-arrow{font-size:18px;color:var(--accent);}
+    .pattern-to{font-size:13px;font-weight:500;flex:1;}
+    .pattern-weight{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);white-space:nowrap;}
+    .pattern-ops{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(29,158,117,0.15);color:#3DD68C;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;}
+
+    /* Similar clients */
+    .client-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .client-row:last-child{border-bottom:none;}
+    .client-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+    .client-info{flex:1;}
+    .client-name{font-size:13px;font-weight:500;}
+    .client-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+
+    /* Search input */
+    .search-input{padding:9px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;width:240px;}
+    .search-input:focus{border-color:var(--accent);}
+    .search-input::placeholder{color:rgba(255,255,255,0.3);}
+
+    /* Empty */
+    .empty{text-align:center;padding:40px;color:var(--text-muted);}
+    .empty-icon{font-size:36px;margin-bottom:8px;}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  </style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
+      <span class="logo-name">PropTech</span>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">General</div>
+      <a href="admin_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a href="admin_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles</a>
+      <a href="admin_agents.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores</a>
+      <a href="admin_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Análisis</div>
+      <a href="admin_analytics.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/></svg>Analítica</a>
+      <a href="admin_alerts.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Alertas</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar">AD</div>
+        <div><div class="user-name">Administrador</div><div class="user-role">Admin · Cerrar sesión</div></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">Analítica</span>
+      <button class="btn btn-ghost" onclick="loadAll()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M4 4v5h5M20 20v-5h-5M4 15a9 9 0 0 0 15 4M20 9A9 9 0 0 0 5 5"/></svg>
+        Actualizar datos
+      </button>
+    </div>
+
+    <div class="content">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('agents',this)">📊 Carga asesores</button>
+        <button class="tab" onclick="showTab('demand',this)">🔥 Demanda</button>
+        <button class="tab" onclick="showTab('clients',this)">👥 Clientes</button>
+        <button class="tab" onclick="showTab('similar',this)">🔗 Similares</button>
+        <button class="tab" onclick="showTab('mobility',this)">🗺 Movilidad</button>
+        <button class="tab" onclick="showTab('history',this)">📋 Historial visitas</button>
+      </div>
+
+      <!-- TAB: Carga de asesores -->
+      <div class="section active" id="sec-agents">
+        <div class="card">
+          <div class="card-title">
+            Asesores ordenados por carga de visitas
+            <span class="card-sub">Mayor número de visitas agendadas primero</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Asesor</th><th>Visitas agendadas</th><th>Carga</th><th>Cierres</th><th>Zona</th>
+              </tr></thead>
+              <tbody id="agents-load-tbody">
+              <tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Demanda -->
+      <div class="section" id="sec-demand">
+        <div class="card">
+          <div class="card-title">
+            Inmuebles con mayor demanda
+            <span class="card-sub">Ordenados por frecuencia de interacciones</span>
+          </div>
+          <div id="demand-list">
+            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Clientes -->
+      <div class="section" id="sec-clients">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">
+              Clientes por presupuesto
+              <span class="card-sub">De menor a mayor</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Cliente</th><th>Presupuesto</th><th>Tipo</th></tr></thead>
+                <tbody id="clients-budget-tbody">
+                <tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:24px;">Cargando...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              Clientes con mayor intención de cierre
+              <span class="card-sub">Basado en interacciones BUYING / RENTING</span>
+            </div>
+            <div id="closing-intention-list">
+              <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Filtrar clientes por rango de presupuesto</div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div>
+              <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Presupuesto mínimo</div>
+              <input class="search-input" type="number" id="budget-min" placeholder="0" style="width:160px;">
+            </div>
+            <div>
+              <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Presupuesto máximo</div>
+              <input class="search-input" type="number" id="budget-max" placeholder="1000000000" style="width:160px;">
+            </div>
+            <button class="btn btn-ghost" onclick="filterByBudget()">Filtrar</button>
+          </div>
+          <div id="budget-range-result" style="margin-top:16px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Similares -->
+      <div class="section" id="sec-similar">
+        <div class="card">
+          <div class="card-title">
+            Clientes que visitaron propiedades similares
+            <span class="card-sub">Ingresa la cédula de un cliente para ver clientes con comportamiento similar</span>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <input class="search-input" type="text" id="similar-client-id" placeholder="Cédula del cliente...">
+            <button class="btn btn-ghost" onclick="loadSimilarClients()">Buscar</button>
+          </div>
+          <div id="similar-clients-list">
+            <div class="empty"><div class="empty-icon">🔗</div><div style="font-size:13px;">Ingresa una cédula para ver clientes similares</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            Propiedades similares por co-visita
+            <span class="card-sub">Ingresa el código de un inmueble para ver inmuebles visitados por los mismos clientes</span>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <input class="search-input" type="text" id="similar-prop-id" placeholder="Código del inmueble...">
+            <button class="btn btn-ghost" onclick="loadSimilarProps()">Buscar</button>
+          </div>
+          <div id="similar-props-list">
+            <div class="empty"><div class="empty-icon">🏠</div><div style="font-size:13px;">Ingresa un código para ver inmuebles similares</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Movilidad -->
+      <div class="section" id="sec-mobility">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">
+              Zonas destino más populares
+              <span class="card-sub">Por peso de conexiones</span>
+            </div>
+            <div id="top-destinations-list">
+              <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              Patrones correlacionados con operaciones
+              <span class="card-sub">Zonas con más cierres reales</span>
+            </div>
+            <div id="correlated-patterns-list">
+              <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            Todos los patrones de movilidad comercial
+            <span class="card-sub">Conexiones entre zonas por actividad de clientes</span>
+          </div>
+          <div id="all-patterns-list">
+            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Historial visitas -->
+      <div class="section" id="sec-history">
+        <div class="card">
+          <div class="card-title">
+            Historial de visitas por cliente
+            <span class="card-sub">Ingresa la cédula del cliente</span>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:20px;">
+            <input class="search-input" type="text" id="history-client-id" placeholder="Cédula del cliente...">
+            <button class="btn btn-ghost" onclick="loadClientHistory()">Ver historial</button>
+          </div>
+          <div id="visit-history-list">
+            <div class="empty"><div class="empty-icon">📋</div><div style="font-size:13px;">Ingresa una cédula para ver el historial</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  if (!user.role) window.location.href = 'proptech_login.html';
+  function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
+
+  const colors = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(107,138,255,0.2)'];
+  const tcolors = ['#6B8AFF','#3DD68C','#EF9F27','#FF7B7B','#B8AFFE'];
+
+  function showTab(name, el) {
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('sec-'+name).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // ── Carga de asesores ──────────────────────────────────────────────
+  async function loadAgentLoad() {
+    const res = await fetch(`${API}/agents`).catch(()=>null);
+    if (!res?.ok) return;
+    const agents = await res.json();
+    agents.sort((a,b) => (b.scheduledVisitsCount||b.visitCount||0) - (a.scheduledVisitsCount||a.visitCount||0));
+    const maxVisits = Math.max(...agents.map(a=>a.scheduledVisitsCount||0), 1);
+    const tbody = document.getElementById('agents-load-tbody');
+
+    // Fetch visits per agent
+    const visitCounts = await Promise.all(
+            agents.map(a => fetch(`${API}/visits/agent/${a.cedula}`)
+                    .then(r=>r.ok?r.json():[]).then(v=>v.filter(x=>x.status==='PENDING'||x.status==='CONFIRMED').length)
+                    .catch(()=>0))
+    );
+
+    const maxV = Math.max(...visitCounts, 1);
+    tbody.innerHTML = agents.map((a,i) => {
+      const ci = i % colors.length;
+      const initials = (a.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const visits = visitCounts[i];
+      const pct = Math.round((visits/maxV)*100);
+      return `<tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:${colors[ci]};color:${tcolors[ci]};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;">${initials}</div>
+            <span style="font-weight:500">${a.name}</span>
+          </div>
+        </td>
+        <td>${visits}</td>
+        <td>
+          <div class="load-bar"><div class="load-fill" style="width:${pct}%;background:${tcolors[ci]}"></div></div>
+        </td>
+        <td style="color:var(--text-muted)">${a.closedDeals||0}</td>
+        <td style="color:var(--text-muted)">${a.assignedZone?.city||'—'} / ${a.assignedZone?.zone||'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Demanda de inmuebles ────────────────────────────────────────────
+  async function loadDemand() {
+    const res = await fetch(`${API}/recommendations/properties/demand`).catch(()=>null);
+    if (!res?.ok) return;
+    const props = await res.json();
+    const list = document.getElementById('demand-list');
+    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-icon">🔥</div><div style="font-size:13px;">Sin datos de demanda aún</div></div>'; return; }
+    const maxDemand = 1;
+    list.innerHTML = props.slice(0,15).map((p,i) => {
+      const ci = i % tcolors.length;
+      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:6px;background:${colors[ci]};color:${tcolors[ci]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">${p.address||p.code}</div>
+          <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted)">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE,p.propertyType)} · $${Number(p.price||0).toLocaleString()}</div>
+        </div>
+        <div style="font-family:'Jost',sans-serif;font-size:11px;padding:2px 10px;border-radius:99px;background:rgba(239,159,39,0.15);color:#EF9F27;">${label(PROPERTY_STATUS,p.status)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Clientes por presupuesto ────────────────────────────────────────
+  async function loadClientsByBudget() {
+    const res = await fetch(`${API}/clients/ordered-by-budget`).catch(()=>null);
+    if (!res?.ok) return;
+    const clients = await res.json();
+    const tbody = document.getElementById('clients-budget-tbody');
+    if (!clients.length) { tbody.innerHTML='<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:24px;">Sin clientes</td></tr>'; return; }
+    tbody.innerHTML = clients.map((c,i) => {
+      const budget = c.budget || 0;
+      const badgeClass = budget > 500000000 ? 'b-high' : budget > 200000000 ? 'b-mid' : 'b-low';
+      return `<tr>
+        <td style="font-weight:500">${c.name}</td>
+        <td><span class="budget-badge ${badgeClass}">$${Number(budget).toLocaleString()}</span></td>
+        <td style="color:var(--text-muted)">${label(CLIENT_TYPE,c.clientType)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function filterByBudget() {
+    const min = document.getElementById('budget-min').value || 0;
+    const max = document.getElementById('budget-max').value || 1000000000;
+    const res = await fetch(`${API}/clients/budget-range?min=${min}&max=${max}`).catch(()=>null);
+    const container = document.getElementById('budget-range-result');
+    if (!res?.ok) { container.innerHTML='<div style="color:var(--text-muted);font-size:13px;">Sin resultados en ese rango</div>'; return; }
+    const clients = await res.json();
+    if (!clients.length) { container.innerHTML='<div style="color:var(--text-muted);font-size:13px;">Sin clientes en ese rango de presupuesto</div>'; return; }
+    container.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:10px;">${clients.length} cliente${clients.length!==1?'s':''} encontrado${clients.length!==1?'s':''}</div>` +
+            clients.map(c=>`<div class="client-row">
+        <div class="client-av" style="background:rgba(74,111,227,0.2);color:#6B8AFF">${(c.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+        <div class="client-info">
+          <div class="client-name">${c.name}</div>
+          <div class="client-meta">$${Number(c.budget||0).toLocaleString()} · ${label(CLIENT_TYPE,c.clientType)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── Intención de cierre ─────────────────────────────────────────────
+  async function loadClosingIntention() {
+    const res = await fetch(`${API}/recommendations/clients/closing-intention`).catch(()=>null);
+    if (!res?.ok) return;
+    const clients = await res.json();
+    const list = document.getElementById('closing-intention-list');
+    if (!clients.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🛒</div><div style="font-size:13px;">Sin datos de intención aún</div></div>'; return; }
+    list.innerHTML = clients.slice(0,8).map((c,i)=>{
+      const ci = i % colors.length;
+      const initials = (c.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      return `<div class="client-row">
+        <div class="client-av" style="background:${colors[ci]};color:${tcolors[ci]}">${initials}</div>
+        <div class="client-info">
+          <div class="client-name">${c.name}</div>
+          <div class="client-meta">$${Number(c.budget||0).toLocaleString()} · ${label(CLIENT_TYPE,c.clientType)}</div>
+        </div>
+        <div style="font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(29,158,117,0.15);color:#3DD68C;font-family:'Jost',sans-serif;">Alta intención</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Clientes similares ──────────────────────────────────────────────
+  async function loadSimilarClients() {
+    const id = document.getElementById('similar-client-id').value.trim();
+    if (!id) return;
+    const res = await fetch(`${API}/recommendations/client/${id}/related-properties`).catch(()=>null);
+    const list = document.getElementById('similar-clients-list');
+
+    // Usar el endpoint de propiedades relacionadas para inferir clientes similares
+    const res2 = await fetch(`${API}/visits/client/${id}`).catch(()=>null);
+    if (!res2?.ok) { list.innerHTML='<div class="empty"><div class="empty-icon">❌</div><div style="font-size:13px;">No se encontró el cliente</div></div>'; return; }
+    const visits = await res2.json();
+    if (!visits.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🔗</div><div style="font-size:13px;">Este cliente no tiene visitas registradas</div></div>'; return; }
+
+    const propCodes = [...new Set(visits.map(v=>v.property?.code).filter(Boolean))];
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">Propiedades visitadas por este cliente: ${propCodes.length}</div>` +
+            visits.slice(0,8).map(v=>`<div class="client-row">
+        <div style="font-size:20px;">🏠</div>
+        <div class="client-info">
+          <div class="client-name">${v.property?.address||v.property?.code||'—'}</div>
+          <div class="client-meta">${new Date(v.date).toLocaleDateString('es-CO')} · ${label(VISIT_STATUS,v.status)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  async function loadSimilarProps() {
+    const code = document.getElementById('similar-prop-id').value.trim();
+    if (!code) return;
+    const res = await fetch(`${API}/recommendations/property/${code}/similar`).catch(()=>null);
+    const list = document.getElementById('similar-props-list');
+    if (!res?.ok) { list.innerHTML='<div class="empty"><div class="empty-icon">❌</div><div style="font-size:13px;">No se encontró el inmueble</div></div>'; return; }
+    const props = await res.json();
+    if (!props.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🏠</div><div style="font-size:13px;">Sin propiedades similares encontradas</div></div>'; return; }
+    list.innerHTML = props.map((p,i)=>`<div class="client-row">
+      <div style="width:28px;height:28px;border-radius:6px;background:${colors[i%colors.length]};color:${tcolors[i%tcolors.length]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${i+1}</div>
+      <div class="client-info">
+        <div class="client-name">${p.address||p.code}</div>
+        <div class="client-meta">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE,p.propertyType)} · $${Number(p.price||0).toLocaleString()}</div>
+      </div>
+    </div>`).join('');
+  }
+
+  // ── Movilidad ───────────────────────────────────────────────────────
+  function patternCard(p) {
+    const from = p.from?.label || p.from?.city || '—';
+    const to   = p.to?.label   || p.to?.city   || '—';
+    return `<div class="pattern-card">
+      <div class="pattern-from">${from}</div>
+      <div class="pattern-arrow">→</div>
+      <div class="pattern-to">${to}</div>
+      <div class="pattern-weight">${p.weight} conexiones</div>
+      ${p.operationCount>0?`<div class="pattern-ops">${p.operationCount} ops</div>`:''}
+    </div>`;
+  }
+
+  async function loadMobility() {
+    const [allRes, topRes, corrRes] = await Promise.all([
+      fetch(`${API}/zone-mobility`).catch(()=>null),
+      fetch(`${API}/zone-mobility/top-destinations`).catch(()=>null),
+      fetch(`${API}/zone-mobility/correlated`).catch(()=>null)
+    ]);
+
+    if (allRes?.ok) {
+      const all = await allRes.json();
+      const list = document.getElementById('all-patterns-list');
+      list.innerHTML = all.length ? all.map(patternCard).join('') : '<div class="empty"><div class="empty-icon">🗺</div><div style="font-size:13px;">Sin patrones de movilidad aún</div></div>';
+    }
+    if (topRes?.ok) {
+      const top = await topRes.json();
+      const list = document.getElementById('top-destinations-list');
+      list.innerHTML = top.length ? top.slice(0,6).map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:16px;">📍</div>
+        <div style="flex:1;font-size:13px;font-weight:500">${p.to?.label||p.to?.city||'—'}</div>
+        <div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted)">${p.weight} conexiones</div>
+      </div>`).join('') : '<div class="empty"><div style="font-size:13px;">Sin datos</div></div>';
+    }
+    if (corrRes?.ok) {
+      const corr = await corrRes.json();
+      const list = document.getElementById('correlated-patterns-list');
+      list.innerHTML = corr.length ? corr.slice(0,6).map(patternCard).join('') : '<div class="empty"><div style="font-size:13px;">Sin correlaciones aún</div></div>';
+    }
+  }
+
+  // ── Historial de visitas por cliente ────────────────────────────────
+  async function loadClientHistory() {
+    const id = document.getElementById('history-client-id').value.trim();
+    if (!id) return;
+    const res = await fetch(`${API}/visits/client/${id}`).catch(()=>null);
+    const list = document.getElementById('visit-history-list');
+    if (!res?.ok) { list.innerHTML='<div class="empty"><div class="empty-icon">❌</div><div style="font-size:13px;">No se encontró el cliente</div></div>'; return; }
+    const visits = await res.json();
+    if (!visits.length) { list.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div style="font-size:13px;">Sin visitas registradas para este cliente</div></div>'; return; }
+    visits.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${visits.length} visita${visits.length!==1?'s':''} registrada${visits.length!==1?'s':''}</div>` +
+            visits.map(v=>`<div class="client-row">
+        <div style="font-size:20px;">${v.visitType==='VIP'?'⭐':'📅'}</div>
+        <div class="client-info">
+          <div class="client-name">${v.property?.address||v.property?.code||'—'}</div>
+          <div class="client-meta">${new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${label(VISIT_STATUS,v.status)} · Asesor: ${v.agent?.name||'—'}</div>
+        </div>
+        ${v.visitType==='VIP'?'<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(239,159,39,0.15);color:#EF9F27;font-family:\'Jost\',sans-serif;font-weight:500;">VIP</span>':''}
+      </div>`).join('');
+  }
+
+  function loadAll() {
+    loadAgentLoad();
+    loadDemand();
+    loadClientsByBudget();
+    loadClosingIntention();
+    loadMobility();
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
