@@ -22,4 +22,5 @@ public interface PropertyRepository {
     ArrayList <Property> getPropertiesByCity(City city);
     ArrayList<Property> getPropertiesByType(PropertyType propertyType);
     ArrayList<Property> getPropertiesByStatus(PropertyStatus propertyStatus);
+    ArrayList<Property> getPropertiesByPriceRange(double min, double max);
 }
