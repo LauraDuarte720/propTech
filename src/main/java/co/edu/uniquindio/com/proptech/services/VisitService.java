@@ -149,4 +149,13 @@ public class VisitService {
             throw new InvalidVisitTransitionException(current, next, "Cannot return to pending");
         }
     }
+
+    public boolean hasVisitsForPropertyAfter(String propertyCode, LocalDateTime after) {
+        for (Visit visit : visitRepository.getVisitsByProperty(propertyCode)) {
+            if (visit.getCreatedAt() != null && visit.getCreatedAt().isAfter(after)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

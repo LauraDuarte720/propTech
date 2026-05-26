@@ -16,6 +16,8 @@ import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import co.edu.uniquindio.com.proptech.utils.CommissionCalculator;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -184,5 +186,15 @@ public class OperationService {
             }
         }
         return total;
+    }
+
+    public boolean hasOperationsForPropertyAfter(String propertyCode, LocalDateTime after) {
+        LocalDate afterDate = after.toLocalDate();
+        for (Operation op : operationRepository.getOperationsByProperty(propertyCode)) {
+            if (op.getDateInitial() != null && op.getDateInitial().isAfter(afterDate)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
