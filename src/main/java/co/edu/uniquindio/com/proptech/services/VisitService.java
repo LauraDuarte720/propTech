@@ -66,16 +66,46 @@ public class VisitService {
 
     public Visit updateVisit(Visit visit) {
         return visitRepository.findById(visit.getId()).map(existing -> {
+
+            boolean onlyUpdatingNotes =
+                    visit.getPostVisitNotes() != null &&
+                            visit.getClient() == null &&
+                            visit.getProperty() == null &&
+                            visit.getVisitType() == null &&
+                            visit.getStatus() == null;
+
+            if (onlyUpdatingNotes) {
+
+                if (existing.getStatus() != VisitStatus.COMPLETED) {
+                    throw new InvalidVisitUpdate(
+                            existing.getStatus(),
+                            "Post visit notes can only be added to completed visits"
+                    );
+                }
+
+                existing.setPostVisitNotes(visit.getPostVisitNotes());
+                return visitRepository.update(existing);
+            }
+            if (existing.getStatus() == VisitStatus.COMPLETED ||
+                    existing.getStatus() == VisitStatus.CANCELED) {
+                throw new InvalidVisitUpdate(
+                        existing.getStatus(),
+                        "Completed or canceled visits cannot be modified"
+                );
+            }
             Optional.ofNullable(visit.getClient()).ifPresent(existing::setClient);
             Optional.ofNullable(visit.getProperty()).ifPresent(existing::setProperty);
             Optional.ofNullable(visit.getVisitType()).ifPresent(existing::setVisitType);
+
             validateNoSchedulingConflict(visit.getAgent(), existing);
+
             Optional.ofNullable(visit.getStatus()).ifPresent(newStatus -> {
                 validateTransition(existing.getStatus(), newStatus);
                 existing.setStatus(newStatus);
             });
-            Optional.ofNullable(visit.getPostVisitNotes()).ifPresent(existing::setPostVisitNotes);
+
             return visitRepository.update(existing);
+
         }).orElseThrow(() -> new VisitDoesNotExist("id", visit.getId()));
     }
 
