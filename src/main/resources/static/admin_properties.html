@@ -157,6 +157,10 @@
     <div class="topbar">
       <span class="page-title">Inmuebles</span>
       <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="ptHistory()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+          Historial de cambios
+        </button>
         <button class="btn btn-ghost" onclick="peekAndUndo()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
           Deshacer último cambio
@@ -328,6 +332,7 @@
 
 <script>
   const API = 'http://localhost:8080';
+  window.PT_API = API;
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
   if (!user.role) window.location.href = 'proptech_login.html';
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
@@ -650,15 +655,33 @@
   async function assignAgentFromEdit(code) {
     const sel = document.getElementById('edit-inline-agent');
     if (!sel?.value) { showToast('info','Selecciona un asesor',''); return; }
+    const agentName = sel.options[sel.selectedIndex]?.text || 'el asesor';
+    const ok = await ptConfirm({
+      title: 'Asignar asesor',
+      message: `Vas a vincular a ${agentName} con este inmueble.`,
+      detail: 'La asignación de asesor queda registrada en el historial pero no puede deshacerse con el botón “Deshacer”.',
+      tone: 'warning',
+      confirmText: 'Asignar asesor',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
     const res = await fetch(`${API}/agents/${sel.value}/properties/${code}`, { method: 'POST' });
-    if (res.ok) { await loadProps(); openEdit(code); }
-    else { const e = await res.json(); showToast('error','Error al asignar', e.message||''); }
+    if (res.ok) { await loadProps(); openEdit(code); showToast('success','Asesor asignado',''); }
+    else { const e = await res.json().catch(()=>({})); showToast('error','Error al asignar', e.message||''); }
   }
   async function unassignAgentFromEdit(code, cedula) {
-    if (!confirm('¿Desasignar al asesor? El inmueble quedará sin asesor e inactivo.')) return;
+    const ok = await ptConfirm({
+      title: 'Desasignar asesor',
+      message: '¿Desasignar al asesor de este inmueble? El inmueble quedará sin asesor e inactivo.',
+      detail: 'Este cambio queda en el historial pero no puede deshacerse con el botón “Deshacer”.',
+      tone: 'danger',
+      confirmText: 'Desasignar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
     const res = await fetch(`${API}/agents/${cedula}/properties/${code}`, { method: 'DELETE' });
-    if (res.ok) { await loadProps(); openEdit(code); }
-    else { const e = await res.json(); showToast('error','Error al desasignar', e.message||''); }
+    if (res.ok) { await loadProps(); openEdit(code); showToast('success','Asesor desasignado',''); }
+    else { const e = await res.json().catch(()=>({})); showToast('error','Error al desasignar', e.message||''); }
   }
 
   function closeModal() {
@@ -747,18 +770,49 @@
   }
 
   async function submitUpdate(body, confirm) {
-    const res = await fetch(`${API}/properties/${editingCode}?confirm=${confirm}`, {
-      method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-    });
-    if (res.ok) { hideZoneConflict(); closeModal(); loadProps(); return; }
-    const e = await res.json();
-    const affected = e.details?.affectedProperties;
-    if (affected?.length > 0) {
-      pendingUpdateBody = body;
-      showZoneConflict(`El asesor asignado no cubre la nueva zona. Al confirmar quedará desasignado del inmueble: ${affected.map(p => p.address||p.code).join(', ')}`);
-    } else {
-      showToast('error','Error al guardar', e.message||'');
+    let res;
+    try {
+      res = await fetch(`${API}/properties/${editingCode}?confirm=${confirm}`, {
+        method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+      });
+    } catch (err) {
+      showToast('error', 'Sin conexión', 'No se pudo contactar al servidor.');
+      return;
     }
+
+    if (res.ok) { hideZoneConflict(); closeModal(); loadProps(); showToast('success','Cambios guardados','El inmueble se actualizó correctamente.'); return; }
+
+    let e = {};
+    try { e = await res.json(); } catch (_) {}
+
+    // 409 que pide confirmación: cambio irreversible o conflicto de zona.
+    if (res.status === 409 && e.details && e.details.requiresConfirmation) {
+      const affected = e.details.affectedProperties || [];
+      const tone = e.details.agentChange || (affected.length > 0) ? 'danger' : 'warning';
+      let detail = '';
+      if (affected.length > 0) {
+        detail = `El asesor quedará desasignado de: ${affected.map(p => p.address || p.code).join(', ')}.`;
+      }
+      const ok = await ptConfirm({
+        title: 'Confirmar cambio sensible',
+        message: e.message || 'Este cambio requiere tu confirmación.',
+        detail,
+        tone,
+        confirmText: 'Sí, aplicar cambio',
+        cancelText: 'Cancelar'
+      });
+      if (ok) await submitUpdate(body, true);
+      return;
+    }
+
+    // Errores de validación del backend (@Validated) -> mostrar campo por campo.
+    if (res.status === 400 && e.details && Object.keys(e.details).length) {
+      const msg = Object.values(e.details).join(' · ');
+      showToast('error', 'Revisa los datos', msg || e.message || '');
+      return;
+    }
+
+    showToast('error', 'Error al guardar', e.message || 'No se pudo actualizar el inmueble.');
   }
 
   async function confirmUpdate() {
@@ -785,18 +839,36 @@
   }
   function closeAssign() { document.getElementById('modal-assign').classList.remove('open'); }
   async function confirmAssign() {
-    const agentId = document.getElementById('assign-agent-select').value;
-    if (!agentId) return;
+    const sel = document.getElementById('assign-agent-select');
+    const agentId = sel.value;
+    if (!agentId) { showToast('info','Selecciona un asesor',''); return; }
+    const agentName = sel.options[sel.selectedIndex]?.text || 'el asesor';
+    const ok = await ptConfirm({
+      title: 'Asignar asesor',
+      message: `Vas a vincular a ${agentName} con este inmueble.`,
+      detail: 'La asignación de asesor queda registrada en el historial pero no puede deshacerse con el botón “Deshacer”.',
+      tone: 'warning',
+      confirmText: 'Asignar asesor',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
     const res = await fetch(`${API}/agents/${agentId}/properties/${assignPropCode}`, { method: 'POST' });
-    if (res.ok) { closeAssign(); loadProps(); }
-    else { const e = await res.json(); showToast('error','Error al asignar', e.message||''); }
+    if (res.ok) { closeAssign(); loadProps(); showToast('success','Asesor asignado',''); }
+    else { const e = await res.json().catch(()=>({})); showToast('error','Error al asignar', e.message||''); }
   }
 
   async function deleteProp(code) {
-    if (!confirm('¿Eliminar este inmueble?')) return;
+    const ok = await ptConfirm({
+      title: 'Eliminar inmueble',
+      message: '¿Seguro que quieres eliminar este inmueble? Esta acción no se puede deshacer.',
+      tone: 'danger',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
     const res = await fetch(`${API}/properties/${code}`, { method: 'DELETE' });
-    if (res.ok) loadProps();
-    else { const e = await res.json(); showToast('error','Error al eliminar', e.message||''); }
+    if (res.ok) { loadProps(); showToast('success','Inmueble eliminado',''); }
+    else { const e = await res.json().catch(()=>({})); showToast('error','Error al eliminar', e.message||''); }
   }
 
   // ── Toast ────────────────────────────────────────────────────
@@ -811,25 +883,32 @@
   }
 
   async function peekAndUndo() {
-    try {
-      const res = await fetch(`${API}/admin-actions/peek`);
-      if (!res.ok) {
-        showToast('info', 'Sin acciones', 'No hay acciones recientes para deshacer.');
-        return;
-      }
-      const action = await res.json();
-      if (confirm(`¿Estás seguro de deshacer esta acción?\n\nDetalle: ${action.description}`)) {
-        const undoRes = await fetch(`${API}/admin-actions/undo`, { method: 'POST' });
-        if (undoRes.ok) {
-          showToast('success', 'Deshecho', 'La acción fue deshecha correctamente.');
-          loadProps();
-        } else {
-          showToast('error', 'Error', 'Error al deshacer la acción.');
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      showToast('error', 'Error', 'Error al procesar la solicitud.');
+    let res;
+    try { res = await fetch(`${API}/admin-actions/peek`); }
+    catch (e) { showToast('error', 'Sin conexión', 'No se pudo contactar al servidor.'); return; }
+
+    if (!res.ok) {
+      ptToast('info', 'Nada que deshacer', 'No hay acciones recientes que se puedan revertir.');
+      return;
+    }
+    const action = await res.json();
+    const ok = await ptConfirm({
+      title: 'Deshacer último cambio',
+      message: 'Se revertirá la última acción reversible registrada.',
+      detail: action.description || '',
+      tone: 'warning',
+      confirmText: 'Deshacer',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
+
+    const undoRes = await fetch(`${API}/admin-actions/undo`, { method: 'POST' }).catch(() => null);
+    if (undoRes && undoRes.ok) {
+      showToast('success', 'Cambio deshecho', 'La acción se revirtió correctamente.');
+      loadProps();
+    } else {
+      const e = undoRes ? await undoRes.json().catch(()=>({})) : {};
+      showToast('error', 'No se pudo deshacer', e.message || 'Intenta de nuevo.');
     }
   }
 
