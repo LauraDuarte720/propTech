@@ -1352,12 +1352,24 @@
 
   async function registerInteraction(propCode, interactionType) {
     if (!user) return false;
+
     const res = await fetch(`${API}/clients/${user.cedula}/interactions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId: user.cedula, propertyId: propCode, interactionType })
+      body: JSON.stringify({
+        clientId: user.cedula,
+        propertyId: propCode,
+        interactionType
+      })
     });
-    return res.ok;
+
+    if (!res.ok) return false;
+
+    // Refrescar datos automáticamente
+    await loadHistory();
+    await loadFavorites();
+
+    return true;
   }
 
   // ── Render tarjeta de propiedad ──────────────────────────────────
