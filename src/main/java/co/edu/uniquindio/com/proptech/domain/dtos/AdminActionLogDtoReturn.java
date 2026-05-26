@@ -26,4 +26,6 @@ public class AdminActionLogDtoReturn {
     private String performedBy;
 
     private String entityId;
+
+    private boolean undoable;
 }

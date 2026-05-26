@@ -21,5 +21,8 @@ public class AdminActionLog {
     private String performedBy;
     private String entityId;
     private String secondaryEntityId;
-    private ArrayList<String> affectedEntityIds;;
+    private ArrayList<String> affectedEntityIds;
+    
+    @Builder.Default
+    private boolean undoable = true;
 }
