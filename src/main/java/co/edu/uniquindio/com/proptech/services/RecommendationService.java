@@ -120,6 +120,234 @@ public class RecommendationService {
     }
 
     // ══════════════════════════════════════════════
+// CLIENTES POTENCIALES PARA UNA PROPIEDAD
+// ══════════════════════════════════════════════
+
+    /**
+     * Dado el código de una propiedad, retorna los clientes ordenados
+     * por qué tan bien encaja esa propiedad con sus preferencias e historial.
+     */
+    public ArrayList<Client> getPotentialClientsForProperty(String propertyCode) {
+        Property property = propertyService.getPropertyByCode(propertyCode);
+        HashTable<String, Client> allClients = clientService.getClients();
+
+        ArrayList<ScoredClient> scored = new ArrayList<>();
+
+        for (Client client : allClients.values()) {
+            double score = 0;
+
+            if (property.getPrice() <= client.getBudget())                          score += 3;
+            if (matchesInterestZone(client, property))                               score += 2;
+            if (client.getDesiredPropertyType() != null
+                    && client.getDesiredPropertyType().equals(property.getPropertyType())) score += 3;
+            if (client.getMinBedrooms() != null && property.getNumBedrooms() != null
+                    && property.getNumBedrooms() >= client.getMinBedrooms())        score += 2;
+
+            // Bonus por interacción previa con la propiedad en el grafo
+            ArrayList<GraphEdge<Object>> edges =
+                    algorithmRepository.getClientPropertyGraph().getNeighbors(client.getCedula());
+            if (edges != null) {
+                for (int i = 0; i < edges.size(); i++) {
+                    if (edges.get(i).getTarget().getId().equals(propertyCode)) {
+                        score += edges.get(i).getWeight();
+                        break;
+                    }
+                }
+            }
+
+            if (score > 0) scored.add(new ScoredClient(client, score));
+        }
+
+        insertionSortClients(scored);
+        return extractClients(scored);
+    }
+
+// ══════════════════════════════════════════════
+// CLIENTES POTENCIALES PARA UN GRUPO DE PROPIEDADES
+// ══════════════════════════════════════════════
+
+    /**
+     * Dado un conjunto de propiedades (ej: cartera de un agente),
+     * agrega los scores de cada propiedad y retorna los clientes
+     * más potenciales en general para ese grupo.
+     */
+    public ArrayList<Client> getPotentialClientsForProperties(ArrayList<String> propertyCodes) {
+        HashTable<String, Double> aggregated = new HashTable<>();
+
+        for (int p = 0; p < propertyCodes.size(); p++) {
+            ArrayList<Client> candidates =
+                    getPotentialClientsForProperty(propertyCodes.get(p));
+
+            // Re-calculamos el score sumando contribuciones de cada propiedad
+            Property property = propertyService.getPropertyByCode(propertyCodes.get(p));
+            for (int i = 0; i < candidates.size(); i++) {
+                Client client = candidates.get(i);
+                double score  = computeClientPropertyScore(client, property);
+                Double current = aggregated.get(client.getCedula());
+                aggregated.put(client.getCedula(), current == null ? score : current + score);
+            }
+        }
+
+        // Construir lista ordenada
+        ArrayList<ScoredClient> scored = new ArrayList<>();
+        HashTable<String, Client> allClients = clientService.getClients();
+        for (String cedula : aggregated.keys()) {
+            Client client = allClients.get(cedula);
+            if (client != null) scored.add(new ScoredClient(client, aggregated.get(cedula)));
+        }
+
+        insertionSortClients(scored);
+        return extractClients(scored);
+    }
+
+// ══════════════════════════════════════════════
+// CLIENTES MÁS POTENCIALES DEL SISTEMA
+// ══════════════════════════════════════════════
+
+    /**
+     * Retorna todos los clientes ordenados por su potencial global de compra:
+     * intención de cierre + actividad en el grafo + estado de búsqueda.
+     */
+    public PriorityQueue<Client> getMostPotentialClients() {
+        HashTable<String, Client> allClients = clientService.getClients();
+
+        PriorityQueue<Client> queue = new PriorityQueue<>(
+                (a, b) -> Double.compare(globalClientScore(b), globalClientScore(a))
+        );
+
+        for (Client client : allClients.values()) {
+            if (globalClientScore(client) > 0) queue.add(client);
+        }
+        return queue;
+    }
+
+    private double globalClientScore(Client client) {
+        double score = 0;
+
+        // Intención de cierre
+        score += closingScore(client) * 2.0;
+
+        // Actividad total en el grafo (suma de pesos de aristas)
+        ArrayList<GraphEdge<Object>> edges =
+                algorithmRepository.getClientPropertyGraph().getNeighbors(client.getCedula());
+        if (edges != null) {
+            for (int i = 0; i < edges.size(); i++) score += edges.get(i).getWeight();
+        }
+
+        // Bonus por estado de búsqueda
+        if (client.getSearchStatus() != null) {
+            switch (client.getSearchStatus()) {
+                case ACTIVE      -> score += 5;
+                case NEGOTIATING -> score += 8;
+                case PAUSED      -> score += 2;
+            }
+        }
+
+        return score;
+    }
+
+// ══════════════════════════════════════════════
+// INMUEBLES MÁS POTENCIALES (por interacciones totales)
+// ══════════════════════════════════════════════
+
+    /**
+     * Propiedades con mayor potencial de venta basado en
+     * el peso acumulado de todas las interacciones en el grafo
+     * (no solo visitas — incluye SAVED, NEGOTIATED, BUYING_INTENTION, etc.).
+     */
+    public PriorityQueue<Property> getMostPotentialProperties() {
+        HashTable<String, Property> allProperties = propertyService.getAllProperties();
+        HashTable<String, Double>   graphWeights  = buildPropertyGraphWeights();
+
+        PriorityQueue<Property> queue = new PriorityQueue<>(
+                (a, b) -> {
+                    double wa = graphWeights.get(a.getCode()) != null ? graphWeights.get(a.getCode()) : 0;
+                    double wb = graphWeights.get(b.getCode()) != null ? graphWeights.get(b.getCode()) : 0;
+                    return Double.compare(wb, wa);
+                }
+        );
+
+        for (Property property : allProperties.values()) {
+            if (!property.isAvailable()) continue;
+            Double w = graphWeights.get(property.getCode());
+            if (w != null && w > 0) queue.add(property);
+        }
+        return queue;
+    }
+
+    private HashTable<String, Double> buildPropertyGraphWeights() {
+        HashTable<String, Double> weights = new HashTable<>();
+        HashTable<String, Client> allClients = clientService.getClients();
+
+        for (Client client : allClients.values()) {
+            ArrayList<GraphEdge<Object>> edges =
+                    algorithmRepository.getClientPropertyGraph().getNeighbors(client.getCedula());
+            if (edges == null) continue;
+            for (int i = 0; i < edges.size(); i++) {
+                Object data = edges.get(i).getTarget().getData();
+                if (!(data instanceof Property)) continue;
+                String code = edges.get(i).getTarget().getId();
+                Double current = weights.get(code);
+                weights.put(code, current == null
+                        ? edges.get(i).getWeight()
+                        : current + edges.get(i).getWeight());
+            }
+        }
+        return weights;
+    }
+
+// ── helpers privados nuevos ───────────────────
+
+    private double computeClientPropertyScore(Client client, Property property) {
+        double score = 0;
+        if (property.getPrice() <= client.getBudget())                              score += 3;
+        if (matchesInterestZone(client, property))                                   score += 2;
+        if (client.getDesiredPropertyType() != null
+                && client.getDesiredPropertyType().equals(property.getPropertyType())) score += 3;
+        if (client.getMinBedrooms() != null && property.getNumBedrooms() != null
+                && property.getNumBedrooms() >= client.getMinBedrooms())            score += 2;
+
+        ArrayList<GraphEdge<Object>> edges =
+                algorithmRepository.getClientPropertyGraph().getNeighbors(client.getCedula());
+        if (edges != null) {
+            for (int i = 0; i < edges.size(); i++) {
+                if (edges.get(i).getTarget().getId().equals(property.getCode())) {
+                    score += edges.get(i).getWeight();
+                    break;
+                }
+            }
+        }
+        return score;
+    }
+
+    private void insertionSortClients(ArrayList<ScoredClient> list) {
+        for (int i = 1; i < list.size(); i++) {
+            ScoredClient key = list.get(i);
+            int j = i - 1;
+            while (j >= 0 && list.get(j).score < key.score) {
+                list.set(j + 1, list.get(j));
+                j--;
+            }
+            list.set(j + 1, key);
+        }
+    }
+
+    private ArrayList<Client> extractClients(ArrayList<ScoredClient> scored) {
+        ArrayList<Client> result = new ArrayList<>();
+        for (int i = 0; i < scored.size(); i++) result.add(scored.get(i).client);
+        return result;
+    }
+
+    private static class ScoredClient {
+        final Client client;
+        final double score;
+        ScoredClient(Client client, double score) {
+            this.client = client;
+            this.score  = score;
+        }
+    }
+
+    // ══════════════════════════════════════════════
     // MÉTODOS PRIVADOS DE APOYO — GRAFO
     // ══════════════════════════════════════════════
 
