@@ -200,10 +200,10 @@
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Dirección</th><th>Tipo</th><th>Barrio / Zona / Ciudad</th><th>Precio</th><th>Asesor</th><th>Estado</th><th>Acciones</th>
+            <th>Código</th><th>Dirección</th><th>Tipo</th><th>Barrio / Zona / Ciudad</th><th>Precio</th><th>Asesor</th><th>Estado</th><th>Acciones</th>
           </tr></thead>
           <tbody id="props-tbody">
-          <tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
+          <tr><td colspan="8" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -494,7 +494,7 @@
   function renderTable(props) {
     const tbody = document.getElementById('props-tbody');
     if (!props.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:32px;">Sin inmuebles</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--text-muted);text-align:center;padding:32px;">Sin inmuebles</td></tr>';
       return;
     }
     tbody.innerHTML = props.map(p => {
@@ -507,6 +507,7 @@
               ? [n.name, label(ZONE, n.zone), label(CITY, n.city)].filter(Boolean).join(' / ')
               : '—';
       return `<tr>
+        <td class="td-muted" style="font-family:'Jost',monospace;font-size:12px;white-space:nowrap;">${p.code || '—'}</td>
         <td class="td-addr" title="${p.address}">${p.address || p.code}</td>
         <td class="td-muted">${label(PROPERTY_TYPE, p.propertyType)}</td>
         <td class="td-muted" style="font-size:12px;">${neighborhoodLabel}</td>
