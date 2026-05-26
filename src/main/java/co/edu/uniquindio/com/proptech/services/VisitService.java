@@ -106,11 +106,28 @@ public class VisitService {
         visitRepository.deleteById(visitId);
     }
 
+    public void updateExpiredVisits() {
+        LocalDateTime now = LocalDateTime.now();
+        for (Visit visit : visitRepository.getAllVisits()) {
+            if (visit.getStatus() == VisitStatus.COMPLETED ||
+                    visit.getStatus() == VisitStatus.CANCELED ||
+                    visit.getStatus() == VisitStatus.EXPIRED) {
+                continue;
+            }
+            if (visit.getDate() != null &&
+                    visit.getDate().plusDays(1).isBefore(now)) {
+                visit.setStatus(VisitStatus.EXPIRED);
+            }
+        }
+    }
+
     public LinkedList<Visit> getAllVisits() {
+        updateExpiredVisits();
         return visitRepository.getAllVisits();
     }
 
     public LinkedList<Visit> getAllAgentVisitHistory(String agentCedula) {
+        updateExpiredVisits();
         return visitRepository.getVisitsByAgent(agentCedula);
     }
 
@@ -165,6 +182,9 @@ public class VisitService {
         if (next == VisitStatus.PENDING) {
             throw new InvalidVisitTransitionException(current, next, "Cannot return to pending");
         }
+        if (
+                current == VisitStatus.EXPIRED && next != VisitStatus.CANCELED && next != VisitStatus.RESCHEDULED
+        ){throw new InvalidVisitTransitionException(current, next, "Can only cancel or reprogram");}
     }
 
     public boolean hasVisitsForPropertyAfter(String propertyCode, LocalDateTime after) {

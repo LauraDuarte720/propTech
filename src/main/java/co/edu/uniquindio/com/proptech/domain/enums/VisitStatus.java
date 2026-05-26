@@ -12,7 +12,8 @@ public enum VisitStatus {
     COMPLETED("Completed"),
     CANCELED("Canceled"),
     RESCHEDULED("Rescheduled"),
-    PENDINGRESCHEDULE("Pending Reschedule");
+    PENDINGRESCHEDULE("Pending Reschedule"),
+    EXPIRED("Expired");
 
     private final String displayName;
 
