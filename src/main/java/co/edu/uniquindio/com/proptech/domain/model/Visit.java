@@ -11,7 +11,7 @@ import java.time.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Visit {
+public class Visit implements Cloneable {
 
     private String id;
     
@@ -30,4 +30,15 @@ public class Visit {
     private LocalDateTime createdAt;
 
     private VisitType visitType;
+
+    @Override
+    public Visit clone() {
+        try {
+            Visit clone = (Visit) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

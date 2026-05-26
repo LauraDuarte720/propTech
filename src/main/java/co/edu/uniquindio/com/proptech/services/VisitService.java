@@ -33,7 +33,8 @@ public class VisitService {
         if (exists) {
             throw new VisitAlreadyExists("id", visit.getId());
         }
-        validateNoSchedulingConflict(agent, visit);
+        LocalDateTime date = visit.getDate();
+        validateNoSchedulingConflict(agent, visit, date);
         visit.setId(CodeGenerator.generateVisitCode());
         visit.setCreatedAt(LocalDateTime.now());
             visit.setStatus(VisitStatus.PENDING);
@@ -41,11 +42,11 @@ public class VisitService {
     }
 
 
-    private void validateNoSchedulingConflict(Agent agent, Visit visit) {
+    private void validateNoSchedulingConflict(Agent agent, Visit visit, LocalDateTime newDate) {
         PriorityQueue<Visit> agentVisits = agent.getScheduledVisits();
         for (Visit v : agentVisits) {
             if (v.getStatus() == VisitStatus.CANCELED ||
-                    v.getStatus() == VisitStatus.COMPLETED) continue;
+                    v.getStatus() == VisitStatus.COMPLETED || v.equals(visit)) continue;
             long diff = Math.abs(Duration.between(v.getDate(), visit.getDate()).toMinutes());
             if (diff < 60) {
                 if (visit.getVisitType() == VisitType.VIP) {
@@ -96,9 +97,6 @@ public class VisitService {
             Optional.ofNullable(visit.getClient()).ifPresent(existing::setClient);
             Optional.ofNullable(visit.getProperty()).ifPresent(existing::setProperty);
             Optional.ofNullable(visit.getVisitType()).ifPresent(existing::setVisitType);
-
-            validateNoSchedulingConflict(visit.getAgent(), existing);
-
             Optional.ofNullable(visit.getStatus()).ifPresent(newStatus -> {
                 validateTransition(existing.getStatus(), newStatus);
                 existing.setStatus(newStatus);
@@ -110,9 +108,14 @@ public class VisitService {
     }
 
     public Visit rescheduleVisit(Visit visit, LocalDateTime newDate) {
+        Agent agent = visit.getAgent();
         validateTransition(visit.getStatus(), VisitStatus.RESCHEDULED);
-        visit.setStatus(VisitStatus.RESCHEDULED);
+        agent.removeVisitFromQueue(visit);
         visit.setDate(newDate);
+        visit.setStatus(VisitStatus.RESCHEDULED);
+
+        agent.enqueueVisit(visit);
+
         return visit;
     }
 
@@ -205,7 +208,7 @@ public class VisitService {
         return visit;
     }
 
-    private void validateTransition(VisitStatus current, VisitStatus next) {
+    public void validateTransition(VisitStatus current, VisitStatus next) {
         if (current == VisitStatus.COMPLETED || current == VisitStatus.CANCELED) {
             throw new InvalidVisitTransitionException(current, next, "Terminal state, cannot be modified");
         }
@@ -215,6 +218,13 @@ public class VisitService {
         if (
                 current == VisitStatus.EXPIRED && next != VisitStatus.CANCELED && next != VisitStatus.RESCHEDULED
         ){throw new InvalidVisitTransitionException(current, next, "Can only cancel or reprogram");}
+        if(next == VisitStatus.COMPLETED && current != VisitStatus.CONFIRMED){
+            throw new InvalidVisitTransitionException(current, next, "Cannot complete unconfirmed visit");
+        }
+        if(next == VisitStatus.CONFIRMED && current != VisitStatus.PENDING && current != VisitStatus.RESCHEDULED){
+            throw new InvalidVisitTransitionException(current, next, "Cannot confirm visit if it is not pending or rescheduled");
+        }
+
     }
 
     public boolean hasVisitsForPropertyAfter(String propertyCode, LocalDateTime after) {
