@@ -813,7 +813,7 @@ public class DataLoader {
 
     private void registerVisitSafe(Visit visit) {
         try {
-            visitService.registerVisit(visit);
+            agentService.registerVisit(visit.getAgent(), visit);
         } catch (RuntimeException e) {
             System.out.println("⚠️  Visita omitida por conflicto de agenda: " + e.getMessage());
         }
