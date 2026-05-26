@@ -1,9 +1,8 @@
 package co.edu.uniquindio.com.proptech.services;
+
 import co.edu.uniquindio.com.proptech.domain.enums.AdminActionType;
 import co.edu.uniquindio.com.proptech.domain.enums.AdminEntityType;
-import co.edu.uniquindio.com.proptech.domain.model.AdminActionLog;
-import co.edu.uniquindio.com.proptech.domain.model.Agent;
-import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
+import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.NoAdminActionsToUndo;
 import co.edu.uniquindio.com.proptech.repositories.AdminActionLogRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
@@ -21,14 +20,20 @@ public class AdminActionService {
     private final AdminActionLogRepository repository;
     private final PropertyService propertyService;
     private final AgentService agentService;
+    private final OperationService operationService;
+    private final VisitService visitService;
 
 
     public AdminActionService(AdminActionLogRepository repository,
                               @Lazy PropertyService propertyService,
-                              @Lazy AgentService agentService) {
+                              @Lazy AgentService agentService,
+                              @Lazy OperationService operationService,
+                              @Lazy VisitService visitService) {
         this.repository = repository;
         this.propertyService = propertyService;
         this.agentService = agentService;
+        this.operationService = operationService;
+        this.visitService = visitService;
     }
 
     public void log(AdminActionType action, AdminEntityType entity, String description,
@@ -78,7 +83,41 @@ public class AdminActionService {
         }
     }
 
+    private void validateUndoableActions() {
+        for (AdminActionLog log : repository.getAdminUndoHistory()) {
+            if (!log.isUndoable()) continue;
+            if (log.getEntity() != AdminEntityType.PROPERTY) continue;
+
+            String code = log.getEntityId();
+            LocalDateTime actionTime = log.getTimestamp();
+
+            boolean hasLaterActivity =
+                    visitService.hasVisitsForPropertyAfter(code, actionTime) ||
+                            operationService.hasOperationsForPropertyAfter(code, actionTime);
+
+            if (hasLaterActivity) {
+                Property property = propertyService.getPropertyByCode(code);
+                PropertySnapshot snapshot = property.getLastSnapshot();
+
+                // snapshot puede ser null si nunca se editó la propiedad
+                if (snapshot == null) continue;
+
+                // agent también puede ser null
+                boolean neighborhoodChanged = snapshot.getNeighborhood() != null &&
+                        !snapshot.getNeighborhood().equals(property.getNeighborhood());
+                boolean agentChanged = snapshot.getAgent() != null &&
+                        !snapshot.getAgent().equals(property.getAgent());
+
+                if (neighborhoodChanged || agentChanged) {
+                    log.setUndoable(false);
+                }
+            }
+        }
+
+    }
+
     public Queue<AdminActionLog> getHistory() {
+        validateUndoableActions();
         return repository.getHistory();
     }
 }
