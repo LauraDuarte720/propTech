@@ -51,30 +51,33 @@
     .queue-icon svg{width:20px;height:20px;color:var(--accent);}
     .queue-title{font-size:14px;font-weight:500;}
     .queue-sub{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-top:2px;}
-    .next-card{background:rgba(74,111,227,0.04);border:1px solid rgba(74,111,227,0.15);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:none;}
-    .next-card.visible{display:block;}
-    .next-card-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
-    .next-card-msg{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
-    .next-card-meta{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
-    .next-card-actions{display:flex;gap:8px;margin-top:12px;}
 
-    /* Tabs */
-    .tabs{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:20px;width:fit-content;}
-    .tab{padding:7px 18px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:var(--text-muted);transition:all 0.15s;border:none;background:none;}
-    .tab.active{background:var(--accent);color:white;font-weight:500;}
+    /* Next card */
+    .next-card{background:rgba(74,111,227,0.04);border:1px solid rgba(74,111,227,0.2);border-radius:12px;padding:18px 20px;margin-bottom:20px;display:none;}
+    .next-card.visible{display:block;}
+    .next-card-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+    .next-card-msg{font-size:14px;color:var(--text);line-height:1.5;padding:12px;background:white;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;}
+    .next-card-meta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
+    .next-meta-item{display:flex;align-items:center;gap:6px;font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
+    .next-meta-item svg{width:13px;height:13px;flex-shrink:0;}
+    .next-meta-item a{color:var(--accent);text-decoration:none;}
+    .next-meta-item a:hover{text-decoration:underline;}
+    .next-card-actions{display:flex;gap:8px;}
 
     /* Cards grid */
-    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
     .req-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.15s;}
     .req-card:hover{box-shadow:0 2px 12px rgba(74,111,227,0.08);}
     .req-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
-    .req-client{font-size:13px;font-weight:500;color:var(--text);}
-    .req-prop{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
-    .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
+    .req-client-name{font-size:13px;font-weight:500;color:var(--text);}
+    .req-client-phone{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .req-prop{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:1px;}
+    .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;}
     .b-PENDING{background:rgba(74,111,227,0.1);color:var(--accent);}
     .b-ATTENDED{background:rgba(29,158,117,0.1);color:#1D9E75;}
     .b-CANCELLED{background:rgba(88,94,99,0.1);color:var(--text-muted);}
-    .req-msg{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:12px;padding:10px;background:var(--bg);border-radius:8px;}
+    .req-msg{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:10px;padding:10px;background:var(--bg);border-radius:8px;}
+    .req-date{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
     .req-actions{display:flex;gap:6px;}
 
     /* Empty */
@@ -116,6 +119,7 @@
     </div>
 
     <div class="content">
+
       <!-- Queue status -->
       <div class="queue-banner">
         <div class="queue-left">
@@ -133,27 +137,42 @@
         </div>
       </div>
 
-      <!-- Next request preview -->
+      <!-- Siguiente en cola (peek) -->
       <div class="next-card" id="next-card">
-        <div class="next-card-label">Siguiente en cola</div>
+        <div class="next-card-label">⏭ Siguiente en cola</div>
         <div class="next-card-msg" id="next-msg">—</div>
-        <div class="next-card-meta" id="next-meta">—</div>
+        <div class="next-card-meta">
+          <span class="next-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="next-client">—</span>
+          </span>
+          <span class="next-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.61 4.93 2 2 0 0 1 3.6 2.69h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <a id="next-phone" href="#"></a>
+          </span>
+          <span class="next-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
+            <span id="next-prop">—</span>
+          </span>
+          <span class="next-meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="next-date">—</span>
+          </span>
+        </div>
         <div class="next-card-actions">
-          <button class="btn btn-success btn-sm" onclick="attendNext()">✓ Atender ahora</button>
+          <button class="btn btn-success btn-sm" onclick="attendNext()">✓ Atender</button>
         </div>
       </div>
 
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab active" onclick="filterTab('all',this)">Todas</button>
-        <button class="tab" onclick="filterTab('PENDING',this)">Pendientes</button>
-        <button class="tab" onclick="filterTab('ATTENDED',this)">Atendidas</button>
-        <button class="tab" onclick="filterTab('CANCELLED',this)">Canceladas</button>
+      <!-- Historial — sin filtros, solo todos -->
+      <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:16px;">
+        Historial de solicitudes
       </div>
 
       <div class="cards-grid" id="reqs-grid">
         <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
       </div>
+
     </div>
   </div>
 </div>
@@ -168,108 +187,121 @@
   }
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-  let allReqs = [];
-  let currentTab = 'all';
+  if (typeof label === 'undefined') window.label = (map, key) => map[key] || key || '—';
 
   const STATUS_LABEL = { PENDING:'Pendiente', ATTENDED:'Atendida', CANCELLED:'Cancelada' };
 
+  function fmtDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('es-CO', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
   async function load() {
-    // Peek next
-    const nextRes = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(()=>null);
-    if (nextRes && nextRes.ok) {
-      const next = await nextRes.json();
-      if (next && next.id) {
-        document.getElementById('next-card').classList.add('visible');
-        document.getElementById('next-msg').textContent = next.message || '—';
-        document.getElementById('next-meta').textContent = `${next.client?.name||'—'} · ${next.property?.address||'—'}`;
-      }
-    }
-
-    // History
-    const histRes = await fetch(`${API}/agents/${user.cedula}/support-requests/history`).catch(()=>null);
-    const pendingCount = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(()=>null);
-
-    // Build list from history + estimate pending
-    let reqs = [];
-
-    if (histRes && histRes.ok) {
-      reqs = await histRes.json();
-    }
-
-    allReqs = reqs;
-
-// Obtener tamaño REAL de la cola
-    const countRes = await fetch(
-            `${API}/agents/${user.cedula}/support-requests/count`
-    ).catch(() => null);
-
-    if (countRes && countRes.ok) {
-
-      const count = await countRes.json();
-
-      document.getElementById('q-count').textContent = count;
-
+    // Contar pendientes
+    const countRes = await fetch(`${API}/agents/${user.cedula}/support-requests/count`).catch(()=>null);
+    if (countRes?.ok) {
+      document.getElementById('q-count').textContent = await countRes.json();
     } else {
-
       document.getElementById('q-count').textContent = '0';
     }
 
-    renderReqs(filterReqs(currentTab));
-  }
+    // Peek — siguiente en cola
+    const nextRes = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(()=>null);
+    const nextCard = document.getElementById('next-card');
+    if (nextRes?.ok) {
+      const next = await nextRes.json();
+      if (next?.id) {
+        document.getElementById('next-msg').textContent    = next.message || '—';
+        document.getElementById('next-client').textContent = next.client?.name || '—';
+        document.getElementById('next-prop').textContent   = next.property?.address || '—';
+        document.getElementById('next-date').textContent   = fmtDate(next.date);
 
-  function filterReqs(tab) {
-    if (tab==='all') return allReqs;
-    return allReqs.filter(r=>r.status===tab);
-  }
+        const phone = next.client?.phone;
+        const phoneEl = document.getElementById('next-phone');
+        if (phone) {
+          phoneEl.textContent = phone;
+          phoneEl.href = `tel:${phone}`;
+        } else {
+          phoneEl.textContent = '—';
+          phoneEl.removeAttribute('href');
+        }
 
-  function filterTab(tab, el) {
-    currentTab = tab;
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    el.classList.add('active');
-    renderReqs(filterReqs(tab));
+        nextCard.classList.add('visible');
+      } else {
+        nextCard.classList.remove('visible');
+      }
+    } else {
+      nextCard.classList.remove('visible');
+    }
+
+    // Historial completo
+    const histRes = await fetch(`${API}/agents/${user.cedula}/support-requests/history`).catch(()=>null);
+    if (histRes?.ok) {
+      const reqs = await histRes.json();
+      renderReqs(reqs);
+    }
   }
 
   function renderReqs(reqs) {
     const grid = document.getElementById('reqs-grid');
     if (!reqs.length) {
-      grid.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><div class="empty-title">Sin solicitudes</div></div>`;
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><div class="empty-title">Sin solicitudes en el historial</div></div>`;
       return;
     }
-    grid.innerHTML = reqs.map(r => `
-      <div class="req-card">
+    grid.innerHTML = reqs.map(r => {
+      const phone = r.client?.phone;
+      const phoneHtml = phone
+              ? `<a href="tel:${phone}" style="color:var(--accent);text-decoration:none;">${phone}</a>`
+              : '—';
+      const canAct = r.status === 'PENDING';
+
+      return `<div class="req-card">
         <div class="req-card-header">
           <div>
-            <div class="req-client">${r.client?.name||'Cliente'}</div>
-            <div class="req-prop">${r.property?.address||'—'}</div>
+            <div class="req-client-name">${r.client?.name || '—'}</div>
+            <div class="req-client-phone">${phoneHtml}</div>
+            <div class="req-prop">${r.property?.address || '—'}</div>
           </div>
-          <span class="badge b-${r.status}">${STATUS_LABEL[r.status]||r.status}</span>
+          <span class="badge b-${r.status || 'PENDING'}">${STATUS_LABEL[r.status] || r.status || 'Pendiente'}</span>
         </div>
-        <div class="req-msg">${r.message||'—'}</div>
-        <div class="req-actions">
-          ${r.status==='PENDING' ? `
-            <button class="btn btn-sm btn-success" onclick="attendNext()">Atender</button>
-            <button class="btn btn-sm btn-danger" onclick="cancelReq('${r.id}')">Cancelar</button>
-          ` : ''}
+        <div class="req-msg">${r.message || '—'}</div>
+        <div class="req-date">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${fmtDate(r.date)}
         </div>
-      </div>`).join('');
+        ${canAct ? `<div class="req-actions">
+          <button class="btn btn-sm btn-success" onclick="attendNext()">✓ Atender siguiente</button>
+          <button class="btn btn-sm btn-danger" onclick="cancelReq('${r.id}')">Cancelar</button>
+        </div>` : ''}
+      </div>`;
+    }).join('');
   }
 
+  let _attending = false;
   async function attendNext() {
-    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/attend`, { method:'POST' });
-    if (res.ok) {
-      document.getElementById('next-card').classList.remove('visible');
+    if (_attending) return;
+    _attending = true;
+    const btn = document.querySelector('.btn-primary');
+    if (btn) { btn.disabled = true; btn.textContent = 'Atendiendo...'; }
+
+    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/attend`, { method: 'POST' }).catch(()=>null);
+
+    if (btn) { btn.disabled = false; btn.textContent = 'Atender siguiente'; }
+    _attending = false;
+
+    if (res?.ok) {
       load();
     } else {
-      const e = await res.json();
-      alert(e.message || 'No hay solicitudes pendientes');
+      const e = await res?.json().catch(()=>({}));
+      alert(e?.message || 'No hay solicitudes pendientes');
     }
   }
 
   async function cancelReq(id) {
     if (!confirm('¿Cancelar esta solicitud?')) return;
-    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/${id}/cancel`, { method:'PATCH' });
-    if (res.ok) load();
-    else { const e = await res.json(); alert(e.message||'Error'); }
+    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/${id}/cancel`, { method: 'PATCH' }).catch(()=>null);
+    if (res?.ok) load();
+    else { const e = await res?.json().catch(()=>({})); alert(e?.message || 'Error al cancelar'); }
   }
 
   load();

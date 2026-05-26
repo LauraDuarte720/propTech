@@ -48,6 +48,8 @@ public class SupportRequestMapper  implements MapperCreate<SupportRequest, Suppo
                 .property(propertyMapper.toDto(entity.getProperty()))
                 .agent(agentMapper.toDto(entity.getAgent()))
                 .message(entity.getMessage())
+                .date(entity.getDate())       // ← agregar
+                .status(entity.getStatus())
                 .build();
     }
 
