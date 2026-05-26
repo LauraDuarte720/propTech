@@ -20,8 +20,6 @@ public class AdminActionLog {
     private LocalDateTime timestamp;
     private String performedBy;
     private String entityId;
-    private String secondaryEntityId;
-    private ArrayList<String> affectedEntityIds;
     
     @Builder.Default
     private boolean undoable = true;
