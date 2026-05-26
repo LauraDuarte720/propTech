@@ -99,9 +99,10 @@ public class AgentController {
     public ResponseEntity<VisitDtoReturn> registerVisit(
             @PathVariable String cedula,
             @Validated @RequestBody VisitDtoCreate dto) {
+        dto.setAgentId(cedula); // toma la cédula del path, ignora lo que mande el body
         Visit visit = visitMapper.toEntity(dto);
         Agent agent = agentService.getAgentByCedula(cedula);
-        return ResponseEntity.ok(visitMapper.toDto(agentService.registerVisit(agent,visit)));
+        return ResponseEntity.ok(visitMapper.toDto(agentService.registerVisit(agent, visit)));
     }
 
     @PostMapping("/{cedula}/visits/attend")
