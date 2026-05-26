@@ -150,7 +150,6 @@ public class PropertyService {
     public Property updateProperty(Property property, boolean confirm) {
         return propertyRepository.findByCode(property.getCode()).map(existing -> {
 
-            boolean skipLog = false;
             existing.saveSnapshot();
 
             if (property.getAddress() != null) {
@@ -158,7 +157,6 @@ public class PropertyService {
             }
             if (property.getNeighborhood() != null) {
                 updatePropertyNeighborhood(existing, property.getNeighborhood(), confirm);
-                skipLog = true;
             }
             if (property.getPurpose() != null) {
                 existing.setPurpose(property.getPurpose());
@@ -183,7 +181,6 @@ public class PropertyService {
             }
             if (property.getAgent() != null) {
                 propertyAssignmentService.assignAgent(existing.getCode(), property.getAgent().getCedula());
-                skipLog = true;
             }
             if(property.getPropertyType() != null) {
                 changePropertyType(existing, property.getPropertyType());
@@ -191,7 +188,6 @@ public class PropertyService {
 
             Property saved = propertyRepository.save(existing);
 
-            if (!skipLog) {
                 adminActionService.log(
                         AdminActionType.UPDATE,
                         AdminEntityType.PROPERTY,
@@ -199,7 +195,6 @@ public class PropertyService {
                         "Admin",
                         existing.getCode()
                 );
-            }
             return saved;
 
         }).orElseThrow(() -> new PropertyDoesNotExist("code", property.getCode()));
@@ -272,6 +267,7 @@ public class PropertyService {
         property.setArea(snapshot.getArea());
         property.setNumBedrooms(snapshot.getNumBedrooms());
         property.setNumBathrooms(snapshot.getNumBathrooms());
+        property.setAgent(snapshot.getAgent());
         while (property.getPriceHistory().size() > snapshot.getPriceHistorySize()) {
             property.getPriceHistory().removeLast();
         }
