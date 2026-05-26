@@ -5,12 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PropTech Admin — Analítica</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="/proptech_utils.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;--border:rgba(255,255,255,0.08);--text-muted:#8A90A0;--sidebar-w:220px;}
+    :root{
+      --navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;
+      --border:rgba(255,255,255,0.08);--text-muted:#8A90A0;
+      --sidebar-w:220px;--green:#3DD68C;--orange:#EF9F27;--red:#FF7B7B;
+    }
     html,body{height:100%;font-family:'Outfit',sans-serif;background:#0A0C1B;color:#fff;}
     .app{display:flex;height:100vh;overflow:hidden;}
+
+    /* ── Sidebar ── */
     .sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;}
     .sidebar-logo{padding:24px 20px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
     .logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
@@ -28,30 +35,42 @@
     .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;}
     .user-name{font-size:13px;font-weight:500;}
     .user-role{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);}
+
+    /* ── Main layout ── */
     .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     .topbar{padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(19,25,54,0.4);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
     .page-title{font-size:18px;font-weight:500;}
     .btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
     .btn-ghost{background:rgba(255,255,255,0.06);color:#fff;border:1px solid var(--border);}
     .btn-ghost:hover{background:rgba(255,255,255,0.1);}
-    .btn-sm{padding:5px 12px;font-size:12px;}
+    .btn-accent{background:var(--accent);color:#fff;}
+    .btn-accent:hover{background:var(--accent-light);}
     .content{flex:1;overflow-y:auto;padding:28px;}
 
-    /* Tabs */
-    .tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;}
-    .tab{padding:7px 18px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:rgba(255,255,255,0.5);border:none;background:none;transition:all 0.15s;}
-    .tab.active{background:var(--accent);color:white;font-weight:500;}
+    /* ── Group tabs (top level) ── */
+    .group-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;flex-wrap:wrap;}
+    .gtab{padding:7px 16px;border-radius:7px;font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;color:rgba(255,255,255,0.5);border:none;background:none;transition:all 0.15s;white-space:nowrap;}
+    .gtab.active{background:var(--accent);color:white;font-weight:500;}
 
-    /* Section */
-    .section{display:none;}
-    .section.active{display:block;}
+    /* ── Sub-tabs ── */
+    .sub-tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;}
+    .stab{padding:6px 14px;border-radius:6px;font-family:'Jost',sans-serif;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.4);border:1px solid transparent;background:none;transition:all 0.15s;}
+    .stab:hover{color:#fff;border-color:var(--border);}
+    .stab.active{color:var(--accent-light);border-color:rgba(74,111,227,0.4);background:rgba(74,111,227,0.08);}
 
-    /* Cards */
+    /* ── Sections ── */
+    .gsection{display:none;}.gsection.active{display:block;}
+    .subsection{display:none;}.subsection.active{display:block;}
+
+    /* ── Cards ── */
     .card{background:var(--navy);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
-    .card-title{font-size:14px;font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-    .card-sub{font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);}
+    .card-title{font-size:14px;font-weight:500;margin-bottom:4px;}
+    .card-desc{font-family:'Jost',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;line-height:1.5;}
+    .card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 
-    /* Table */
+    /* ── Tables ── */
     .table-wrap{border-radius:10px;overflow:hidden;}
     table{width:100%;border-collapse:collapse;}
     th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
@@ -59,50 +78,77 @@
     tr:last-child td{border-bottom:none;}
     tr:hover td{background:rgba(255,255,255,0.02);}
 
-    /* Agent load bar */
-    .load-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:99px;margin-top:4px;width:120px;}
-    .load-fill{height:6px;border-radius:99px;background:var(--accent);}
+    /* ── Badges ── */
+    .badge{font-size:11px;padding:2px 9px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;}
+    .badge-green{background:rgba(61,214,140,0.12);color:var(--green);}
+    .badge-blue{background:rgba(74,111,227,0.15);color:var(--accent-light);}
+    .badge-orange{background:rgba(239,159,39,0.15);color:var(--orange);}
+    .badge-red{background:rgba(255,123,123,0.15);color:var(--red);}
+    .badge-gray{background:rgba(138,144,160,0.15);color:var(--text-muted);}
 
-    /* Client chip */
-    .budget-badge{font-size:11px;padding:3px 10px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:500;}
-    .b-high{background:rgba(29,158,117,0.15);color:#3DD68C;}
-    .b-mid{background:rgba(74,111,227,0.15);color:var(--accent-light);}
-    .b-low{background:rgba(88,94,99,0.2);color:var(--text-muted);}
+    /* ── List rows ── */
+    .list-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
+    .list-row:last-child{border-bottom:none;}
+    .list-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+    .list-sq{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+    .list-info{flex:1;min-width:0;}
+    .list-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .list-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
 
-    /* Property demand */
-    .demand-bar{height:8px;background:rgba(255,255,255,0.06);border-radius:99px;flex:1;}
-    .demand-fill{height:8px;border-radius:99px;}
+    /* ── Progress bar ── */
+    .prog-wrap{height:6px;background:rgba(255,255,255,0.07);border-radius:99px;flex:1;min-width:60px;}
+    .prog-fill{height:6px;border-radius:99px;}
 
-    /* Mobility */
-    .pattern-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
-    .pattern-from{font-size:13px;font-weight:500;flex:1;}
-    .pattern-arrow{font-size:18px;color:var(--accent);}
-    .pattern-to{font-size:13px;font-weight:500;flex:1;}
+    /* ── Pattern card (mobility) ── */
+    .pattern-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .pattern-zone{font-size:13px;font-weight:500;flex:1;min-width:80px;}
+    .pattern-arrow{color:var(--accent);font-size:20px;font-weight:300;}
     .pattern-weight{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);white-space:nowrap;}
-    .pattern-ops{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(29,158,117,0.15);color:#3DD68C;font-family:'Jost',sans-serif;font-weight:500;white-space:nowrap;}
 
-    /* Similar clients */
-    .client-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
-    .client-row:last-child{border-bottom:none;}
-    .client-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
-    .client-info{flex:1;}
-    .client-name{font-size:13px;font-weight:500;}
-    .client-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+    /* ── Picker ── */
+    .picker-wrap{position:relative;flex:1;}
+    .picker-search{width:100%;padding:9px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
+    .picker-search:focus{border-color:var(--accent);}
+    .picker-search::placeholder{color:rgba(255,255,255,0.3);}
+    .picker-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1a2145;border:1px solid var(--border);border-radius:10px;z-index:100;max-height:220px;overflow-y:auto;display:none;box-shadow:0 12px 36px rgba(0,0,0,0.5);}
+    .picker-dropdown.open{display:block;}
+    .picker-item{padding:10px 14px;font-size:13px;cursor:pointer;transition:background 0.1s;border-bottom:1px solid var(--border);}
+    .picker-item:last-child{border-bottom:none;}
+    .picker-item:hover,.picker-item.focused{background:rgba(74,111,227,0.15);}
+    .picker-item .pi-main{font-weight:500;}
+    .picker-item .pi-sub{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .selected-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(74,111,227,0.15);border:1px solid rgba(74,111,227,0.3);border-radius:8px;font-size:13px;margin-top:8px;}
+    .selected-chip .sc-x{cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;}
+    .selected-chip .sc-x:hover{color:#fff;}
 
-    /* Search input */
-    .search-input{padding:9px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;width:240px;}
-    .search-input:focus{border-color:var(--accent);}
-    .search-input::placeholder{color:rgba(255,255,255,0.3);}
+    /* ── Search row ── */
+    .search-row{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
 
-    /* Empty */
+    /* ── Empty ── */
     .empty{text-align:center;padding:40px;color:var(--text-muted);}
-    .empty-icon{font-size:36px;margin-bottom:8px;}
+    .empty-ico{font-size:32px;margin-bottom:8px;opacity:0.5;}
 
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    /* ── Stat boxes ── */
+    .stat-box{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:16px;}
+    .stat-val{font-size:24px;font-weight:600;margin-bottom:4px;}
+    .stat-lbl{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);}
+
+    /* ── Chart container ── */
+    .chart-wrap{position:relative;height:220px;}
+
+    /* ── Zone filter input ── */
+    .zone-input{padding:9px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;width:100%;}
+    .zone-input:focus{border-color:var(--accent);}
+    .zone-input::placeholder{color:rgba(255,255,255,0.3);}
+
+    /* ── Load bar (agents) ── */
+    .load-bar{height:6px;background:rgba(255,255,255,0.07);border-radius:99px;width:100px;}
+    .load-fill{height:6px;border-radius:99px;}
   </style>
 </head>
 <body>
 <div class="app">
+  <!-- ═══════════ SIDEBAR ═══════════ -->
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
@@ -128,9 +174,10 @@
     </div>
   </nav>
 
+  <!-- ═══════════ MAIN ═══════════ -->
   <div class="main">
     <div class="topbar">
-      <span class="page-title">Analítica</span>
+      <span class="page-title">Analítica del sistema</span>
       <button class="btn btn-ghost" onclick="loadAll()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M4 4v5h5M20 20v-5h-5M4 15a9 9 0 0 0 15 4M20 9A9 9 0 0 0 5 5"/></svg>
         Actualizar datos
@@ -138,176 +185,391 @@
     </div>
 
     <div class="content">
-      <div class="tabs">
-        <button class="tab active" onclick="showTab('agents',this)">📊 Carga asesores</button>
-        <button class="tab" onclick="showTab('demand',this)">🔥 Demanda</button>
-        <button class="tab" onclick="showTab('clients',this)">👥 Clientes</button>
-        <button class="tab" onclick="showTab('similar',this)">🔗 Similares</button>
-        <button class="tab" onclick="showTab('mobility',this)">🗺 Movilidad</button>
-        <button class="tab" onclick="showTab('history',this)">📋 Historial visitas</button>
+      <!-- ─── GROUP TABS ─── -->
+      <div class="group-tabs">
+        <button class="gtab active" onclick="showGroup('demand',this)">Demanda e inmuebles</button>
+        <button class="gtab" onclick="showGroup('clients',this)">Clientes y potencial</button>
+        <button class="gtab" onclick="showGroup('similarity',this)">Similitud y recomendacion</button>
+        <button class="gtab" onclick="showGroup('agents',this)">Asesores</button>
+        <button class="gtab" onclick="showGroup('mobility',this)">Movilidad de zonas</button>
       </div>
 
-      <!-- TAB: Carga de asesores -->
-      <div class="section active" id="sec-agents">
-        <div class="card">
-          <div class="card-title">
-            Asesores ordenados por carga de visitas
-            <span class="card-sub">Mayor número de visitas agendadas primero</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr>
-                <th>Asesor</th><th>Visitas agendadas</th><th>Carga</th><th>Cierres</th><th>Zona</th>
-              </tr></thead>
-              <tbody id="agents-load-tbody">
-              <tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
-              </tbody>
-            </table>
-          </div>
+      <!-- ══════════════════════════════════════
+           GRUPO 1: DEMANDA E INMUEBLES
+      ══════════════════════════════════════ -->
+      <div class="gsection active" id="g-demand">
+        <div class="sub-tabs">
+          <button class="stab active" onclick="showSub('demand','by-demand',this)">Por frecuencia de interacciones</button>
+          <button class="stab" onclick="showSub('demand','by-potential',this)">Potencial de venta (grafo)</button>
+          <button class="stab" onclick="showSub('demand','history',this)">Historial de interacciones por cliente</button>
         </div>
-      </div>
 
-      <!-- TAB: Demanda -->
-      <div class="section" id="sec-demand">
-        <div class="card">
-          <div class="card-title">
-            Inmuebles con mayor demanda
-            <span class="card-sub">Ordenados por frecuencia de interacciones</span>
-          </div>
-          <div id="demand-list">
-            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB: Clientes -->
-      <div class="section" id="sec-clients">
-        <div class="grid-2">
+        <!-- Sub: por frecuencia -->
+        <div class="subsection active" id="sub-demand-by-demand">
           <div class="card">
-            <div class="card-title">
-              Clientes por presupuesto
-              <span class="card-sub">De menor a mayor</span>
+            <div class="card-header">
+              <div>
+                <div class="card-title">Inmuebles con mayor demanda</div>
+                <div class="card-desc">Ordenados por frecuencia acumulada de interacciones: visitas presenciales, guardados en favoritos y negociaciones activas. Refleja el interés real del mercado sobre cada inmueble.</div>
+              </div>
             </div>
-            <div class="table-wrap">
+            <div class="grid-2" style="margin-bottom:20px;">
+              <div class="chart-wrap"><canvas id="chart-demand-bar"></canvas></div>
+              <div id="demand-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub: potencial de venta -->
+        <div class="subsection" id="sub-demand-by-potential">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Inmuebles con mayor potencial de venta</div>
+                <div class="card-desc">Calculado a partir del peso acumulado de todas las interacciones del grafo: consultas, visitas, guardados, negociaciones, intenciones de compra y arriendo. Pondera el nivel de interes real de los clientes hacia cada inmueble disponible.</div>
+              </div>
+            </div>
+            <div id="potential-props-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+          </div>
+        </div>
+
+        <!-- Sub: historial por cliente -->
+        <div class="subsection" id="sub-demand-history">
+          <div class="card">
+            <div class="card-title">Historial de interacciones por cliente</div>
+            <div class="card-desc">Selecciona un cliente para ver todas sus interacciones registradas en el sistema.</div>
+            <div class="search-row">
+              <div class="picker-wrap">
+                <input class="picker-search" id="hist-client-search" placeholder="Buscar cliente por nombre o cedula..." autocomplete="off"
+                       oninput="filterPicker('hist-client')" onfocus="openPicker('hist-client')" onblur="delayClosePicker('hist-client')">
+                <div class="picker-dropdown" id="hist-client-dropdown"></div>
+              </div>
+              <input type="hidden" id="hist-client-val">
+              <button class="btn btn-accent" onclick="loadClientHistory()">Ver historial</button>
+            </div>
+            <div id="hist-client-chip"></div>
+            <div id="visit-history-list" style="margin-top:16px;">
+              <div class="empty"><div class="empty-ico">&#128203;</div><div style="font-size:13px;">Selecciona un cliente para ver su historial</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           GRUPO 2: CLIENTES Y POTENCIAL
+      ══════════════════════════════════════ -->
+      <div class="gsection" id="g-clients">
+        <div class="sub-tabs">
+          <button class="stab active" onclick="showSub('clients','most-potential',this)">Clientes mas potenciales</button>
+          <button class="stab" onclick="showSub('clients','closing',this)">Intencion de cierre</button>
+          <button class="stab" onclick="showSub('clients','by-budget',this)">Por presupuesto</button>
+          <button class="stab" onclick="showSub('clients','for-property',this)">Clientes para un inmueble</button>
+        </div>
+
+        <!-- Sub: más potenciales -->
+        <div class="subsection active" id="sub-clients-most-potential">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Clientes con mayor potencial de compra en el sistema</div>
+                <div class="card-desc">Ranking global calculado combinando: intenciones de compra y arriendo registradas (peso alto), actividad total en el grafo de interacciones (suma de pesos de aristas), y estado de busqueda activo o en negociacion. Identifica a quien atacar primero.</div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div id="most-potential-clients-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+              <div class="chart-wrap"><canvas id="chart-potential-clients"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub: intención de cierre -->
+        <div class="subsection" id="sub-clients-closing">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Clientes con mayor intencion de cierre</div>
+                <div class="card-desc">Ordenados por cantidad de interacciones del tipo "Intencion de compra" y "Intencion de arriendo" registradas. A mayor conteo, mas proxima la decision de compra o arrendamiento.</div>
+              </div>
+            </div>
+            <div id="closing-intention-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+          </div>
+        </div>
+
+        <!-- Sub: por presupuesto -->
+        <div class="subsection" id="sub-clients-by-budget">
+          <div class="card">
+            <div class="card-title">Clientes ordenados por presupuesto</div>
+            <div class="card-desc">Listado completo de clientes de menor a mayor presupuesto declarado.</div>
+            <div class="table-wrap" style="margin-bottom:0;">
               <table>
-                <thead><tr><th>Cliente</th><th>Presupuesto</th><th>Tipo</th></tr></thead>
-                <tbody id="clients-budget-tbody">
-                <tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:24px;">Cargando...</td></tr>
-                </tbody>
+                <thead><tr><th>Cliente</th><th>Presupuesto</th><th>Tipo</th><th>Estado busqueda</th></tr></thead>
+                <tbody id="clients-budget-tbody"><tr><td colspan="4" style="color:var(--text-muted);text-align:center;padding:24px;">Cargando...</td></tr></tbody>
               </table>
             </div>
           </div>
           <div class="card">
-            <div class="card-title">
-              Clientes con mayor intención de cierre
-              <span class="card-sub">Basado en interacciones BUYING / RENTING</span>
+            <div class="card-title">Filtrar por rango de presupuesto</div>
+            <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+              <div>
+                <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Minimo</div>
+                <input class="zone-input" type="number" id="budget-min" placeholder="0" style="width:160px;">
+              </div>
+              <div>
+                <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Maximo</div>
+                <input class="zone-input" type="number" id="budget-max" placeholder="1000000000" style="width:160px;">
+              </div>
+              <button class="btn btn-accent" onclick="filterByBudget()">Filtrar</button>
             </div>
-            <div id="closing-intention-list">
-              <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-            </div>
+            <div id="budget-range-result" style="margin-top:16px;"></div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">Filtrar clientes por rango de presupuesto</div>
-          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-            <div>
-              <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Presupuesto mínimo</div>
-              <input class="search-input" type="number" id="budget-min" placeholder="0" style="width:160px;">
-            </div>
-            <div>
-              <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Presupuesto máximo</div>
-              <input class="search-input" type="number" id="budget-max" placeholder="1000000000" style="width:160px;">
-            </div>
-            <button class="btn btn-ghost" onclick="filterByBudget()">Filtrar</button>
-          </div>
-          <div id="budget-range-result" style="margin-top:16px;"></div>
-        </div>
-      </div>
-
-      <!-- TAB: Similares -->
-      <div class="section" id="sec-similar">
-        <div class="card">
-          <div class="card-title">
-            Clientes que visitaron propiedades similares
-            <span class="card-sub">Ingresa la cédula de un cliente para ver clientes con comportamiento similar</span>
-          </div>
-          <div style="display:flex;gap:10px;margin-bottom:20px;">
-            <input class="search-input" type="text" id="similar-client-id" placeholder="Cédula del cliente...">
-            <button class="btn btn-ghost" onclick="loadSimilarClients()">Buscar</button>
-          </div>
-          <div id="similar-clients-list">
-            <div class="empty"><div class="empty-icon">🔗</div><div style="font-size:13px;">Ingresa una cédula para ver clientes similares</div></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            Propiedades similares por co-visita
-            <span class="card-sub">Ingresa el código de un inmueble para ver inmuebles visitados por los mismos clientes</span>
-          </div>
-          <div style="display:flex;gap:10px;margin-bottom:20px;">
-            <input class="search-input" type="text" id="similar-prop-id" placeholder="Código del inmueble...">
-            <button class="btn btn-ghost" onclick="loadSimilarProps()">Buscar</button>
-          </div>
-          <div id="similar-props-list">
-            <div class="empty"><div class="empty-icon">🏠</div><div style="font-size:13px;">Ingresa un código para ver inmuebles similares</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB: Movilidad -->
-      <div class="section" id="sec-mobility">
-        <div class="grid-2">
+        <!-- Sub: clientes para un inmueble -->
+        <div class="subsection" id="sub-clients-for-property">
           <div class="card">
-            <div class="card-title">
-              Zonas destino más populares
-              <span class="card-sub">Por peso de conexiones</span>
+            <div class="card-title">Clientes potenciales para un inmueble</div>
+            <div class="card-desc">Dado un inmueble, obtiene los clientes cuyo perfil encaja mejor con ese inmueble: presupuesto, zona de interes, tipo de inmueble deseado, habitaciones minimas e historial de interacciones en el grafo. Los resultados vienen ordenados de mayor a menor compatibilidad.</div>
+            <div class="search-row">
+              <div class="picker-wrap">
+                <input class="picker-search" id="prop-clients-search" placeholder="Buscar inmueble por codigo o direccion..." autocomplete="off"
+                       oninput="filterPicker('prop-clients')" onfocus="openPicker('prop-clients')" onblur="delayClosePicker('prop-clients')">
+                <div class="picker-dropdown" id="prop-clients-dropdown"></div>
+              </div>
+              <input type="hidden" id="prop-clients-val">
+              <button class="btn btn-accent" onclick="loadClientsForProperty()">Buscar</button>
             </div>
-            <div id="top-destinations-list">
-              <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
+            <div id="prop-clients-chip"></div>
+            <div id="clients-for-property-list" style="margin-top:16px;">
+              <div class="empty"><div class="empty-ico">&#127968;</div><div style="font-size:13px;">Selecciona un inmueble para ver sus clientes potenciales</div></div>
             </div>
-          </div>
-          <div class="card">
-            <div class="card-title">
-              Patrones correlacionados con operaciones
-              <span class="card-sub">Zonas con más cierres reales</span>
-            </div>
-            <div id="correlated-patterns-list">
-              <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">
-            Todos los patrones de movilidad comercial
-            <span class="card-sub">Conexiones entre zonas por actividad de clientes</span>
-          </div>
-          <div id="all-patterns-list">
-            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
           </div>
         </div>
       </div>
 
-      <!-- TAB: Historial visitas -->
-      <div class="section" id="sec-history">
-        <div class="card">
-          <div class="card-title">
-            Historial de visitas por cliente
-            <span class="card-sub">Ingresa la cédula del cliente</span>
+      <!-- ══════════════════════════════════════
+           GRUPO 3: SIMILITUD Y RECOMENDACION
+      ══════════════════════════════════════ -->
+      <div class="gsection" id="g-similarity">
+        <div class="sub-tabs">
+          <button class="stab active" onclick="showSub('similarity','similar-props',this)">Inmuebles similares</button>
+          <button class="stab" onclick="showSub('similarity','similar-clients',this)">Clientes similares</button>
+          <button class="stab" onclick="showSub('similarity','recommended',this)">Inmuebles recomendados para cliente</button>
+        </div>
+
+        <!-- Sub: inmuebles similares -->
+        <div class="subsection active" id="sub-similarity-similar-props">
+          <div class="card">
+            <div class="card-title">Inmuebles similares a un inmueble dado</div>
+            <div class="card-desc">El sistema infiere similitud a partir del comportamiento compartido de clientes en el grafo: si los mismos perfiles de clientes han interactuado (consultado, visitado, guardado, negociado o expresado intencion) con dos inmuebles distintos, esos inmuebles son similares porque comparten el mismo publico objetivo. Los resultados se ordenan por frecuencia de interaccion compartida.</div>
+            <div class="search-row">
+              <div class="picker-wrap">
+                <input class="picker-search" id="sim-prop-search" placeholder="Buscar inmueble..." autocomplete="off"
+                       oninput="filterPicker('sim-prop')" onfocus="openPicker('sim-prop')" onblur="delayClosePicker('sim-prop')">
+                <div class="picker-dropdown" id="sim-prop-dropdown"></div>
+              </div>
+              <input type="hidden" id="sim-prop-val">
+              <button class="btn btn-accent" onclick="loadSimilarProps()">Buscar</button>
+            </div>
+            <div id="sim-prop-chip"></div>
+            <div id="similar-props-list" style="margin-top:16px;">
+              <div class="empty"><div class="empty-ico">&#127968;</div><div style="font-size:13px;">Selecciona un inmueble para ver similares</div></div>
+            </div>
           </div>
-          <div style="display:flex;gap:10px;margin-bottom:20px;">
-            <input class="search-input" type="text" id="history-client-id" placeholder="Cédula del cliente...">
-            <button class="btn btn-ghost" onclick="loadClientHistory()">Ver historial</button>
+        </div>
+
+        <!-- Sub: clientes similares -->
+        <div class="subsection" id="sub-similarity-similar-clients">
+          <div class="card">
+            <div class="card-title">Clientes similares a un cliente dado</div>
+            <div class="card-desc">Muestra los inmuebles con conexion directa al cliente en el grafo, lo que permite identificar clientes con intereses comunes (aquellos que interactuaron con los mismos inmuebles). Util para analisis de perfiles y segmentacion.</div>
+            <div class="search-row">
+              <div class="picker-wrap">
+                <input class="picker-search" id="sim-client-search" placeholder="Buscar cliente por nombre o cedula..." autocomplete="off"
+                       oninput="filterPicker('sim-client')" onfocus="openPicker('sim-client')" onblur="delayClosePicker('sim-client')">
+                <div class="picker-dropdown" id="sim-client-dropdown"></div>
+              </div>
+              <input type="hidden" id="sim-client-val">
+              <button class="btn btn-accent" onclick="loadRelatedProperties()">Buscar</button>
+            </div>
+            <div id="sim-client-chip"></div>
+            <div id="similar-clients-list" style="margin-top:16px;">
+              <div class="empty"><div class="empty-ico">&#128101;</div><div style="font-size:13px;">Selecciona un cliente para ver sus inmuebles relacionados en el grafo</div></div>
+            </div>
           </div>
-          <div id="visit-history-list">
-            <div class="empty"><div class="empty-icon">📋</div><div style="font-size:13px;">Ingresa una cédula para ver el historial</div></div>
+        </div>
+
+        <!-- Sub: recomendados para cliente -->
+        <div class="subsection" id="sub-similarity-recommended">
+          <div class="card">
+            <div class="card-title">Inmuebles recomendados para un cliente</div>
+            <div class="card-desc">Sistema de recomendacion personalizada: combina preferencias declaradas del cliente (presupuesto, zona, tipo, habitaciones), historial de interacciones en el grafo y el comportamiento de clientes con perfiles similares (filtrado colaborativo). Los resultados se ordenan por puntaje de relevancia total.</div>
+            <div class="search-row">
+              <div class="picker-wrap">
+                <input class="picker-search" id="rec-client-search" placeholder="Buscar cliente..." autocomplete="off"
+                       oninput="filterPicker('rec-client')" onfocus="openPicker('rec-client')" onblur="delayClosePicker('rec-client')">
+                <div class="picker-dropdown" id="rec-client-dropdown"></div>
+              </div>
+              <input type="hidden" id="rec-client-val">
+              <button class="btn btn-accent" onclick="loadRecommendations()">Obtener recomendaciones</button>
+            </div>
+            <div id="rec-client-chip"></div>
+            <div id="recommendations-list" style="margin-top:16px;">
+              <div class="empty"><div class="empty-ico">&#127775;</div><div style="font-size:13px;">Selecciona un cliente para ver sus recomendaciones</div></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+      <!-- ══════════════════════════════════════
+           GRUPO 4: ASESORES
+      ══════════════════════════════════════ -->
+      <div class="gsection" id="g-agents">
+        <div class="sub-tabs">
+          <button class="stab active" onclick="showSub('agents','load',this)">Carga de visitas</button>
+          <button class="stab" onclick="showSub('agents','performance',this)">Cierres por asesor</button>
+          <button class="stab" onclick="showSub('agents','potential-clients',this)">Clientes potenciales por asesor</button>
+        </div>
+
+        <!-- Sub: carga -->
+        <div class="subsection active" id="sub-agents-load">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Asesores ordenados por carga de visitas pendientes</div>
+                <div class="card-desc">Muestra cuantas visitas en estado PENDING o CONFIRMED tiene cada asesor agendadas actualmente. Un asesor con alta carga puede requerir redistribucion de clientes o inmuebles.</div>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-bottom:0;">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Asesor</th><th>Visitas activas</th><th>Carga relativa</th><th>Cierres</th><th>Zona</th></tr></thead>
+                  <tbody id="agents-load-tbody"><tr><td colspan="5" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr></tbody>
+                </table>
+              </div>
+              <div class="chart-wrap"><canvas id="chart-agents-load"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub: rendimiento -->
+        <div class="subsection" id="sub-agents-performance">
+          <div class="card">
+            <div class="card-title">Asesores por operaciones cerradas</div>
+            <div class="card-desc">Ranking de asesores segun numero total de operaciones cerradas (ventas y arriendos). Refleja el rendimiento historico de cada uno.</div>
+            <div id="agents-perf-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+          </div>
+        </div>
+
+        <!-- Sub: clientes potenciales por asesor -->
+        <div class="subsection" id="sub-agents-potential-clients">
+          <div class="card">
+            <div class="card-title">Clientes potenciales para la cartera de un asesor</div>
+            <div class="card-desc">Selecciona un asesor para ver que clientes del sistema tienen mayor afinidad con el conjunto de inmuebles asignados a ese asesor. El score agrega la compatibilidad del cliente con cada inmueble de la cartera: presupuesto, zona, tipo, habitaciones e historial en el grafo.</div>
+            <div class="search-row">
+              <div class="picker-wrap">
+                <input class="picker-search" id="agent-pc-search" placeholder="Buscar asesor..." autocomplete="off"
+                       oninput="filterPicker('agent-pc')" onfocus="openPicker('agent-pc')" onblur="delayClosePicker('agent-pc')">
+                <div class="picker-dropdown" id="agent-pc-dropdown"></div>
+              </div>
+              <input type="hidden" id="agent-pc-val">
+              <button class="btn btn-accent" onclick="loadAgentPotentialClients()">Buscar clientes</button>
+            </div>
+            <div id="agent-pc-chip"></div>
+            <div id="agent-potential-clients-list" style="margin-top:16px;">
+              <div class="empty"><div class="empty-ico">&#128101;</div><div style="font-size:13px;">Selecciona un asesor para ver sus clientes potenciales</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           GRUPO 5: MOVILIDAD DE ZONAS
+      ══════════════════════════════════════ -->
+      <div class="gsection" id="g-mobility">
+        <div class="sub-tabs">
+          <button class="stab active" onclick="showSub('mobility','all',this)">Todos los patrones</button>
+          <button class="stab" onclick="showSub('mobility','top',this)">Zonas destino mas populares</button>
+          <button class="stab" onclick="showSub('mobility','correlated',this)">Correlacionados con operaciones</button>
+          <button class="stab" onclick="showSub('mobility','from',this)">Desde una zona</button>
+          <button class="stab" onclick="showSub('mobility','to',this)">Hacia una zona</button>
+        </div>
+
+        <!-- Sub: todos -->
+        <div class="subsection active" id="sub-mobility-all">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Todos los patrones de movilidad comercial</div>
+                <div class="card-desc">Cada patron representa un flujo de clientes que pasaron de interactuar con inmuebles en una zona a interactuar con inmuebles en otra. El peso indica la intensidad del flujo. Se generan automaticamente cuando el sistema detecta zona dominante de un cliente y registra una interaccion en una zona diferente.</div>
+              </div>
+            </div>
+            <div id="all-patterns-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+          </div>
+        </div>
+
+        <!-- Sub: top destinos -->
+        <div class="subsection" id="sub-mobility-top">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Zonas destino con mayor flujo entrante</div>
+                <div class="card-desc">Las zonas que mas clientes atraen desde otras zonas. El peso es la suma de todas las conexiones entrantes. Util para identificar zonas en auge o con mayor demanda comercial real.</div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div id="top-destinations-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+              <div class="chart-wrap"><canvas id="chart-top-destinations"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub: correlacionados -->
+        <div class="subsection" id="sub-mobility-correlated">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Patrones correlacionados con operaciones cerradas</div>
+                <div class="card-desc">Solo muestra los patrones de movilidad donde la zona destino tiene al menos una operacion (venta o arriendo) efectivamente cerrada. Indica que el desplazamiento de clientes hacia esa zona se ha materializado en negocios reales.</div>
+              </div>
+            </div>
+            <div id="correlated-patterns-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
+          </div>
+        </div>
+
+        <!-- Sub: desde zona -->
+        <div class="subsection" id="sub-mobility-from">
+          <div class="card">
+            <div class="card-title">Patrones salientes desde una zona</div>
+            <div class="card-desc">Muestra hacia donde se mueven los clientes que estaban concentrados en una zona especifica. Usa el formato de clave de zona: <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-size:11px;">ZONE|CIUDAD|ZONA</code> (ej: <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-size:11px;">ZONE|ARMENIA|NORTH</code>)</div>
+            <div class="search-row">
+              <input class="zone-input" id="from-zone-key" placeholder="Ej: ZONE|ARMENIA|NORTH" style="max-width:340px;">
+              <button class="btn btn-accent" onclick="loadPatternsFrom()">Buscar</button>
+            </div>
+            <div id="from-patterns-list">
+              <div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Ingresa una clave de zona para ver los patrones salientes</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub: hacia zona -->
+        <div class="subsection" id="sub-mobility-to">
+          <div class="card">
+            <div class="card-title">Patrones entrantes hacia una zona</div>
+            <div class="card-desc">Muestra desde que zonas llegan clientes hacia una zona destino especifica. Usa el mismo formato de clave.</div>
+            <div class="search-row">
+              <input class="zone-input" id="to-zone-key" placeholder="Ej: ZONE|ARMENIA|NORTH" style="max-width:340px;">
+              <button class="btn btn-accent" onclick="loadPatternsTo()">Buscar</button>
+            </div>
+            <div id="to-patterns-list">
+              <div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Ingresa una clave de zona para ver los patrones entrantes</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
 
 <script>
   const API = 'http://localhost:8080';
@@ -315,241 +577,649 @@
   if (!user.role) window.location.href = 'proptech_login.html';
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-  const colors = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(107,138,255,0.2)'];
-  const tcolors = ['#6B8AFF','#3DD68C','#EF9F27','#FF7B7B','#B8AFFE'];
+  // ── Color palettes ──────────────────────────────────────────────────────
+  const BG  = ['rgba(74,111,227,0.2)','rgba(29,158,117,0.2)','rgba(239,159,39,0.2)','rgba(226,75,74,0.2)','rgba(107,138,255,0.2)','rgba(255,123,123,0.2)'];
+  const TC  = ['#6B8AFF','#3DD68C','#EF9F27','#FF7B7B','#B8AFFE','#FFB347'];
+  const ci  = i => i % TC.length;
 
-  function showTab(name, el) {
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById('sec-'+name).classList.add('active');
+  // ── Shared data ─────────────────────────────────────────────────────────
+  let allClients  = [];
+  let allProps    = [];
+  let allAgents   = [];
+
+  // ── Tab navigation ──────────────────────────────────────────────────────
+  function showGroup(name, el) {
+    document.querySelectorAll('.gsection').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.gtab').forEach(t => t.classList.remove('active'));
+    document.getElementById('g-' + name).classList.add('active');
     el.classList.add('active');
   }
 
-  // ── Carga de asesores ──────────────────────────────────────────────
-  async function loadAgentLoad() {
-    const res = await fetch(`${API}/agents`).catch(()=>null);
-    if (!res?.ok) return;
-    const agents = await res.json();
-    agents.sort((a,b) => (b.scheduledVisitsCount||b.visitCount||0) - (a.scheduledVisitsCount||a.visitCount||0));
-    const maxVisits = Math.max(...agents.map(a=>a.scheduledVisitsCount||0), 1);
-    const tbody = document.getElementById('agents-load-tbody');
-
-    // Fetch visits per agent
-    const visitCounts = await Promise.all(
-            agents.map(a => fetch(`${API}/visits/agent/${a.cedula}`)
-                    .then(r=>r.ok?r.json():[]).then(v=>v.filter(x=>x.status==='PENDING'||x.status==='CONFIRMED').length)
-                    .catch(()=>0))
-    );
-
-    const maxV = Math.max(...visitCounts, 1);
-    tbody.innerHTML = agents.map((a,i) => {
-      const ci = i % colors.length;
-      const initials = (a.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      const visits = visitCounts[i];
-      const pct = Math.round((visits/maxV)*100);
-      return `<tr>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div style="width:28px;height:28px;border-radius:50%;background:${colors[ci]};color:${tcolors[ci]};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;">${initials}</div>
-            <span style="font-weight:500">${a.name}</span>
-          </div>
-        </td>
-        <td>${visits}</td>
-        <td>
-          <div class="load-bar"><div class="load-fill" style="width:${pct}%;background:${tcolors[ci]}"></div></div>
-        </td>
-        <td style="color:var(--text-muted)">${a.closedDeals||0}</td>
-        <td style="color:var(--text-muted)">${a.assignedZone?.city||'—'} / ${a.assignedZone?.zone||'—'}</td>
-      </tr>`;
-    }).join('');
+  function showSub(group, name, el) {
+    const section = document.getElementById('g-' + group);
+    section.querySelectorAll('.subsection').forEach(s => s.classList.remove('active'));
+    section.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+    document.getElementById('sub-' + group + '-' + name).classList.add('active');
+    el.classList.add('active');
   }
 
-  // ── Demanda de inmuebles ────────────────────────────────────────────
+  // ── Initials helper ──────────────────────────────────────────────────────
+  function initials(name) {
+    return (name || '??').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  // ═══════════════════════════════════════════════
+  // PICKER SYSTEM
+  // ═══════════════════════════════════════════════
+  const pickerData = {};
+
+  function registerPicker(id, items, renderFn, onSelect) {
+    pickerData[id] = { items, renderFn, onSelect, filtered: items.slice() };
+    renderDropdown(id, items.slice(0, 30));
+  }
+
+  function renderDropdown(id, items) {
+    const dd = document.getElementById(id + '-dropdown');
+    if (!dd) return;
+    if (!items.length) {
+      dd.innerHTML = '<div style="padding:12px 14px;font-size:12px;color:var(--text-muted);">Sin resultados</div>';
+      return;
+    }
+    dd.innerHTML = items.slice(0, 50).map(item => {
+      const pd = pickerData[id];
+      return pd ? pd.renderFn(item) : '';
+    }).join('');
+    dd.querySelectorAll('.picker-item').forEach(el => {
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const val = el.dataset.val;
+        const label = el.dataset.label;
+        selectPicker(id, val, label);
+      });
+    });
+  }
+
+  function filterPicker(id) {
+    const input = document.getElementById(id + '-search');
+    const q = input.value.toLowerCase();
+    const pd = pickerData[id];
+    if (!pd) return;
+    const filtered = pd.items.filter(item => {
+      const text = (JSON.stringify(item) || '').toLowerCase();
+      return text.includes(q);
+    });
+    openPicker(id);
+    renderDropdown(id, filtered.slice(0, 50));
+  }
+
+  function openPicker(id) {
+    const dd = document.getElementById(id + '-dropdown');
+    if (dd) dd.classList.add('open');
+  }
+
+  function delayClosePicker(id) {
+    setTimeout(() => {
+      const dd = document.getElementById(id + '-dropdown');
+      if (dd) dd.classList.remove('open');
+    }, 180);
+  }
+
+  function selectPicker(id, val, label) {
+    const hidden = document.getElementById(id + '-val');
+    const input  = document.getElementById(id + '-search');
+    const chip   = document.getElementById(id + '-chip');
+    if (hidden) hidden.value = val;
+    if (input)  input.value  = label;
+    delayClosePicker(id);
+    if (chip) {
+      chip.innerHTML = `<div class="selected-chip">
+      <span>${label}</span>
+      <span class="sc-x" onclick="clearPicker('${id}')">x</span>
+    </div>`;
+    }
+    const pd = pickerData[id];
+    if (pd && pd.onSelect) pd.onSelect(val, label);
+  }
+
+  function clearPicker(id) {
+    const hidden = document.getElementById(id + '-val');
+    const input  = document.getElementById(id + '-search');
+    const chip   = document.getElementById(id + '-chip');
+    if (hidden) hidden.value = '';
+    if (input)  input.value  = '';
+    if (chip)   chip.innerHTML = '';
+  }
+
+  // ── Render functions for pickers ────────────────────────────────────────
+  function clientRender(c) {
+    return `<div class="picker-item" data-val="${c.cedula}" data-label="${c.name} (${c.cedula})">
+    <div class="pi-main">${c.name}</div>
+    <div class="pi-sub">${c.cedula} · ${label(CLIENT_TYPE, c.clientType)} · $${Number(c.budget||0).toLocaleString()}</div>
+  </div>`;
+  }
+
+  function propRender(p) {
+    return `<div class="picker-item" data-val="${p.code}" data-label="${p.address||p.code} (${p.code})">
+    <div class="pi-main">${p.address || p.code}</div>
+    <div class="pi-sub">${p.code} · ${label(PROPERTY_TYPE, p.propertyType)} · $${Number(p.price||0).toLocaleString()}</div>
+  </div>`;
+  }
+
+  function agentRender(a) {
+    return `<div class="picker-item" data-val="${a.cedula}" data-label="${a.name} (${a.cedula})">
+    <div class="pi-main">${a.name}</div>
+    <div class="pi-sub">${a.cedula} · ${a.assignedZone?.city||'—'} / ${a.assignedZone?.zone||'—'}</div>
+  </div>`;
+  }
+
+  // ═══════════════════════════════════════════════
+  // CHART helpers
+  // ═══════════════════════════════════════════════
+  const charts = {};
+  function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+  function makeBarChart(id, labels, data, colorIdx) {
+    destroyChart(id);
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+    charts[id] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: labels.map((_, i) => BG[ci(i)]),
+          borderColor: labels.map((_, i) => TC[ci(i)]),
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8A90A0', font: { size: 10 }, maxRotation: 30 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { ticks: { color: '#8A90A0', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+      }
+    });
+  }
+
+  function makeHorizBarChart(id, labels, data) {
+    destroyChart(id);
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+    charts[id] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: labels.map((_, i) => BG[ci(i)]),
+          borderColor: labels.map((_, i) => TC[ci(i)]),
+          borderWidth: 1,
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8A90A0', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+          y: { ticks: { color: '#8A90A0', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }
+      }
+    });
+  }
+
+  function makeDoughnut(id, labels, data) {
+    destroyChart(id);
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+    charts[id] = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data, backgroundColor: TC.slice(0, data.length), borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#8A90A0', font: { size: 11 }, boxWidth: 12, padding: 10 } }
+        }
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════
+  // SECTION LOADERS
+  // ═══════════════════════════════════════════════
+
+  // ── DEMAND ──────────────────────────────────────
   async function loadDemand() {
-    const res = await fetch(`${API}/recommendations/properties/demand`).catch(()=>null);
+    const res = await fetch(`${API}/recommendations/properties/demand`).catch(() => null);
     if (!res?.ok) return;
     const props = await res.json();
     const list = document.getElementById('demand-list');
-    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-icon">🔥</div><div style="font-size:13px;">Sin datos de demanda aún</div></div>'; return; }
-    const maxDemand = 1;
-    list.innerHTML = props.slice(0,15).map((p,i) => {
-      const ci = i % tcolors.length;
-      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-        <div style="width:28px;height:28px;border-radius:6px;background:${colors[ci]};color:${tcolors[ci]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${i+1}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:500">${p.address||p.code}</div>
-          <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted)">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE,p.propertyType)} · $${Number(p.price||0).toLocaleString()}</div>
-        </div>
-        <div style="font-family:'Jost',sans-serif;font-size:11px;padding:2px 10px;border-radius:99px;background:rgba(239,159,39,0.15);color:#EF9F27;">${label(PROPERTY_STATUS,p.status)}</div>
-      </div>`;
-    }).join('');
+    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128293;</div><div style="font-size:13px;">Sin datos de demanda aun</div></div>'; return; }
+    const top = props.slice(0, 12);
+    list.innerHTML = top.map((p, i) => `
+    <div class="list-row">
+      <div class="list-sq" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${i + 1}</div>
+      <div class="list-info">
+        <div class="list-name">${p.address || p.code}</div>
+        <div class="list-meta">${p.neighborhood?.name || '—'} · ${label(PROPERTY_TYPE, p.propertyType)} · $${Number(p.price || 0).toLocaleString()}</div>
+      </div>
+      <div class="badge badge-orange">${label(PROPERTY_STATUS, p.status)}</div>
+    </div>`).join('');
+    makeBarChart('chart-demand-bar',
+            top.map(p => (p.address || p.code).slice(0, 18)),
+            top.map((_, i) => top.length - i)
+    );
   }
 
-  // ── Clientes por presupuesto ────────────────────────────────────────
+  async function loadPotentialProps() {
+    const res = await fetch(`${API}/recommendations/properties/most-potential`).catch(() => null);
+    if (!res?.ok) return;
+    const props = await res.json();
+    const list = document.getElementById('potential-props-list');
+    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128293;</div><div style="font-size:13px;">Sin datos aun</div></div>'; return; }
+    list.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Inmueble</th><th>Tipo</th><th>Precio</th><th>Estado</th></tr></thead>
+    <tbody>${props.slice(0, 20).map((p, i) => `<tr>
+      <td style="color:${TC[ci(i)]};font-weight:600">${i + 1}</td>
+      <td><div style="font-weight:500">${p.address || p.code}</div><div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted)">${p.neighborhood?.name || '—'}</div></td>
+      <td><span class="badge badge-blue">${label(PROPERTY_TYPE, p.propertyType)}</span></td>
+      <td style="font-family:'Jost',sans-serif;">$${Number(p.price || 0).toLocaleString()}</td>
+      <td><span class="badge ${p.status === 'ACTIVE' ? 'badge-green' : 'badge-gray'}">${label(PROPERTY_STATUS, p.status)}</span></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+  }
+
+  async function loadClientHistory() {
+    const id = document.getElementById('hist-client-val').value.trim();
+    if (!id) { ptToast && ptToast('warning', 'Selecciona un cliente', ''); return; }
+    const res = await fetch(`${API}/clients/${id}/interactions`).catch(() => null);
+    const list = document.getElementById('visit-history-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">No se encontro el cliente</div></div>'; return; }
+    const interactions = await res.json();
+    if (!interactions.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128203;</div><div style="font-size:13px;">Sin interacciones registradas</div></div>'; return; }
+    interactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${interactions.length} interaccion${interactions.length !== 1 ? 'es' : ''} registrada${interactions.length !== 1 ? 's' : ''}</div>` +
+            interactions.map(v => `<div class="list-row">
+      <div style="font-size:18px;width:28px;text-align:center;">&#127968;</div>
+      <div class="list-info">
+        <div class="list-name">${v.property?.address || v.property?.code || '—'}</div>
+        <div class="list-meta">${new Date(v.timestamp).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+      </div>
+      <span class="badge badge-blue">${label(INTERACTION_TYPE, v.interactionType)}</span>
+    </div>`).join('');
+  }
+
+  // ── CLIENTS ──────────────────────────────────────
+  async function loadMostPotentialClients() {
+    const res = await fetch(`${API}/recommendations/clients/most-potential`).catch(() => null);
+    if (!res?.ok) return;
+    const clients = await res.json();
+    const list = document.getElementById('most-potential-clients-list');
+    if (!clients.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128101;</div><div style="font-size:13px;">Sin datos aun</div></div>'; return; }
+    const top = clients.slice(0, 10);
+    list.innerHTML = top.map((c, i) => `
+    <div class="list-row">
+      <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(c.name)}</div>
+      <div class="list-info">
+        <div class="list-name">${c.name}</div>
+        <div class="list-meta">$${Number(c.budget || 0).toLocaleString()} · ${label(CLIENT_TYPE, c.clientType)}</div>
+      </div>
+      <span class="badge ${c.searchStatus === 'NEGOTIATING' ? 'badge-green' : c.searchStatus === 'ACTIVE' ? 'badge-blue' : 'badge-gray'}">${label(SEARCH_STATUS, c.searchStatus)}</span>
+    </div>`).join('');
+    makeDoughnut('chart-potential-clients',
+            top.slice(0, 6).map(c => c.name.split(' ')[0]),
+            top.slice(0, 6).map((_, i) => top.length - i)
+    );
+  }
+
+  async function loadClosingIntention() {
+    const res = await fetch(`${API}/recommendations/clients/closing-intention`).catch(() => null);
+    if (!res?.ok) return;
+    const clients = await res.json();
+    const list = document.getElementById('closing-intention-list');
+    if (!clients.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128722;</div><div style="font-size:13px;">Sin datos de intencion aun</div></div>'; return; }
+    list.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Cliente</th><th>Presupuesto</th><th>Tipo</th><th>Estado</th></tr></thead>
+    <tbody>${clients.slice(0, 20).map((c, i) => `<tr>
+      <td style="color:${TC[ci(i)]};font-weight:600">${i + 1}</td>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(c.name)}</div>
+        <span style="font-weight:500">${c.name}</span>
+      </div></td>
+      <td style="font-family:'Jost',sans-serif;">$${Number(c.budget || 0).toLocaleString()}</td>
+      <td><span class="badge badge-blue">${label(CLIENT_TYPE, c.clientType)}</span></td>
+      <td><span class="badge badge-green">Alta intencion</span></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+  }
+
   async function loadClientsByBudget() {
-    const res = await fetch(`${API}/clients/ordered-by-budget`).catch(()=>null);
+    const res = await fetch(`${API}/clients/ordered-by-budget`).catch(() => null);
     if (!res?.ok) return;
     const clients = await res.json();
     const tbody = document.getElementById('clients-budget-tbody');
-    if (!clients.length) { tbody.innerHTML='<tr><td colspan="3" style="color:var(--text-muted);text-align:center;padding:24px;">Sin clientes</td></tr>'; return; }
-    tbody.innerHTML = clients.map((c,i) => {
-      const budget = c.budget || 0;
-      const badgeClass = budget > 500000000 ? 'b-high' : budget > 200000000 ? 'b-mid' : 'b-low';
+    if (!clients.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);text-align:center;padding:24px;">Sin clientes</td></tr>'; return; }
+    tbody.innerHTML = clients.map((c, i) => {
+      const b = c.budget || 0;
+      const bc = b > 500000000 ? 'badge-green' : b > 200000000 ? 'badge-blue' : 'badge-gray';
       return `<tr>
-        <td style="font-weight:500">${c.name}</td>
-        <td><span class="budget-badge ${badgeClass}">$${Number(budget).toLocaleString()}</span></td>
-        <td style="color:var(--text-muted)">${label(CLIENT_TYPE,c.clientType)}</td>
-      </tr>`;
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(c.name)}</div>
+        <span style="font-weight:500">${c.name}</span>
+      </div></td>
+      <td><span class="badge ${bc}">$${Number(b).toLocaleString()}</span></td>
+      <td style="color:var(--text-muted)">${label(CLIENT_TYPE, c.clientType)}</td>
+      <td><span class="badge badge-gray">${label(SEARCH_STATUS, c.searchStatus)}</span></td>
+    </tr>`;
     }).join('');
   }
 
   async function filterByBudget() {
     const min = document.getElementById('budget-min').value || 0;
     const max = document.getElementById('budget-max').value || 1000000000;
-    const res = await fetch(`${API}/clients/budget-range?min=${min}&max=${max}`).catch(()=>null);
+    const res = await fetch(`${API}/clients/budget-range?min=${min}&max=${max}`).catch(() => null);
     const container = document.getElementById('budget-range-result');
-    if (!res?.ok) { container.innerHTML='<div style="color:var(--text-muted);font-size:13px;">Sin resultados en ese rango</div>'; return; }
+    if (!res?.ok) { container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin resultados en ese rango</div>'; return; }
     const clients = await res.json();
-    if (!clients.length) { container.innerHTML='<div style="color:var(--text-muted);font-size:13px;">Sin clientes en ese rango de presupuesto</div>'; return; }
-    container.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:10px;">${clients.length} cliente${clients.length!==1?'s':''} encontrado${clients.length!==1?'s':''}</div>` +
-            clients.map(c=>`<div class="client-row">
-        <div class="client-av" style="background:rgba(74,111,227,0.2);color:#6B8AFF">${(c.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
-        <div class="client-info">
-          <div class="client-name">${c.name}</div>
-          <div class="client-meta">$${Number(c.budget||0).toLocaleString()} · ${label(CLIENT_TYPE,c.clientType)}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  // ── Intención de cierre ─────────────────────────────────────────────
-  async function loadClosingIntention() {
-    const res = await fetch(`${API}/recommendations/clients/closing-intention`).catch(()=>null);
-    if (!res?.ok) return;
-    const clients = await res.json();
-    const list = document.getElementById('closing-intention-list');
-    if (!clients.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🛒</div><div style="font-size:13px;">Sin datos de intención aún</div></div>'; return; }
-    list.innerHTML = clients.slice(0,8).map((c,i)=>{
-      const ci = i % colors.length;
-      const initials = (c.name||'??').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      return `<div class="client-row">
-        <div class="client-av" style="background:${colors[ci]};color:${tcolors[ci]}">${initials}</div>
-        <div class="client-info">
-          <div class="client-name">${c.name}</div>
-          <div class="client-meta">$${Number(c.budget||0).toLocaleString()} · ${label(CLIENT_TYPE,c.clientType)}</div>
-        </div>
-        <div style="font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(29,158,117,0.15);color:#3DD68C;font-family:'Jost',sans-serif;">Alta intención</div>
-      </div>`;
-    }).join('');
-  }
-
-  // ── Clientes similares ──────────────────────────────────────────────
-  async function loadSimilarClients() {
-    const id = document.getElementById('similar-client-id').value.trim();
-    if (!id) return;
-    const res = await fetch(`${API}/recommendations/client/${id}/related-properties`).catch(()=>null);
-    const list = document.getElementById('similar-clients-list');
-
-    // Usar el endpoint de propiedades relacionadas para inferir clientes similares
-    const res2 = await fetch(`${API}/visits/client/${id}`).catch(()=>null);
-    if (!res2?.ok) { list.innerHTML='<div class="empty"><div class="empty-icon">❌</div><div style="font-size:13px;">No se encontró el cliente</div></div>'; return; }
-    const visits = await res2.json();
-    if (!visits.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🔗</div><div style="font-size:13px;">Este cliente no tiene visitas registradas</div></div>'; return; }
-
-    const propCodes = [...new Set(visits.map(v=>v.property?.code).filter(Boolean))];
-    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">Propiedades visitadas por este cliente: ${propCodes.length}</div>` +
-            visits.slice(0,8).map(v=>`<div class="client-row">
-        <div style="font-size:20px;">🏠</div>
-        <div class="client-info">
-          <div class="client-name">${v.property?.address||v.property?.code||'—'}</div>
-          <div class="client-meta">${new Date(v.date).toLocaleDateString('es-CO')} · ${label(VISIT_STATUS,v.status)}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  async function loadSimilarProps() {
-    const code = document.getElementById('similar-prop-id').value.trim();
-    if (!code) return;
-    const res = await fetch(`${API}/recommendations/property/${code}/similar`).catch(()=>null);
-    const list = document.getElementById('similar-props-list');
-    if (!res?.ok) { list.innerHTML='<div class="empty"><div class="empty-icon">❌</div><div style="font-size:13px;">No se encontró el inmueble</div></div>'; return; }
-    const props = await res.json();
-    if (!props.length) { list.innerHTML='<div class="empty"><div class="empty-icon">🏠</div><div style="font-size:13px;">Sin propiedades similares encontradas</div></div>'; return; }
-    list.innerHTML = props.map((p,i)=>`<div class="client-row">
-      <div style="width:28px;height:28px;border-radius:6px;background:${colors[i%colors.length]};color:${tcolors[i%tcolors.length]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${i+1}</div>
-      <div class="client-info">
-        <div class="client-name">${p.address||p.code}</div>
-        <div class="client-meta">${p.neighborhood?.name||'—'} · ${label(PROPERTY_TYPE,p.propertyType)} · $${Number(p.price||0).toLocaleString()}</div>
+    if (!clients.length) { container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin clientes en ese rango</div>'; return; }
+    container.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:10px;">${clients.length} cliente${clients.length !== 1 ? 's' : ''} encontrado${clients.length !== 1 ? 's' : ''}</div>` +
+            clients.map((c, i) => `<div class="list-row">
+      <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(c.name)}</div>
+      <div class="list-info">
+        <div class="list-name">${c.name}</div>
+        <div class="list-meta">$${Number(c.budget || 0).toLocaleString()} · ${label(CLIENT_TYPE, c.clientType)}</div>
       </div>
     </div>`).join('');
   }
 
-  // ── Movilidad ───────────────────────────────────────────────────────
+  async function loadClientsForProperty() {
+    const code = document.getElementById('prop-clients-val').value.trim();
+    if (!code) { return; }
+    const res = await fetch(`${API}/recommendations/property/${code}/potential-clients`).catch(() => null);
+    const list = document.getElementById('clients-for-property-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">No se encontro el inmueble o sin resultados</div></div>'; return; }
+    const clients = await res.json();
+    if (!clients.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128101;</div><div style="font-size:13px;">Sin clientes potenciales para este inmueble</div></div>'; return; }
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${clients.length} cliente${clients.length !== 1 ? 's' : ''} potencial${clients.length !== 1 ? 'es' : ''}</div>` +
+            `<div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Cliente</th><th>Presupuesto</th><th>Tipo</th><th>Estado</th></tr></thead>
+      <tbody>${clients.map((c, i) => `<tr>
+        <td style="color:${TC[ci(i)]};font-weight:600">${i + 1}</td>
+        <td><div style="display:flex;align-items:center;gap:8px;">
+          <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(c.name)}</div>
+          <span style="font-weight:500">${c.name}</span>
+        </div></td>
+        <td style="font-family:'Jost',sans-serif;">$${Number(c.budget || 0).toLocaleString()}</td>
+        <td><span class="badge badge-blue">${label(CLIENT_TYPE, c.clientType)}</span></td>
+        <td><span class="badge ${c.searchStatus === 'NEGOTIATING' ? 'badge-green' : c.searchStatus === 'ACTIVE' ? 'badge-blue' : 'badge-gray'}">${label(SEARCH_STATUS, c.searchStatus)}</span></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  // ── SIMILARITY ──────────────────────────────────
+  async function loadSimilarProps() {
+    const code = document.getElementById('sim-prop-val').value.trim();
+    if (!code) return;
+    const res = await fetch(`${API}/recommendations/property/${code}/similar`).catch(() => null);
+    const list = document.getElementById('similar-props-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">No se encontro el inmueble</div></div>'; return; }
+    const props = await res.json();
+    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#127968;</div><div style="font-size:13px;">Sin inmuebles con interaccion compartida</div></div>'; return; }
+    list.innerHTML = props.map((p, i) => `
+    <div class="list-row">
+      <div class="list-sq" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${i + 1}</div>
+      <div class="list-info">
+        <div class="list-name">${p.address || p.code}</div>
+        <div class="list-meta">${p.neighborhood?.name || '—'} · ${label(PROPERTY_TYPE, p.propertyType)} · $${Number(p.price || 0).toLocaleString()}</div>
+      </div>
+      <span class="badge badge-orange">${label(PROPERTY_STATUS, p.status)}</span>
+    </div>`).join('');
+  }
+
+  async function loadRelatedProperties() {
+    const id = document.getElementById('sim-client-val').value.trim();
+    if (!id) return;
+    const res = await fetch(`${API}/recommendations/client/${id}/related-properties`).catch(() => null);
+    const list = document.getElementById('similar-clients-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">No se encontro el cliente</div></div>'; return; }
+    const props = await res.json();
+    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#127968;</div><div style="font-size:13px;">Este cliente no tiene conexiones en el grafo aun</div></div>'; return; }
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${props.length} inmueble${props.length !== 1 ? 's' : ''} con interaccion registrada en el grafo</div>` +
+            props.map((p, i) => `<div class="list-row">
+      <div class="list-sq" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${i + 1}</div>
+      <div class="list-info">
+        <div class="list-name">${p.address || p.code}</div>
+        <div class="list-meta">${p.neighborhood?.name || '—'} · ${label(PROPERTY_TYPE, p.propertyType)} · $${Number(p.price || 0).toLocaleString()}</div>
+      </div>
+      <span class="badge badge-blue">${label(PROPERTY_STATUS, p.status)}</span>
+    </div>`).join('');
+  }
+
+  async function loadRecommendations() {
+    const id = document.getElementById('rec-client-val').value.trim();
+    if (!id) return;
+    const res = await fetch(`${API}/recommendations/client/${id}`).catch(() => null);
+    const list = document.getElementById('recommendations-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">No se encontro el cliente</div></div>'; return; }
+    const props = await res.json();
+    if (!props.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#127775;</div><div style="font-size:13px;">Sin recomendaciones disponibles</div></div>'; return; }
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${props.length} inmueble${props.length !== 1 ? 's' : ''} recomendado${props.length !== 1 ? 's' : ''} en orden de relevancia</div>` +
+            `<div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Inmueble</th><th>Tipo</th><th>Precio</th><th>Estado</th></tr></thead>
+      <tbody>${props.map((p, i) => `<tr>
+        <td style="color:${TC[ci(i)]};font-weight:600">${i + 1}</td>
+        <td><div style="font-weight:500">${p.address || p.code}</div><div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted)">${p.neighborhood?.name || '—'}</div></td>
+        <td><span class="badge badge-blue">${label(PROPERTY_TYPE, p.propertyType)}</span></td>
+        <td style="font-family:'Jost',sans-serif;">$${Number(p.price || 0).toLocaleString()}</td>
+        <td><span class="badge ${p.status === 'ACTIVE' ? 'badge-green' : 'badge-gray'}">${label(PROPERTY_STATUS, p.status)}</span></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  // ── AGENTS ──────────────────────────────────────
+  async function loadAgentLoad() {
+    const res = await fetch(`${API}/agents`).catch(() => null);
+    if (!res?.ok) return;
+    const agents = await res.json();
+
+    const visitCounts = await Promise.all(
+            agents.map(a => fetch(`${API}/agents/${a.cedula}/visits`)
+                    .then(r => r.ok ? r.json() : [])
+                    .then(v => Array.isArray(v) ? v.filter(x => x.status === 'PENDING' || x.status === 'CONFIRMED').length : 0)
+                    .catch(() => 0))
+    );
+
+    const maxV = Math.max(...visitCounts, 1);
+    const tbody = document.getElementById('agents-load-tbody');
+    tbody.innerHTML = agents.map((a, i) => {
+      const visits = visitCounts[i];
+      const pct = Math.round((visits / maxV) * 100);
+      return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(a.name)}</div>
+        <span style="font-weight:500">${a.name}</span>
+      </div></td>
+      <td style="font-weight:600;color:${TC[ci(i)]}">${visits}</td>
+      <td>
+        <div class="load-bar"><div class="load-fill" style="width:${pct}%;background:${TC[ci(i)]}"></div></div>
+      </td>
+      <td style="color:var(--text-muted)">${a.closedDeals || 0}</td>
+      <td style="color:var(--text-muted);font-family:'Jost',sans-serif;font-size:12px;">${a.assignedZone?.city || '—'} / ${a.assignedZone?.zone || '—'}</td>
+    </tr>`;
+    }).join('');
+
+    makeHorizBarChart('chart-agents-load',
+            agents.map(a => a.name.split(' ')[0]),
+            visitCounts
+    );
+  }
+
+  async function loadAgentPerformance() {
+    const res = await fetch(`${API}/agents/ordered-by-closed-deals`).catch(() => null);
+    if (!res?.ok) return;
+    const agents = await res.json();
+    const list = document.getElementById('agents-perf-list');
+    if (!agents.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128202;</div><div style="font-size:13px;">Sin datos</div></div>'; return; }
+    const max = Math.max(...agents.map(a => a.closedDeals || 0), 1);
+    list.innerHTML = agents.map((a, i) => `
+    <div class="list-row">
+      <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(a.name)}</div>
+      <div class="list-info">
+        <div class="list-name">${a.name}</div>
+        <div class="list-meta">${a.assignedZone?.city || '—'} / ${a.assignedZone?.zone || '—'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex:1;max-width:200px;">
+        <div class="prog-wrap"><div class="prog-fill" style="width:${Math.round(((a.closedDeals||0)/max)*100)}%;background:${TC[ci(i)]}"></div></div>
+        <span style="font-family:'Jost',sans-serif;font-size:12px;color:${TC[ci(i)]};font-weight:600;min-width:20px;">${a.closedDeals || 0}</span>
+      </div>
+    </div>`).join('');
+  }
+
+  async function loadAgentPotentialClients() {
+    const cedula = document.getElementById('agent-pc-val').value.trim();
+    if (!cedula) return;
+    const res = await fetch(`${API}/agents/${cedula}/potential-clients`).catch(() => null);
+    const list = document.getElementById('agent-potential-clients-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">No se encontro el asesor o no tiene inmuebles asignados</div></div>'; return; }
+    const clients = await res.json();
+    if (!clients.length) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#128101;</div><div style="font-size:13px;">Sin clientes potenciales para esta cartera</div></div>'; return; }
+    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${clients.length} cliente${clients.length !== 1 ? 's' : ''} potencial${clients.length !== 1 ? 'es' : ''} identificado${clients.length !== 1 ? 's' : ''}</div>` +
+            `<div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Cliente</th><th>Presupuesto</th><th>Tipo</th><th>Estado de busqueda</th></tr></thead>
+      <tbody>${clients.map((c, i) => `<tr>
+        <td style="color:${TC[ci(i)]};font-weight:600">${i + 1}</td>
+        <td><div style="display:flex;align-items:center;gap:8px;">
+          <div class="list-av" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${initials(c.name)}</div>
+          <span style="font-weight:500">${c.name}</span>
+        </div></td>
+        <td style="font-family:'Jost',sans-serif;">$${Number(c.budget || 0).toLocaleString()}</td>
+        <td><span class="badge badge-blue">${label(CLIENT_TYPE, c.clientType)}</span></td>
+        <td><span class="badge ${c.searchStatus === 'NEGOTIATING' ? 'badge-green' : c.searchStatus === 'ACTIVE' ? 'badge-blue' : 'badge-gray'}">${label(SEARCH_STATUS, c.searchStatus)}</span></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  // ── MOBILITY ─────────────────────────────────────
   function patternCard(p) {
-    const from = p.from?.label || p.from?.city || '—';
-    const to   = p.to?.label   || p.to?.city   || '—';
+    const from = formatZoneNode(p.from);
+    const to   = formatZoneNode(p.to);
     return `<div class="pattern-card">
-      <div class="pattern-from">${from}</div>
-      <div class="pattern-arrow">→</div>
-      <div class="pattern-to">${to}</div>
-      <div class="pattern-weight">${p.weight} conexiones</div>
-      ${p.operationCount>0?`<div class="pattern-ops">${p.operationCount} ops</div>`:''}
-    </div>`;
+    <div class="pattern-zone">${from || '—'}</div>
+    <div class="pattern-arrow">&#8594;</div>
+    <div class="pattern-zone">${to || '—'}</div>
+    <div class="pattern-weight">${p.weight} conexiones</div>
+    ${p.operationCount > 0 ? `<span class="badge badge-green">${p.operationCount} ops cerradas</span>` : ''}
+  </div>`;
+  }
+
+  function formatZoneNode(node) {
+    if (!node) return null;
+    if (node.label) return node.label;
+    const parts = [node.city, node.zone, node.neighborhoodName].filter(Boolean);
+    return parts.join(' / ');
   }
 
   async function loadMobility() {
     const [allRes, topRes, corrRes] = await Promise.all([
-      fetch(`${API}/zone-mobility`).catch(()=>null),
-      fetch(`${API}/zone-mobility/top-destinations`).catch(()=>null),
-      fetch(`${API}/zone-mobility/correlated`).catch(()=>null)
+      fetch(`${API}/zone-mobility`).catch(() => null),
+      fetch(`${API}/zone-mobility/top-destinations`).catch(() => null),
+      fetch(`${API}/zone-mobility/correlated`).catch(() => null)
     ]);
 
     if (allRes?.ok) {
       const all = await allRes.json();
       const list = document.getElementById('all-patterns-list');
-      list.innerHTML = all.length ? all.map(patternCard).join('') : '<div class="empty"><div class="empty-icon">🗺</div><div style="font-size:13px;">Sin patrones de movilidad aún</div></div>';
+      list.innerHTML = all.length ? all.map(patternCard).join('') : '<div class="empty"><div class="empty-ico">&#128506;</div><div style="font-size:13px;">Sin patrones de movilidad aun. Se generan automaticamente con las interacciones de los clientes.</div></div>';
     }
+
     if (topRes?.ok) {
       const top = await topRes.json();
-      const list = document.getElementById('top-destinations-list');
-      list.innerHTML = top.length ? top.slice(0,6).map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-        <div style="font-size:16px;">📍</div>
-        <div style="flex:1;font-size:13px;font-weight:500">${p.to?.label||p.to?.city||'—'}</div>
-        <div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted)">${p.weight} conexiones</div>
-      </div>`).join('') : '<div class="empty"><div style="font-size:13px;">Sin datos</div></div>';
+      const tlist = document.getElementById('top-destinations-list');
+      if (top.length) {
+        tlist.innerHTML = top.slice(0, 8).map((p, i) => `
+        <div class="list-row">
+          <div class="list-sq" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${i + 1}</div>
+          <div class="list-info">
+            <div class="list-name">${formatZoneNode(p.to) || '—'}</div>
+            <div class="list-meta">${p.weight} conexiones entrantes · ${p.operationCount} op${p.operationCount !== 1 ? 's' : ''} cerrada${p.operationCount !== 1 ? 's' : ''}</div>
+          </div>
+        </div>`).join('');
+        makeBarChart('chart-top-destinations',
+                top.slice(0, 8).map(p => formatZoneNode(p.to)?.slice(0, 14) || '—'),
+                top.slice(0, 8).map(p => p.weight)
+        );
+      } else {
+        document.getElementById('top-destinations-list').innerHTML = '<div class="empty"><div style="font-size:13px;">Sin datos</div></div>';
+      }
     }
+
     if (corrRes?.ok) {
       const corr = await corrRes.json();
-      const list = document.getElementById('correlated-patterns-list');
-      list.innerHTML = corr.length ? corr.slice(0,6).map(patternCard).join('') : '<div class="empty"><div style="font-size:13px;">Sin correlaciones aún</div></div>';
+      const clist = document.getElementById('correlated-patterns-list');
+      clist.innerHTML = corr.length ? corr.map(patternCard).join('') : '<div class="empty"><div style="font-size:13px;">Sin correlaciones con operaciones cerradas aun</div></div>';
     }
   }
 
-  // ── Historial de visitas por cliente ────────────────────────────────
-  async function loadClientHistory() {
-    const id = document.getElementById('history-client-id').value.trim();
-    if (!id) return;
-    const res = await fetch(`${API}/visits/client/${id}`).catch(()=>null);
-    const list = document.getElementById('visit-history-list');
-    if (!res?.ok) { list.innerHTML='<div class="empty"><div class="empty-icon">❌</div><div style="font-size:13px;">No se encontró el cliente</div></div>'; return; }
-    const visits = await res.json();
-    if (!visits.length) { list.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div style="font-size:13px;">Sin visitas registradas para este cliente</div></div>'; return; }
-    visits.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    list.innerHTML = `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:12px;">${visits.length} visita${visits.length!==1?'s':''} registrada${visits.length!==1?'s':''}</div>` +
-            visits.map(v=>`<div class="client-row">
-        <div style="font-size:20px;">${v.visitType==='VIP'?'⭐':'📅'}</div>
-        <div class="client-info">
-          <div class="client-name">${v.property?.address||v.property?.code||'—'}</div>
-          <div class="client-meta">${new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${label(VISIT_STATUS,v.status)} · Asesor: ${v.agent?.name||'—'}</div>
-        </div>
-        ${v.visitType==='VIP'?'<span style="font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(239,159,39,0.15);color:#EF9F27;font-family:\'Jost\',sans-serif;font-weight:500;">VIP</span>':''}
-      </div>`).join('');
+  async function loadPatternsFrom() {
+    const key = document.getElementById('from-zone-key').value.trim();
+    if (!key) return;
+    const res = await fetch(`${API}/zone-mobility/from/${encodeURIComponent(key)}`).catch(() => null);
+    const list = document.getElementById('from-patterns-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">Zona no encontrada o sin patrones</div></div>'; return; }
+    const patterns = await res.json();
+    list.innerHTML = patterns.length ? patterns.map(patternCard).join('') : '<div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Sin patrones salientes para esta zona</div></div>';
   }
 
-  function loadAll() {
-    loadAgentLoad();
+  async function loadPatternsTo() {
+    const key = document.getElementById('to-zone-key').value.trim();
+    if (!key) return;
+    const res = await fetch(`${API}/zone-mobility/to/${encodeURIComponent(key)}`).catch(() => null);
+    const list = document.getElementById('to-patterns-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">Zona no encontrada o sin patrones</div></div>'; return; }
+    const patterns = await res.json();
+    list.innerHTML = patterns.length ? patterns.map(patternCard).join('') : '<div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Sin patrones entrantes para esta zona</div></div>';
+  }
+
+  // ═══════════════════════════════════════════════
+  // INIT — load data and register pickers
+  // ═══════════════════════════════════════════════
+  async function initPickerData() {
+    const [pRes, cRes, aRes] = await Promise.all([
+      fetch(`${API}/properties`).catch(() => null),
+      fetch(`${API}/clients`).catch(() => null),
+      fetch(`${API}/agents`).catch(() => null)
+    ]);
+
+    if (pRes?.ok) allProps   = await pRes.json();
+    if (cRes?.ok) allClients = await cRes.json();
+    if (aRes?.ok) allAgents  = await aRes.json();
+
+    // Register all pickers
+    registerPicker('hist-client',   allClients, clientRender, null);
+    registerPicker('prop-clients',  allProps,   propRender,   null);
+    registerPicker('sim-prop',      allProps,   propRender,   null);
+    registerPicker('sim-client',    allClients, clientRender, null);
+    registerPicker('rec-client',    allClients, clientRender, null);
+    registerPicker('agent-pc',      allAgents,  agentRender,  null);
+  }
+
+  async function loadAll() {
+    await initPickerData();
     loadDemand();
-    loadClientsByBudget();
+    loadPotentialProps();
+    loadMostPotentialClients();
     loadClosingIntention();
+    loadClientsByBudget();
+    loadAgentLoad();
+    loadAgentPerformance();
     loadMobility();
   }
 
