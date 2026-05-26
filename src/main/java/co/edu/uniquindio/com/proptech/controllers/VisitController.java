@@ -104,9 +104,9 @@ public class VisitController {
     @PostMapping("/{id}/reschedule")
     public ResponseEntity<VisitDtoReturn> rescheduleVisit(
             @PathVariable String id,
-            @RequestBody HashTable<String, String> body) {
+            @RequestBody VisitDtoUpdate body) {
         Visit visit = visitService.getVisitById(id);
-        LocalDateTime newDate = LocalDateTime.parse(body.get("newDate"));
+        LocalDateTime newDate = body.getDate();
         return ResponseEntity.ok(visitMapper.toDto(visitService.rescheduleVisit(visit, newDate)));
     }
 
