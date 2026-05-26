@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/visits")
@@ -31,18 +33,6 @@ public class VisitController {
         this.visitService = visitService;
         this.visitMapper = visitMapper;
         this.structuresMappers = structuresMappers;
-    }
-
-    // ══════════════════════════════════════════════
-    // CRUD BÁSICO
-    // ══════════════════════════════════════════════
-
-    @PostMapping
-    public ResponseEntity<VisitDtoReturn> createVisit(
-            @Validated @RequestBody VisitDtoCreate dto) {
-        return ResponseEntity.ok(
-                visitMapper.toDto(visitService.registerVisit(visitMapper.toEntity(dto)))
-        );
     }
 
     @GetMapping("/{id}")
@@ -97,6 +87,27 @@ public class VisitController {
                         visitMapper::toDto
                 )
         );
+    }
+
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<VisitDtoReturn> confirmVisit(@PathVariable String id) {
+        Visit visit = visitService.getVisitById(id);
+        return ResponseEntity.ok(visitMapper.toDto(visitService.confirmVisit(visit)));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<VisitDtoReturn> cancelVisit(@PathVariable String id) {
+        Visit visit = visitService.getVisitById(id);
+        return ResponseEntity.ok(visitMapper.toDto(visitService.cancelVisit(visit)));
+    }
+
+    @PostMapping("/{id}/reschedule")
+    public ResponseEntity<VisitDtoReturn> rescheduleVisit(
+            @PathVariable String id,
+            @RequestBody HashTable<String, String> body) {
+        Visit visit = visitService.getVisitById(id);
+        LocalDateTime newDate = LocalDateTime.parse(body.get("newDate"));
+        return ResponseEntity.ok(visitMapper.toDto(visitService.rescheduleVisit(visit, newDate)));
     }
 
     @GetMapping("/client/{clientCedula}")

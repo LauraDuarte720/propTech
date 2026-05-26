@@ -6,6 +6,7 @@ import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.mappers.MapperCreate;
 import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.services.AgentService;
+import co.edu.uniquindio.com.proptech.services.VisitService;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,13 +25,14 @@ public class AgentController {
     private final StructuresMappers structuresMappers;
     private final MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper;
     private final MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper;
+    private final VisitService  visitService;
 
 
     public AgentController(AgentService agentService,
                            MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper,
                            MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper,
                            MapperCreate<SupportRequest, SupportRequestDtoCreate, SupportRequestDtoReturn> supportRequestMapper,
-                           StructuresMappers structuresMappers, MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper) {
+                           StructuresMappers structuresMappers, MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper, VisitService visitService) {
         this.agentService = agentService;
         this.agentMapper = agentMapper;
         this.visitMapper = visitMapper;
@@ -38,6 +40,7 @@ public class AgentController {
         this.structuresMappers = structuresMappers;
         this.geographicZoneMapper = geographicZoneMapper;
         this.propertyMapper = propertyMapper;
+        this.visitService = visitService;
     }
 
     // ══════════════════════════════════════════════
@@ -97,8 +100,23 @@ public class AgentController {
             @PathVariable String cedula,
             @Validated @RequestBody VisitDtoCreate dto) {
         Visit visit = visitMapper.toEntity(dto);
-        visit.setAgent(agentService.getAgentByCedula(cedula));
-        return ResponseEntity.ok(visitMapper.toDto(agentService.registerVisit(visit)));
+        Agent agent = agentService.getAgentByCedula(cedula);
+        return ResponseEntity.ok(visitMapper.toDto(agentService.registerVisit(agent,visit)));
+    }
+
+    @PostMapping("/{cedula}/visits/attend")
+    public ResponseEntity<VisitDtoReturn> attendVisit(@PathVariable String cedula) {
+        return ResponseEntity.ok(visitMapper.toDto(agentService.attendVisit(cedula)));
+    }
+
+    @GetMapping("/{cedula}/visits/history")
+    public ResponseEntity<List<VisitDtoReturn>> getAgentVisitHistory(@PathVariable String cedula) {
+        return ResponseEntity.ok(
+                structuresMappers.fromLinkedList(
+                        visitService.getAllAgentVisitHistory(cedula),
+                        visitMapper::toDto
+                )
+        );
     }
 
     // ══════════════════════════════════════════════
