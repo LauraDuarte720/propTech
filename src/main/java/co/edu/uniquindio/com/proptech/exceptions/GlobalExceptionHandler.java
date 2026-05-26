@@ -56,17 +56,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
-    @ExceptionHandler(IrreversiblePropertyUpdateException.class)
-    public ResponseEntity<ErrorResponse> handleIrreversibleUpdate(IrreversiblePropertyUpdateException ex) {
-        ErrorResponse response = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
-        response.getDetails().put("requiresConfirmation", true);
-        response.getDetails().put("irreversible", true);
-        response.getDetails().put("neighborhoodChange", ex.isNeighborhoodChange());
-        response.getDetails().put("agentChange", ex.isAgentChange());
-        response.getDetails().put("affectedProperties", ex.getAffectedProperties());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-    }
-
     // ══════════════════════════════════════════════
     // 401 UNAUTHORIZED
     // ══════════════════════════════════════════════
