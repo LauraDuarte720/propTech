@@ -34,10 +34,11 @@ public class AgentService {
     AdminActionService  adminActionService;
     GeographicZoneService geographicZoneService;
     PropertyService propertyService;
+    private final ClientService clientService;
 
     public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper,
                         PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers,
-                        AdminActionService adminActionService, GeographicZoneService geographicZoneService, @Lazy PropertyService propertyService) {
+                        AdminActionService adminActionService, GeographicZoneService geographicZoneService, @Lazy PropertyService propertyService, ClientService clientService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
@@ -47,6 +48,7 @@ public class AgentService {
         this.adminActionService = adminActionService;
         this.geographicZoneService = geographicZoneService;
         this.propertyService = propertyService;
+        this.clientService = clientService;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -113,6 +115,14 @@ public class AgentService {
     public Visit attendVisit(String agentId) {
         Agent agent = getAgentByCedula(agentId);
         Visit visit = agent.dequeueVisit();
+        if(visit != null) {
+            clientService.registerUserInteraction(UserInteraction.builder()
+                    .client(visit.getClient())
+                    .property(visit.getProperty())
+                    .interactionType(InteractionType.VISITED)
+                    .build());
+        }
+
         while (visit != null && visit.getStatus() == VisitStatus.CANCELED) {
             visit = agent.dequeueVisit();
         }
@@ -120,11 +130,13 @@ public class AgentService {
             visit.setStatus(VisitStatus.COMPLETED);
         }
         agentRepository.save(agent);
+
         return visit;
     }
 
 
     public PriorityQueue<Visit> getVisitsAgent(String idAgent) {
+        visitService.updateExpiredVisits();
         Agent agent = getAgentByCedula(idAgent);
         return agent.getScheduledVisits();
     }
