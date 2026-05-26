@@ -83,7 +83,7 @@ public class VisitService {
         validateTransition(visit.getStatus(), VisitStatus.RESCHEDULED);
         visit.setStatus(VisitStatus.RESCHEDULED);
         visit.setDate(newDate);
-        return  visitRepository.save(visit);
+        return visit;
     }
 
     public Visit cancelVisit(Visit visit) {
