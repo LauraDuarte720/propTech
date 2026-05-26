@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Carga datos de prueba al iniciar la aplicación.
@@ -414,6 +419,74 @@ public class DataLoader {
                         .build(),
                 agente4);
 
+        // ══════════════════════════════════════════════
+        // INMUEBLES EXTRA PARA LLENAR DATOS
+        // ══════════════════════════════════════════════
+        Property prop21 = registrarYPublicar(
+                Property.builder()
+                        .address("Avenida El Dorado # 45-12")
+                        .neighborhood(barrioElBosque)
+                        .propertyType(PropertyType.OFFICE)
+                        .purpose(Purpose.RENT)
+                        .price(4_000_000.0)
+                        .area(150.0)
+                        .numBedrooms(0)
+                        .numBathrooms(3)
+                        .build(),
+                agente1);
+
+        Property prop22 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 7 # 12-34")
+                        .neighborhood(barrioLaCastellana)
+                        .propertyType(PropertyType.APARTMENT)
+                        .purpose(Purpose.SALE)
+                        .price(350_000_000.0)
+                        .area(90.0)
+                        .numBedrooms(3)
+                        .numBathrooms(2)
+                        .build(),
+                agente2);
+
+        Property prop23 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 100 # 15-20")
+                        .neighborhood(barrioElPoblado)
+                        .propertyType(PropertyType.HOUSE)
+                        .purpose(Purpose.RENT)
+                        .price(6_000_000.0)
+                        .area(250.0)
+                        .numBedrooms(4)
+                        .numBathrooms(4)
+                        .build(),
+                agente3);
+
+        Property prop24 = registrarYPublicar(
+                Property.builder()
+                        .address("Calle 50 # 10-20")
+                        .neighborhood(barrioCiudadJardin)
+                        .propertyType(PropertyType.RETAIL_SPACE)
+                        .purpose(Purpose.SALE)
+                        .price(800_000_000.0)
+                        .area(120.0)
+                        .numBedrooms(0)
+                        .numBathrooms(2)
+                        .build(),
+                agente4);
+
+        Property prop25 = registrarYPublicar(
+                Property.builder()
+                        .address("Carrera 5 # 3-10")
+                        .neighborhood(barrioLaureles)
+                        .propertyType(PropertyType.LOT)
+                        .purpose(Purpose.SALE)
+                        .price(200_000_000.0)
+                        .area(500.0)
+                        .numBedrooms(0)
+                        .numBathrooms(0)
+                        .build(),
+                agenteSur);
+
         // Inmueble sin publicar (INACTIVE) — confirm=true, sin agente
         propertyService.registerProperty(
                 Property.builder()
@@ -509,6 +582,81 @@ public class DataLoader {
                 .build());
         cliente5.addInterestZone(zonaOccidenteCali);
 
+        Client cliente6 = clientService.registerClient(Client.builder()
+                .cedula("1093000006")
+                .name("Diego Lopez")
+                .username("diego.lopez")
+                .password("Diego123A")
+                .email("diego@email.com")
+                .phone("+57300200006")
+                .budget(350_000_000.0)
+                .minBedrooms(2)
+                .clientType(ClientType.BUYER)
+                .searchStatus(SearchStatus.ACTIVE)
+                .desiredPropertyType(PropertyType.APARTMENT)
+                .build());
+        cliente6.addInterestZone(zonaNorteArmenia);
+
+        Client cliente7 = clientService.registerClient(Client.builder()
+                .cedula("1093000007")
+                .name("Andrea Martinez")
+                .username("andrea.martinez")
+                .password("Andrea456A")
+                .email("andrea@email.com")
+                .phone("+57300200007")
+                .budget(5_000_000.0)
+                .minBedrooms(3)
+                .clientType(ClientType.TENANT)
+                .searchStatus(SearchStatus.ACTIVE)
+                .desiredPropertyType(PropertyType.HOUSE)
+                .build());
+        cliente7.addInterestZone(zonaOrienteMedellin);
+
+        Client cliente8 = clientService.registerClient(Client.builder()
+                .cedula("1093000008")
+                .name("Jorge Ruiz")
+                .username("jorge.ruiz")
+                .password("Jorge789A")
+                .email("jorge@email.com")
+                .phone("+57300200008")
+                .budget(900_000_000.0)
+                .minBedrooms(4)
+                .clientType(ClientType.INVESTOR)
+                .searchStatus(SearchStatus.ACTIVE)
+                .desiredPropertyType(PropertyType.RETAIL_SPACE)
+                .build());
+        cliente8.addInterestZone(zonaOccidenteCali);
+
+        Client cliente9 = clientService.registerClient(Client.builder()
+                .cedula("1093000009")
+                .name("Paula Silva")
+                .username("paula.silva")
+                .password("Paula321A")
+                .email("paula@email.com")
+                .phone("+57300200009")
+                .budget(250_000_000.0)
+                .minBedrooms(0)
+                .clientType(ClientType.BUYER)
+                .searchStatus(SearchStatus.ACTIVE)
+                .desiredPropertyType(PropertyType.LOT)
+                .build());
+        cliente9.addInterestZone(zonaSurArmenia);
+
+        Client cliente10 = clientService.registerClient(Client.builder()
+                .cedula("1093000010")
+                .name("Luis Diaz")
+                .username("luis.diaz")
+                .password("Luis654A")
+                .email("luis@email.com")
+                .phone("+57300200010")
+                .budget(4_500_000.0)
+                .minBedrooms(2)
+                .clientType(ClientType.TENANT)
+                .searchStatus(SearchStatus.ACTIVE)
+                .desiredPropertyType(PropertyType.OFFICE)
+                .build());
+        cliente10.addInterestZone(zonaNorteArmenia);
+
         // ══════════════════════════════════════════════
         // 6. INTERACCIONES
         // Regla: VISITED solo si hay visita real registrada en sección 7.
@@ -544,6 +692,26 @@ public class DataLoader {
         //            prop2: sin visita real → CONSULTED (era VISITED)
         registerInteraction(cliente5, prop5, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(20));
         registerInteraction(cliente5, prop2, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(18));
+
+        // --- Interacciones extra de los últimos 2 meses ---
+        registerInteraction(cliente6, prop21, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(55));
+        registerInteraction(cliente6, prop22, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(40));
+        registerInteraction(cliente6, prop22, InteractionType.SAVED,              LocalDateTime.now().minusDays(38));
+        registerInteraction(cliente6, prop22, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(30));
+
+        registerInteraction(cliente7, prop23, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(50));
+        registerInteraction(cliente7, prop23, InteractionType.RENTING_INTENTION,  LocalDateTime.now().minusDays(48));
+
+        registerInteraction(cliente8, prop24, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(45));
+        registerInteraction(cliente8, prop24, InteractionType.SAVED,              LocalDateTime.now().minusDays(40));
+        registerInteraction(cliente8, prop24, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(35));
+        registerInteraction(cliente8, prop24, InteractionType.NEGOTIATED,         LocalDateTime.now().minusDays(30));
+
+        registerInteraction(cliente9, prop25, InteractionType.CONSULTED,          LocalDateTime.now().minusDays(28));
+        registerInteraction(cliente9, prop25, InteractionType.BUYING_INTENTION,   LocalDateTime.now().minusDays(20));
+
+        registerInteraction(cliente10, prop21, InteractionType.CONSULTED,         LocalDateTime.now().minusDays(15));
+        registerInteraction(cliente10, prop21, InteractionType.RENTING_INTENTION, LocalDateTime.now().minusDays(10));
 
         // ══════════════════════════════════════════════
         // 7. VISITAS
@@ -587,6 +755,74 @@ public class DataLoader {
         registerVisitSafe(Visit.builder()
                 .client(cliente1).property(prop3).agent(agenteSur)
                 .date(LocalDateTime.now().plusDays(3))
+                .visitType(VisitType.NORMAL)
+                .build());
+
+        // --- Visitas extra de los últimos 2 meses ---
+        registerVisitSafe(Visit.builder()
+                .client(cliente6).property(prop22).agent(agente2)
+                .date(LocalDateTime.now().minusDays(32))
+                .visitType(VisitType.NORMAL)
+                .postVisitNotes("Muy interesado en el apartamento, revisará con el banco.")
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente7).property(prop23).agent(agente3)
+                .date(LocalDateTime.now().minusDays(49))
+                .visitType(VisitType.NORMAL)
+                .postVisitNotes("Le encantó la casa, lista para rentar.")
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente8).property(prop24).agent(agente4)
+                .date(LocalDateTime.now().minusDays(38))
+                .visitType(VisitType.VIP)
+                .postVisitNotes("Evalúa el local para una franquicia.")
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente8).property(prop24).agent(agente4)
+                .date(LocalDateTime.now().minusDays(32))
+                .visitType(VisitType.VIP)
+                .postVisitNotes("Segunda visita con arquitecto. Va a negociar.")
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente9).property(prop25).agent(agenteSur)
+                .date(LocalDateTime.now().minusDays(25))
+                .visitType(VisitType.NORMAL)
+                .postVisitNotes("El lote es ideal para su proyecto.")
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente10).property(prop21).agent(agente1)
+                .date(LocalDateTime.now().minusDays(12))
+                .visitType(VisitType.NORMAL)
+                .postVisitNotes("Le gustó la oficina, preguntará por adecuaciones.")
+                .build());
+
+        // Agendadas a futuro
+        registerVisitSafe(Visit.builder()
+                .client(cliente6).property(prop9).agent(agente1)
+                .date(LocalDateTime.now().plusDays(2))
+                .visitType(VisitType.NORMAL)
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente7).property(prop17).agent(agente3)
+                .date(LocalDateTime.now().plusDays(5))
+                .visitType(VisitType.NORMAL)
+                .build());
+        
+        registerVisitSafe(Visit.builder()
+                .client(cliente9).property(prop6).agent(agente1)
+                .date(LocalDateTime.now().plusDays(7))
+                .visitType(VisitType.VIP)
+                .build());
+
+        registerVisitSafe(Visit.builder()
+                .client(cliente10).property(prop4).agent(agente3)
+                .date(LocalDateTime.now().plusDays(10))
                 .visitType(VisitType.NORMAL)
                 .build());
 
@@ -641,6 +877,26 @@ public class DataLoader {
                         .agent(agente2)
                         .message("Necesito informacion sobre disponibilidad y parqueaderos.")
                         .date(LocalDateTime.now().minusMinutes(30))
+                        .build()
+        );
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente6)
+                        .property(prop22)
+                        .agent(agente2)
+                        .message("Necesito ayuda con el certificado de tradición y libertad.")
+                        .date(LocalDateTime.now().minusDays(28))
+                        .build()
+        );
+
+        agentService.registerSupportRequest(
+                SupportRequest.builder()
+                        .client(cliente8)
+                        .property(prop24)
+                        .agent(agente4)
+                        .message("Duda sobre los permisos de uso de suelo.")
+                        .date(LocalDateTime.now().minusDays(30))
                         .build()
         );
 
@@ -707,6 +963,67 @@ public class DataLoader {
                 .dateFinal(LocalDate.now().plusDays(15))
                 .build());
 
+        // --- Operaciones extra de los últimos 2 meses ---
+        Operation opExtra1 = operationService.registerOperation(Operation.builder()
+                .property(prop22)
+                .client(cliente6)
+                .agent(agente2)
+                .operationType(OperationType.SALE)
+                .value(345_000_000.0)
+                .dateInitial(LocalDate.now().minusDays(25))
+                .dateFinal(LocalDate.now().minusDays(5))
+                .build());
+        operationService.updateOperation(Operation.builder()
+                .id(opExtra1.getId())
+                .processStatus(ProcessStatus.CLOSED)
+                .build());
+
+        Operation opExtra2 = operationService.registerOperation(Operation.builder()
+                .property(prop23)
+                .client(cliente7)
+                .agent(agente3)
+                .operationType(OperationType.RENT)
+                .value(6_000_000.0)
+                .dateInitial(LocalDate.now().minusDays(45))
+                .dateFinal(LocalDate.now().plusMonths(12))
+                .build());
+        operationService.updateOperation(Operation.builder()
+                .id(opExtra2.getId())
+                .processStatus(ProcessStatus.CLOSED)
+                .build());
+
+        Operation opExtra3 = operationService.registerOperation(Operation.builder()
+                .property(prop24)
+                .client(cliente8)
+                .agent(agente4)
+                .operationType(OperationType.SALE)
+                .value(780_000_000.0)
+                .dateInitial(LocalDate.now().minusDays(28))
+                .build());
+
+        Operation opExtra4 = operationService.registerOperation(Operation.builder()
+                .property(prop25)
+                .client(cliente9)
+                .agent(agenteSur)
+                .operationType(OperationType.SALE)
+                .value(195_000_000.0)
+                .dateInitial(LocalDate.now().minusDays(18))
+                .dateFinal(LocalDate.now().minusDays(2))
+                .build());
+        operationService.updateOperation(Operation.builder()
+                .id(opExtra4.getId())
+                .processStatus(ProcessStatus.CLOSED)
+                .build());
+
+        Operation opExtra5 = operationService.registerOperation(Operation.builder()
+                .property(prop21)
+                .client(cliente10)
+                .agent(agente1)
+                .operationType(OperationType.RENT)
+                .value(3_900_000.0)
+                .dateInitial(LocalDate.now().minusDays(8))
+                .build());
+
         // ─── RESERVE_NO_CLOSURE ─────────────────────────────────────────────
         operationService.registerOperation(Operation.builder()
                 .property(prop6)
@@ -742,6 +1059,12 @@ public class DataLoader {
         if (pending != null) {
             agentService.cancelSupportRequest(agente1.getCedula(), pending.getId());
         }
+
+        generateMassiveData(
+                agente1, agente2, agente3, agente4, agenteSur,
+                barrioElBosque, barrioLaCastellana, barrioLaureles, barrioElPoblado, barrioCiudadJardin,
+                zonaNorteArmenia, zonaCentroArmenia, zonaSurArmenia, zonaOrienteMedellin, zonaOccidenteCali
+        );
 
         System.out.println("✅ DataLoader: datos de prueba cargados correctamente.");
 
@@ -789,6 +1112,173 @@ public class DataLoader {
                     .client(c).property(prop6).agent(agente1)
                     .date(LocalDateTime.now().minusDays(i))
                     .visitType(VisitType.NORMAL).build());
+        }
+    }
+
+    private void generateMassiveData(
+            Agent agente1, Agent agente2, Agent agente3, Agent agente4, Agent agenteSur,
+            Neighborhood bNorte, Neighborhood bCentro, Neighborhood bSur, Neighborhood bPoblado, Neighborhood bCiudadJardin,
+            GeographicZone zNorte, GeographicZone zCentro, GeographicZone zSur, GeographicZone zPoblado, GeographicZone zCiudadJardin
+    ) {
+        Random r = new Random(12345);
+        String[] names = {"Alejandro", "Maria", "Juan", "Ana", "Carlos", "Luis", "Marta", "Lucia", "Jose", "Pedro", "Sofia", "Diego", "Valentina", "Andres", "Camila", "Mateo", "Isabella", "Daniel", "Valeria", "David"};
+        String[] surnames = {"Gomez", "Perez", "Rodriguez", "Lopez", "Martinez", "Garcia", "Fernandez", "Gonzalez", "Diaz", "Torres", "Ramirez", "Ruiz", "Vargas", "Castro", "Ortiz"};
+
+        Agent[] agents = {agente1, agente2, agenteSur, agente3, agente4};
+        Neighborhood[] neighborhoods = {bNorte, bCentro, bSur, bPoblado, bCiudadJardin};
+        GeographicZone[] zones = {zNorte, zCentro, zSur, zPoblado, zCiudadJardin};
+
+        List<Property> generatedProperties = new ArrayList<>();
+        // 1. Generate 30 Properties
+        for (int i = 0; i < 30; i++) {
+            int agentIndex = r.nextInt(agents.length);
+            Agent agent = agents[agentIndex];
+            Neighborhood neighborhood = neighborhoods[agentIndex]; 
+            
+            PropertyType type = PropertyType.values()[r.nextInt(PropertyType.values().length)];
+            Purpose purpose = Purpose.values()[r.nextInt(Purpose.values().length)];
+            
+            double price = 100_000_000.0 + r.nextInt(900_000_000);
+            if (purpose == Purpose.RENT) {
+                price = 1_000_000.0 + r.nextInt(9_000_000);
+            }
+            
+            Property p = Property.builder()
+                    .address("Gen-Calle " + (r.nextInt(100)+1) + " # " + (r.nextInt(100)+1) + "-" + r.nextInt(100))
+                    .neighborhood(neighborhood)
+                    .propertyType(type)
+                    .purpose(purpose)
+                    .price(price)
+                    .area(40.0 + r.nextInt(200))
+                    .numBedrooms(type == PropertyType.LOT || type == PropertyType.RETAIL_SPACE || type == PropertyType.WAREHOUSE ? 0 : 1 + r.nextInt(4))
+                    .numBathrooms(type == PropertyType.LOT ? 0 : 1 + r.nextInt(3))
+                    .build();
+                    
+            generatedProperties.add(registrarYPublicar(p, agent));
+        }
+        
+        List<Client> generatedClients = new ArrayList<>();
+        // 2. Generate 50 Clients
+        for (int i = 0; i < 50; i++) {
+            String name = names[r.nextInt(names.length)] + " " + surnames[r.nextInt(surnames.length)];
+            ClientType cType = ClientType.values()[r.nextInt(ClientType.values().length)];
+            PropertyType dType = PropertyType.values()[r.nextInt(PropertyType.values().length)];
+            
+            double budget = 150_000_000.0 + r.nextInt(1_000_000_000);
+            if (cType == ClientType.TENANT) budget = 1_500_000.0 + r.nextInt(10_000_000);
+            
+            Client c = Client.builder()
+                    .cedula("1095000" + String.format("%03d", i))
+                    .name(name)
+                    .username("genuser" + i)
+                    .password("Pass123A")
+                    .email("genuser" + i + "@email.com")
+                    .phone("+57300300" + String.format("%04d", i))
+                    .budget(budget)
+                    .minBedrooms(dType == PropertyType.LOT ? 0 : 1 + r.nextInt(3))
+                    .clientType(cType)
+                    .searchStatus(SearchStatus.ACTIVE)
+                    .desiredPropertyType(dType)
+                    .build();
+                    
+            c = clientService.registerClient(c);
+            c.addInterestZone(zones[r.nextInt(zones.length)]);
+            generatedClients.add(c);
+        }
+        
+        // 3. Generate Interactions, Visits, Support Requests and Operations consistently
+        for (Client c : generatedClients) {
+            int numInteractions = 2 + r.nextInt(5); // 2 to 6 interactions per client
+            for (int j = 0; j < numInteractions; j++) {
+                Property p = generatedProperties.get(r.nextInt(generatedProperties.size()));
+                
+                // Find agent for property (from neighborhood match)
+                Agent pAgent = null;
+                for(int k=0; k < neighborhoods.length; k++) {
+                    if(p.getNeighborhood().getId().equals(neighborhoods[k].getId())) {
+                        pAgent = agents[k];
+                        break;
+                    }
+                }
+                if (pAgent == null) pAgent = agente1; // fallback
+                
+                int daysAgo = 1 + r.nextInt(60);
+                LocalDateTime interactionDate = LocalDateTime.now().minusDays(daysAgo);
+                
+                registerInteraction(c, p, InteractionType.CONSULTED, interactionDate);
+                
+                boolean visited = r.nextDouble() < 0.6;
+                if (visited) {
+                    LocalDateTime visitDate = interactionDate.plusDays(1 + r.nextInt(3));
+                    VisitType vType = r.nextDouble() < 0.2 ? VisitType.VIP : VisitType.NORMAL;
+                    
+                    if (visitDate.isBefore(LocalDateTime.now())) {
+                        registerVisitSafe(Visit.builder()
+                                .client(c).property(p).agent(pAgent)
+                                .date(visitDate)
+                                .visitType(vType)
+                                .postVisitNotes(r.nextBoolean() ? "Cliente muy interesado." : "Visita completada. No se convenció.")
+                                .build());
+                        
+                        InteractionType intent = p.getPurpose() == Purpose.RENT ? InteractionType.RENTING_INTENTION : InteractionType.BUYING_INTENTION;
+                        registerInteraction(c, p, intent, visitDate.plusHours(2));
+
+                        if (r.nextDouble() < 0.15) {
+
+                            if (p.getStatus() == PropertyStatus.ACTIVE) {
+
+                                agentService.registerSupportRequest(
+                                        SupportRequest.builder()
+                                                .client(c)
+                                                .property(p)
+                                                .agent(pAgent)
+                                                .message("Solicito más información técnica y financiera sobre la propiedad.")
+                                                .date(visitDate.plusDays(1))
+                                                .build());
+                            }
+                        }
+
+                        if (r.nextDouble() < 0.1) {
+
+                            if (p.getStatus() != PropertyStatus.ACTIVE) {
+                                continue;
+                            }
+
+                            OperationType opType = p.getPurpose() == Purpose.RENT
+                                    ? OperationType.RENT
+                                    : OperationType.SALE;
+
+                            double val = p.getPrice() * (0.9 + (r.nextDouble() * 0.1));
+
+                            Operation op = operationService.registerOperation(Operation.builder()
+                                    .property(p)
+                                    .client(c)
+                                    .agent(pAgent)
+                                    .operationType(opType)
+                                    .value(val)
+                                    .dateInitial(visitDate.toLocalDate().plusDays(2))
+                                    .build());
+
+                            if (r.nextDouble() < 0.5) {
+                                operationService.updateOperation(Operation.builder()
+                                        .id(op.getId())
+                                        .processStatus(ProcessStatus.CLOSED)
+                                        .build());
+                            }
+                        }
+                    } else {
+                        registerVisitSafe(Visit.builder()
+                                .client(c).property(p).agent(pAgent)
+                                .date(visitDate)
+                                .visitType(vType)
+                                .build());
+                    }
+                } else {
+                    if (r.nextBoolean()) {
+                        registerInteraction(c, p, InteractionType.SAVED, interactionDate.plusDays(1));
+                    }
+                }
+            }
         }
     }
 
