@@ -4,13 +4,16 @@ import co.edu.uniquindio.com.proptech.domain.enums.City;
 import co.edu.uniquindio.com.proptech.domain.enums.VisitStatus;
 import co.edu.uniquindio.com.proptech.domain.enums.VisitType;
 import co.edu.uniquindio.com.proptech.domain.enums.Zone;
+import co.edu.uniquindio.com.proptech.domain.model.Agent;
 import co.edu.uniquindio.com.proptech.domain.model.Visit;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.*;
 import co.edu.uniquindio.com.proptech.repositories.VisitRepository;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
+import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,39 +28,28 @@ public class VisitService {
         this.visitRepository = visitRepository;
     }
 
-    public Visit registerVisit(Visit visit) {
+    public Visit registerVisit(Agent agent, Visit visit) {
         boolean exists = visitRepository.findById(visit.getId()).isPresent();
         if (exists) {
             throw new VisitAlreadyExists("id", visit.getId());
         }
-
+        validateNoSchedulingConflict(agent, visit);
         visit.setId(CodeGenerator.generateVisitCode());
         visit.setCreatedAt(LocalDateTime.now());
-
-        try {
-            validateNoSchedulingConflict(visit);
             visit.setStatus(VisitStatus.PENDING);
-        } catch (VipVisitDisplacementException e) {
-            visit.setStatus(VisitStatus.PENDING);
-            visitRepository.save(visit);
-            throw e;
-        }
-
         return visitRepository.save(visit);
     }
 
-    private void validateNoSchedulingConflict(Visit visit) {
-        LinkedList<Visit> agentVisits = visitRepository.getVisitsByAgent(visit.getAgent().getCedula());
 
+    private void validateNoSchedulingConflict(Agent agent, Visit visit) {
+        PriorityQueue<Visit> agentVisits = agent.getScheduledVisits();
         for (Visit v : agentVisits) {
             if (v.getStatus() == VisitStatus.CANCELED ||
                     v.getStatus() == VisitStatus.COMPLETED) continue;
-
             long diff = Math.abs(Duration.between(v.getDate(), visit.getDate()).toMinutes());
             if (diff < 60) {
                 if (visit.getVisitType() == VisitType.VIP) {
                     v.setStatus(VisitStatus.PENDINGRESCHEDULE);
-                    visitRepository.update(v);
                     throw new VipVisitDisplacementException(
                             visit.getAgent().getCedula(),
                             v.getId()
@@ -71,11 +63,13 @@ public class VisitService {
         }
     }
 
+
     public Visit updateVisit(Visit visit) {
         return visitRepository.findById(visit.getId()).map(existing -> {
-            Optional.ofNullable(visit.getDate()).ifPresent(existing::setDate);
             Optional.ofNullable(visit.getClient()).ifPresent(existing::setClient);
             Optional.ofNullable(visit.getProperty()).ifPresent(existing::setProperty);
+            Optional.ofNullable(visit.getVisitType()).ifPresent(existing::setVisitType);
+            validateNoSchedulingConflict(visit.getAgent(), existing);
             Optional.ofNullable(visit.getStatus()).ifPresent(newStatus -> {
                 validateTransition(existing.getStatus(), newStatus);
                 existing.setStatus(newStatus);
@@ -83,6 +77,25 @@ public class VisitService {
             Optional.ofNullable(visit.getPostVisitNotes()).ifPresent(existing::setPostVisitNotes);
             return visitRepository.update(existing);
         }).orElseThrow(() -> new VisitDoesNotExist("id", visit.getId()));
+    }
+
+    public Visit rescheduleVisit(Visit visit, LocalDateTime newDate) {
+        validateTransition(visit.getStatus(), VisitStatus.RESCHEDULED);
+        visit.setStatus(VisitStatus.RESCHEDULED);
+        visit.setDate(newDate);
+        return  visitRepository.save(visit);
+    }
+
+    public Visit cancelVisit(Visit visit) {
+        validateTransition(visit.getStatus(), VisitStatus.CANCELED);
+        visit.setStatus(VisitStatus.CANCELED);
+        return visit;
+    }
+
+    public Visit confirmVisit(Visit visit) {
+        validateTransition(visit.getStatus(), VisitStatus.CONFIRMED);
+        visit.setStatus(VisitStatus.CONFIRMED);
+        return visit;
     }
 
     public void deleteVisit(String visitId) {
@@ -95,6 +108,10 @@ public class VisitService {
 
     public LinkedList<Visit> getAllVisits() {
         return visitRepository.getAllVisits();
+    }
+
+    public LinkedList<Visit> getAllAgentVisitHistory(String agentCedula) {
+        return visitRepository.getVisitsByAgent(agentCedula);
     }
 
     public Visit getVisitById(String id) {
