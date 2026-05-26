@@ -7,6 +7,7 @@ import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.mappers.MapperOnlyDto;
 import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.services.RecommendationService;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,13 +56,62 @@ public class RecommendationController {
         );
     }
 
-    // Propiedades similares a una propiedad dada (colaborativo por co-visita)
+    // Propiedades similares a una propiedad dada\
     @GetMapping("/property/{propertyCode}/similar")
     public ResponseEntity<List<PropertyDtoReturn>> getSimilarProperties(
             @PathVariable String propertyCode) {
         return ResponseEntity.ok(
                 structuresMappers.fromArrayList(
                         recommendationService.getSimilarProperties(propertyCode),
+                        propertyMapper::toDto
+                )
+        );
+    }
+
+
+    // Clientes potenciales para una propiedad específica
+    @GetMapping("/property/{propertyCode}/potential-clients")
+    public ResponseEntity<List<ClientDtoReturn>> getPotentialClientsForProperty(
+            @PathVariable String propertyCode) {
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        recommendationService.getPotentialClientsForProperty(propertyCode),
+                        clientMapper::toDto
+                )
+        );
+    }
+
+    // Clientes potenciales para un grupo de propiedades (body: lista de códigos)
+    @PostMapping("/properties/potential-clients")
+    public ResponseEntity<List<ClientDtoReturn>> getPotentialClientsForProperties(
+            @RequestBody List<String> propertyCodes) {
+        ArrayList<String> codes = new ArrayList<>();
+        propertyCodes.forEach(codes::add);
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        recommendationService.getPotentialClientsForProperties(codes),
+                        clientMapper::toDto
+                )
+        );
+    }
+
+    // Clientes más potenciales del sistema completo
+    @GetMapping("/clients/most-potential")
+    public ResponseEntity<List<ClientDtoReturn>> getMostPotentialClients() {
+        return ResponseEntity.ok(
+                structuresMappers.fromPriorityQueue(
+                        recommendationService.getMostPotentialClients(),
+                        clientMapper::toDto
+                )
+        );
+    }
+
+    // Inmuebles con mayor potencial de venta (basado en interacciones del grafo)
+    @GetMapping("/properties/most-potential")
+    public ResponseEntity<List<PropertyDtoReturn>> getMostPotentialProperties() {
+        return ResponseEntity.ok(
+                structuresMappers.fromPriorityQueue(
+                        recommendationService.getMostPotentialProperties(),
                         propertyMapper::toDto
                 )
         );
