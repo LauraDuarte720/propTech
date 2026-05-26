@@ -29,6 +29,11 @@ public class AdminActionLogRepositoryImpl implements AdminActionLogRepository {
         return propTech.getAdminActionHistory();
     }
 
+    @Override
+    public Stack<AdminActionLog> getAdminUndoHistory() {
+        return propTech.getAdminUndoHistory();
+    }
+
 
     @Override
     public boolean isEmpty() {

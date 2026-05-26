@@ -10,4 +10,5 @@ public interface AdminActionLogRepository {
     boolean isEmpty();
     AdminActionLog pop();
     AdminActionLog peekUndo();
+    Stack<AdminActionLog> getAdminUndoHistory();
 }
