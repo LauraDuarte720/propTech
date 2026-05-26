@@ -607,7 +607,7 @@
     if(!date){ptToast('warning','Fecha requerida','Selecciona una nueva fecha');return;}
     const res=await fetch(`${API}/visits/${currentPopupVisit.id}/reschedule`,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({newDate:date})
+      body:JSON.stringify({date:date})
     }).catch(()=>null);
     if(res?.ok){ptToast('success','Reprogramada','La visita fue reprogramada');closePopup();loadData();}
     else if(res){const e=await res.json().catch(()=>({}));ptToast('error','Error',e.message||'No se pudo reprogramar');}
@@ -710,13 +710,14 @@
       propertyId:document.getElementById('v-prop').value,
       clientId:  document.getElementById('v-client').value,
       date:      document.getElementById('v-date').value,
-      visitType: document.getElementById('v-type').value
-      // agentId lo setea el controller desde el path
+      visitType: document.getElementById('v-type').value,
+      agentId: user.cedula
+
     };
     const res=await fetch(`${API}/agents/${user.cedula}/visits`,{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
     }).catch(()=>null);
-    if(res?.ok){ptToast('success','Visita agendada','Se añadió a tu cola de prioridad');closeNewVisit();loadData();}
+    if(res?.ok){ptToast('success','Visita agendada','La visita ha sido agendada correctamente');closeNewVisit();loadData();}
     else if(res){const e=await res.json().catch(()=>({}));ptToast('error','Error al agendar',e.message||JSON.stringify(e.details||{}));}
     else{closeNewVisit();loadData();}
   }
