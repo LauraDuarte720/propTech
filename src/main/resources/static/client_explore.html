@@ -638,6 +638,186 @@
     populateSelect('r-z-city', CITY);
     populateSelect('r-z-zone', ZONE);
     loadProps();
+
+</script>
+<!-- ═══ CHAT BOT FLOTANTE ═══ -->
+<div id="chat-bubble" onclick="toggleChat()"
+     style="position:fixed;bottom:28px;right:28px;width:52px;height:52px;
+            border-radius:50%;background:var(--accent);color:white;
+            display:flex;align-items:center;justify-content:center;
+            font-size:22px;cursor:pointer;z-index:400;
+            box-shadow:0 4px 20px rgba(74,111,227,0.4);
+            transition:transform 0.2s;">
+    💬
+</div>
+
+<div id="chat-panel"
+     style="display:none;position:fixed;bottom:92px;right:28px;
+            width:360px;height:520px;background:white;
+            border-radius:16px;z-index:400;
+            box-shadow:0 8px 40px rgba(0,0,0,0.18);
+            border:1px solid var(--border);
+            flex-direction:column;overflow:hidden;">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--navy),#1e2d6b);
+              padding:16px 20px;display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;
+                background:rgba(255,255,255,0.15);
+                display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
+        <div>
+            <div style="color:white;font-size:14px;font-weight:500;">Asistente PropTech</div>
+            <div style="color:rgba(255,255,255,0.5);font-family:'Jost',sans-serif;font-size:11px;">
+                Powered by Ollama · phi3
+            </div>
+        </div>
+        <button onclick="toggleChat()"
+                style="margin-left:auto;background:none;border:none;
+                   color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;">×</button>
+    </div>
+
+    <!-- Mensajes -->
+    <div id="chat-messages"
+         style="flex:1;overflow-y:auto;padding:16px;
+              display:flex;flex-direction:column;gap:10px;">
+        <div class="chat-msg bot">
+            Hola 👋 Soy el asistente de PropTech. Puedo ayudarte con dudas sobre inmuebles,
+            arrendamientos, compras y más. ¿En qué te puedo ayudar?
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div style="padding:12px;border-top:1px solid var(--border);
+              display:flex;gap:8px;align-items:center;">
+        <input id="chat-input" type="text"
+               placeholder="Escribe tu pregunta..."
+               onkeydown="if(event.key==='Enter')sendChat()"
+               style="flex:1;padding:10px 14px;border-radius:8px;
+                  border:1px solid var(--border);background:var(--bg);
+                  font-family:'Outfit',sans-serif;font-size:13px;
+                  color:var(--text);outline:none;">
+        <button onclick="sendChat()" id="chat-send-btn"
+                style="width:38px;height:38px;border-radius:8px;
+                   background:var(--accent);color:white;border:none;
+                   cursor:pointer;font-size:16px;display:flex;
+                   align-items:center;justify-content:center;">➤</button>
+    </div>
+</div>
+
+<style>
+    .chat-msg {
+        max-width: 82%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-family: 'Jost', sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+    .chat-msg.bot {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+    }
+    .chat-msg.user {
+        background: var(--accent);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+    .chat-msg.typing {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        align-self: flex-start;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+    #chat-bubble:hover { transform: scale(1.08); }
+</style>
+
+<script>
+    // ── Sistema prompt con contexto de PropTech ──────────────────────
+    const CHAT_SYSTEM = `Eres un asistente inmobiliario virtual de PropTech,
+una plataforma colombiana de compra, venta y arriendo de inmuebles.
+Responde siempre en español, de forma clara y concisa (máximo 3 párrafos).
+Puedes ayudar con: tipos de inmuebles, procesos de compra/arriendo,
+documentación necesaria, preguntas sobre la plataforma y consejos generales.
+Si te preguntan algo fuera del tema inmobiliario, redirige amablemente.`;
+
+    let chatHistory = [];
+    let chatOpen    = false;
+
+    function toggleChat() {
+        chatOpen = !chatOpen;
+        const panel  = document.getElementById('chat-panel');
+        const bubble = document.getElementById('chat-bubble');
+        panel.style.display  = chatOpen ? 'flex' : 'none';
+        bubble.textContent   = chatOpen ? '×' : '💬';
+        if (chatOpen) document.getElementById('chat-input').focus();
+    }
+
+    async function sendChat() {
+        const input = document.getElementById('chat-input');
+        const text  = input.value.trim();
+        if (!text) return;
+
+        input.value = '';
+        appendMessage(text, 'user');
+        chatHistory.push({ role: 'user', content: text });
+
+        const typingId = appendMessage('Escribiendo...', 'typing');
+        document.getElementById('chat-send-btn').disabled = true;
+
+        try {
+            // Reemplaza el fetch de Ollama por este
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer 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'
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.1-8b-instant',  // rápido y gratis
+                    messages: [
+                        { role: 'system', content: CHAT_SYSTEM },
+                        ...chatHistory
+                    ]
+                })
+            });
+
+            const data  = await res.json();
+            const reply = data.choices?.[0]?.message?.content || 'Sin respuesta.';
+            chatHistory.push({ role: 'assistant', content: reply });
+            appendMessage(reply, 'bot');
+
+        } catch (err) {
+            removeMessage(typingId);
+            appendMessage('⚠️ No pude conectar con el asistente. Verifica que Ollama esté corriendo.', 'bot');
+            console.error('Ollama error:', err);
+        }
+
+        document.getElementById('chat-send-btn').disabled = false;
+        document.getElementById('chat-input').focus();
+    }
+
+    function appendMessage(text, type) {
+        const id       = 'msg-' + Date.now() + Math.random();
+        const messages = document.getElementById('chat-messages');
+        const div      = document.createElement('div');
+        div.id         = id;
+        div.className  = `chat-msg ${type}`;
+        div.textContent = text;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return id;
+    }
+
+    function removeMessage(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
 </script>
 </body>
 </html>
