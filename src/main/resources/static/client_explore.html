@@ -208,7 +208,15 @@
             <div class="form-group"><label>Cédula</label><input type="text" id="r-cedula" placeholder="Número de cédula"></div>
             <div class="form-group"><label>Nombre completo</label><input type="text" id="r-name" placeholder="Tu nombre"></div>
             <div class="form-group"><label>Username</label><input type="text" id="r-username" placeholder="nombre.usuario"></div>
-            <div class="form-group"><label>Contraseña</label><input type="password" id="r-password" placeholder="Mínimo 8 caracteres"></div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="r-password" placeholder="Mínimo 8 caracteres"
+                       oninput="validatePassword(this)">
+                <span id="r-password-hint"
+                      style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;">
+        Mínimo 8 caracteres, debe incluir una mayúscula y un número
+    </span>
+            </div>
             <div class="form-group"><label>Email</label><input type="email" id="r-email" placeholder="correo@ejemplo.com"></div>
             <div class="form-group"><label>Teléfono</label><input type="text" id="r-phone" placeholder="+57 300 000 0000"></div>
             <div class="form-group"><label>Presupuesto máximo</label><input type="number" id="r-budget" placeholder="0"></div>
@@ -221,6 +229,47 @@
             </div>
             <div class="form-group form-full"><label>Estado de búsqueda</label>
                 <select id="r-search-status"></select>
+            </div>
+            <!-- Zonas de interés en registro -->
+            <div class="form-group form-full" style="margin-top:4px;">
+                <label>Zonas de interés (opcional)</label>
+                <div id="r-zones-tags"
+                     style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;margin-bottom:10px;">
+        <span id="r-no-zones-msg"
+              style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">
+            Sin zonas añadidas
+        </span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;
+                background:var(--bg);border-radius:8px;padding:10px;border:1px solid var(--border);">
+                    <div class="form-group" style="margin:0">
+                        <label>Ciudad</label>
+                        <select id="r-z-city"
+                                style="padding:8px 10px;background:white;border:1px solid var(--border);
+                           border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;
+                           color:var(--text);outline:none;">
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label>Zona</label>
+                        <select id="r-z-zone"
+                                style="padding:8px 10px;background:white;border:1px solid var(--border);
+                           border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;
+                           color:var(--text);outline:none;">
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0">
+                        <label>Barrio (opcional)</label>
+                        <input type="text" id="r-z-neighborhood" placeholder="Ej: Laureles"
+                               style="padding:8px 10px;background:white;border:1px solid var(--border);
+                          border-radius:7px;font-family:'Outfit',sans-serif;font-size:13px;
+                          color:var(--text);outline:none;">
+                    </div>
+                    <button class="btn btn-primary" onclick="addRegisterZone()"
+                            style="height:36px;white-space:nowrap;font-size:12px;">
+                        + Agregar
+                    </button>
+                </div>
             </div>
         </div>
         <div class="modal-actions">
@@ -280,6 +329,51 @@
             const btn = document.getElementById(`fav-${code}`);
             if (btn) { btn.textContent = '❤️'; btn.classList.add('saved'); btn.disabled = true; }
         });
+    }
+
+    // ── Zonas de interés en registro ─────────────────────────────────
+    let registerZones = [];
+
+    function addRegisterZone() {
+        const city         = document.getElementById('r-z-city').value;
+        const zone         = document.getElementById('r-z-zone').value;
+        const neighborhood = document.getElementById('r-z-neighborhood').value.trim();
+
+        const exists = registerZones.some(z =>
+            z.city === city && z.zone === zone &&
+            (z.nameNeighborhood || '') === neighborhood
+        );
+        if (exists) { alert('Ya agregaste esa zona'); return; }
+
+        registerZones.push({ city, zone, nameNeighborhood: neighborhood || null });
+        document.getElementById('r-z-neighborhood').value = '';
+        renderRegisterZones();
+    }
+
+    function removeRegisterZone(index) {
+        registerZones.splice(index, 1);
+        renderRegisterZones();
+    }
+
+    function renderRegisterZones() {
+        const container = document.getElementById('r-zones-tags');
+        if (!registerZones.length) {
+            container.innerHTML = `<span id="r-no-zones-msg"
+            style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);">
+            Sin zonas añadidas</span>`;
+            return;
+        }
+        container.innerHTML = registerZones.map((z, i) => `
+        <div style="display:flex;align-items:center;gap:5px;padding:5px 11px;
+                    border-radius:99px;background:rgba(74,111,227,0.1);
+                    border:1px solid rgba(74,111,227,0.2);
+                    font-family:'Jost',sans-serif;font-size:12px;color:var(--accent);">
+            📍 ${z.nameNeighborhood ? z.nameNeighborhood + ' · ' : ''}${label(ZONE, z.zone)} · ${label(CITY, z.city)}
+            <button onclick="removeRegisterZone(${i})"
+                    style="background:none;border:none;cursor:pointer;
+                           color:var(--accent);font-size:14px;line-height:1;
+                           padding:0;margin-left:2px;">×</button>
+        </div>`).join('');
     }
 
     async function loadProps() {
@@ -503,17 +597,36 @@
             desiredPropertyType: document.getElementById('r-prop-type').value,
             searchStatus:        document.getElementById('r-search-status').value
         };
+
         const res = await fetch(`${API}/clients`, {
-            method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
-        if (res.ok) {
-            closeRegister();
-            alert('Cuenta creada. Ahora puedes iniciar sesión.');
-            window.location.href = 'proptech_login.html';
-        } else {
+
+        if (!res.ok) {
             const e = await res.json();
-            alert(e.message||'Error al crear cuenta');
+            alert(e.message || 'Error al crear cuenta');
+            return;
         }
+
+        // Si hay zonas de interés, guardarlas en un segundo llamado
+        if (registerZones.length > 0) {
+            const zonesRes = await fetch(`${API}/clients/${body.cedula}/interest-zones`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(registerZones)
+            });
+            if (!zonesRes.ok) {
+                // No bloqueamos el registro por esto, solo avisamos
+                console.warn('Cuenta creada pero no se pudieron guardar las zonas de interés.');
+            }
+        }
+
+        registerZones = []; // limpiar para la próxima vez
+        closeRegister();
+        alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
+        window.location.href = 'proptech_login.html';
     }
 
     populateSelect('f-type', PROPERTY_TYPE, 'Tipo de inmueble');
@@ -522,7 +635,8 @@
     populateSelect('r-client-type', CLIENT_TYPE);
     populateSelect('r-prop-type', PROPERTY_TYPE);
     populateSelect('r-search-status', SEARCH_STATUS);
-
+    populateSelect('r-z-city', CITY);
+    populateSelect('r-z-zone', ZONE);
     loadProps();
 </script>
 </body>

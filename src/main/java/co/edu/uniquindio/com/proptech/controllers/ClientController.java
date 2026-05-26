@@ -5,6 +5,7 @@ import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.mappers.MapperCreate;
 import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
+import co.edu.uniquindio.com.proptech.mappers.impl.GeographicZoneMapper;
 import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.services.ClientService;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
@@ -23,17 +24,19 @@ public class ClientController {
     private final MapperCreate<UserInteraction, UserInteractionDtoCreate, UserInteractionDtoReturn> userInteractionMapper;
     private final MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper;
     private final StructuresMappers structuresMappers;
+    private final GeographicZoneMapper geographicZoneMapper;
 
     public ClientController(ClientService clientService,
                             MapperCrud<Client, ClientDtoCreate, ClientDtoUpdate, ClientDtoReturn> clientMapper,
                             MapperCreate<UserInteraction, UserInteractionDtoCreate, UserInteractionDtoReturn> userInteractionMapper,
                             MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper,
-                            StructuresMappers structuresMappers) {
+                            StructuresMappers structuresMappers, GeographicZoneMapper geographicZoneMapper) {
         this.clientService = clientService;
         this.clientMapper = clientMapper;
         this.userInteractionMapper = userInteractionMapper;
         this.propertyMapper = propertyMapper;
         this.structuresMappers = structuresMappers;
+        this.geographicZoneMapper = geographicZoneMapper;
     }
 
     // CRUD BÁSICO
@@ -64,9 +67,23 @@ public class ClientController {
     public ResponseEntity<ClientDtoReturn> updateInterestZones(
             @PathVariable String cedula,
             @RequestBody List<GeographicZoneDtoCreate> zoneDtos) {
+        ArrayList<GeographicZoneDtoCreate> customList = new ArrayList<>();
+        for (GeographicZoneDtoCreate dto : zoneDtos) {
+            customList.add(dto);
+        }
         return ResponseEntity.ok(
-                clientMapper.toDto(clientService.updateInterestZones(cedula, (ArrayList<GeographicZoneDtoCreate>) zoneDtos))
+                clientMapper.toDto(clientService.updateInterestZones(cedula, customList))
         );
+    }
+
+    @GetMapping("/{cedula}/interest-zones")
+    public ResponseEntity<List<GeographicZoneDtoReturn>> getInterestZones(
+            @PathVariable String cedula) {
+        Client client = clientService.getClientByCedula(cedula);
+
+        return ResponseEntity.ok(structuresMappers.fromArrayList(client.getInterestZones(), geographicZoneMapper));
+
+
     }
 
     @PatchMapping("/{cedula}")
