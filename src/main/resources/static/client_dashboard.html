@@ -1404,12 +1404,70 @@
     ]);
     if (favsRes?.ok) {
       const favs = await favsRes.json();
-      favs.forEach(p => savedProps.add(p.code));
-      document.getElementById('s-favs').textContent = favs.length;
+      // Eliminar duplicados por código
+      const uniqueFavsMap = new Map();
+
+      favs.forEach(p => {
+        uniqueFavsMap.set(p.code, p);
+      });
+
+      const uniqueFavs = Array.from(uniqueFavsMap.values());
+
+// Obtener interacciones
+      const interactionsRes = await fetch(`${API}/clients/${user.cedula}/interactions`).catch(() => null);
+
+      // Analizar historial SAVED vs DISCARDED
+      let savedDates = {};
+      let discardedDates = {};
+
+      if (interactionsRes?.ok) {
+        const interactions = await interactionsRes.json();
+
+        interactions.forEach(i => {
+          const code = i.property?.code;
+          if (!code) return;
+
+          const ts = new Date(i.timestamp).getTime();
+
+          if (i.interactionType === 'SAVED') {
+            if (!savedDates[code] || ts > savedDates[code]) {
+              savedDates[code] = ts;
+            }
+          }
+
+          if (i.interactionType === 'DISCARDED') {
+            if (!discardedDates[code] || ts > discardedDates[code]) {
+              discardedDates[code] = ts;
+            }
+          }
+        });
+      }
+
+// Solo mostrar favoritos cuyo último SAVED sea más reciente que el último DISCARDED
+      const activeFavs = uniqueFavs.filter(p => {
+        const savedTs = savedDates[p.code];
+        const discardedTs = discardedDates[p.code];
+
+        // Nunca fue guardado
+        if (!savedTs) return false;
+
+        // Nunca fue descartado
+        if (!discardedTs) return true;
+
+        // El último guardado es más reciente que el descarte
+        return savedTs > discardedTs;
+      });
+
+      savedProps.clear();
+
+      activeFavs.forEach(p => savedProps.add(p.code));
+
+      document.getElementById('s-favs').textContent = activeFavs.length;
+
       const grid = document.getElementById('favs-grid');
-      // showDiscard=true para mostrar botón de quitar favorito
-      grid.innerHTML = favs.length
-              ? favs.map(p => renderPropCard(p, null, true)).join('')
+
+      grid.innerHTML = activeFavs.length
+              ? activeFavs.map(p => renderPropCard(p, null, true)).join('')
               : '<div class="empty"><div class="empty-icon">❤️</div><div class="empty-title">Sin favoritos aún</div></div>';
     }
     if (relatedRes?.ok) {
