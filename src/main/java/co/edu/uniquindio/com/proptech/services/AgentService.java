@@ -112,26 +112,33 @@ public class AgentService {
         agent.enqueueVisit(saved);
         return saved;
     }
+
+
     public Visit attendVisit(String agentId) {
         Agent agent = getAgentByCedula(agentId);
-        Visit visit = agent.dequeueVisit();
-        if(visit != null) {
-            clientService.registerUserInteraction(UserInteraction.builder()
-                    .client(visit.getClient())
-                    .property(visit.getProperty())
-                    .interactionType(InteractionType.VISITED)
-                    .build());
+        if (!agent.hasVisits()) {
+            throw new AgentHasNoVisitsException(agentId);
         }
-
-        while (visit != null && visit.getStatus() == VisitStatus.CANCELED) {
-            visit = agent.dequeueVisit();
+        while (agent.hasVisits() && shouldDiscard(agent.peekNextVisit())) {
+            agent.dequeueVisit();
         }
-        if (visit != null) {
-            visit.setStatus(VisitStatus.COMPLETED);
-        }
+        if (!agent.hasVisits()) return null;
+        Visit visit = agent.peekNextVisit();
+        visitService.validateTransition(visit.getStatus(), VisitStatus.COMPLETED);
+        agent.dequeueVisit();
+        visit.setStatus(VisitStatus.COMPLETED);
+        clientService.registerUserInteraction(UserInteraction.builder()
+                .client(visit.getClient())
+                .property(visit.getProperty())
+                .interactionType(InteractionType.VISITED)
+                .build());
         agentRepository.save(agent);
-
         return visit;
+    }
+    private boolean shouldDiscard(Visit visit) {
+        return visit.getStatus() == VisitStatus.CANCELED
+                || visit.getStatus() == VisitStatus.EXPIRED
+                || visit.getStatus() == VisitStatus.PENDINGRESCHEDULE;
     }
 
 
