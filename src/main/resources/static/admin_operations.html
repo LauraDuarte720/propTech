@@ -86,19 +86,8 @@
     <div class="topbar">
       <span class="page-title">Operaciones</span>
       <div style="display:flex;gap:8px;">
-        <select id="filter-type" onchange="filterOps()">
-          <option value="">Todos los tipos</option>
-          <option value="SALE">Venta</option>
-          <option value="RENT">Arriendo</option>
-          <option value="CONTRACT_RENEWAL">Renovación</option>
-          <option value="DEAL_CANCELLATION">Cancelación</option>
-        </select>
-        <select id="filter-status" onchange="filterOps()">
-          <option value="">Todos los estados</option>
-          <option value="CREATED">Creado</option>
-          <option value="CLOSED">Cerrado</option>
-          <option value="CANCELLED">Cancelado</option>
-        </select>
+        <select id="filter-type" onchange="filterOps()"></select>
+        <select id="filter-status" onchange="filterOps()"></select>
       </div>
     </div>
     <div class="content">
@@ -167,6 +156,8 @@
     renderOps(ops);
   }
 
+  populateSelect('filter-type', OPERATION_TYPE, 'Todos los tipos');
+  populateSelect('filter-status', PROCESS_STATUS, 'Todos los estados');
   loadOps();
 </script>
 </body>

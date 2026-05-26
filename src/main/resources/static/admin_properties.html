@@ -46,12 +46,20 @@
     .btn-warning:hover{background:rgba(239,159,39,0.25);}
     .btn svg{width:14px;height:14px;}
     .content{flex:1;overflow-y:auto;padding:28px;}
-    .filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
-    .search-box{flex:1;min-width:200px;position:relative;}
+
+    /* ── Filtros ── */
+    .filters{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+    .filters-row2{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .search-box{flex:1;min-width:180px;position:relative;}
     .search-box input{width:100%;padding:9px 14px 9px 36px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;outline:none;}
     .search-box input:focus{border-color:var(--accent);}
     .search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);}
     select{padding:9px 14px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Jost',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+    select.active-filter{border-color:var(--accent);color:#fff;}
+    .filter-label{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);white-space:nowrap;align-self:center;}
+    .btn-reset{padding:6px 12px;font-size:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);cursor:pointer;font-family:'Jost',sans-serif;}
+    .btn-reset:hover{color:#fff;background:rgba(255,255,255,0.08);}
+
     .table-wrap{background:var(--navy);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
     table{width:100%;border-collapse:collapse;}
     th{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
@@ -69,6 +77,7 @@
     .s-INACTIVE{background:rgba(255,255,255,0.05);color:var(--text-muted);}
     .s-RENTED{background:rgba(107,138,255,0.15);color:#6B8AFF;}
     .s-UNDER_NEGOTIATION{background:rgba(239,159,39,0.15);color:#EF9F27;}
+
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
     .modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:580px;max-height:90vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
@@ -83,10 +92,9 @@
     input[type=text]:focus,input[type=number]:focus,select.form-select:focus{border-color:var(--accent);}
     select.form-select option{background:var(--navy);}
     select.form-select:disabled{opacity:0.4;cursor:not-allowed;}
-    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;align-items:center;}
     .info-pill{display:inline-flex;align-items:center;gap:5px;font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:99px;}
     .info-pill.has-agent{color:#3DD68C;background:rgba(29,158,117,0.12);}
-    /* publish toggle */
     .publish-toggle{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:rgba(74,111,227,0.08);border:1px solid rgba(74,111,227,0.2);border-radius:9px;padding:12px 14px;cursor:pointer;user-select:none;}
     .publish-toggle:hover{background:rgba(74,111,227,0.14);}
     .publish-toggle.disabled-toggle{opacity:0.4;cursor:not-allowed;pointer-events:none;}
@@ -96,15 +104,13 @@
     .toggle-switch.on{background:var(--accent);}
     .toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;}
     .toggle-switch.on::after{transform:translateX(16px);}
-    /* section divider in form */
     .form-divider{grid-column:1/-1;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding-top:6px;border-top:1px solid var(--border);}
-    /* edit action strips */
     .edit-action-strip{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:9px;padding:11px 14px;}
     .edit-action-strip-label{font-size:13px;}
     .edit-action-strip-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
     .strip-actions{display:flex;gap:6px;flex-shrink:0;}
-
-    /* Toast notificaciones */
+    .conflict-warning{grid-column:1/-1;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);border-radius:8px;padding:12px;font-size:12px;color:#EF9F27;display:none;}
+    .conflict-warning.visible{display:block;}
     #toast{position:fixed;bottom:28px;right:28px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
     .toast-item{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-radius:10px;font-size:13px;max-width:360px;pointer-events:all;animation:toastIn .25s ease;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
     .toast-item.toast-error{background:#1e1016;border:1px solid rgba(226,75,74,0.35);color:#FF7B7B;}
@@ -114,26 +120,6 @@
     .toast-body{display:flex;flex-direction:column;gap:3px;}
     .toast-title{font-weight:600;font-size:13px;}
     .toast-msg{font-size:12px;opacity:0.8;line-height:1.4;}
-
-    /* Modal advertencia cambios irreversibles */
-    .irrev-modal{background:var(--navy);border:1px solid rgba(239,159,39,0.3);border-radius:16px;padding:28px;width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:fadeUp 0.2s ease;}
-    .irrev-icon{width:48px;height:48px;border-radius:12px;background:rgba(239,159,39,0.15);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px;}
-    .irrev-title{font-size:16px;font-weight:600;text-align:center;margin-bottom:8px;}
-    .irrev-sub{font-family:'Jost',sans-serif;font-size:13px;color:var(--text-muted);text-align:center;line-height:1.5;margin-bottom:20px;}
-    .irrev-changes{background:rgba(239,159,39,0.07);border:1px solid rgba(239,159,39,0.2);border-radius:8px;padding:12px 14px;margin-bottom:20px;font-size:12px;color:#EF9F27;font-family:'Jost',sans-serif;line-height:1.6;}
-    /* Modal historial */
-    .history-modal{background:var(--navy);border:1px solid var(--border);border-radius:16px;padding:28px;width:640px;max-height:80vh;overflow-y:auto;animation:fadeUp 0.2s ease;}
-    .history-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
-    .history-item:last-child{border-bottom:none;}
-    .history-badge{font-size:10px;padding:2px 8px;border-radius:99px;font-family:'Jost',sans-serif;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:2px;}
-    .h-CREATE{background:rgba(74,111,227,0.15);color:var(--accent-light);}
-    .h-UPDATE{background:rgba(239,159,39,0.15);color:#EF9F27;}
-    .h-DELETE{background:rgba(226,75,74,0.15);color:#FF7B7B;}
-    .h-PUBLISH{background:rgba(29,158,117,0.15);color:#3DD68C;}
-    .h-UNPUBLISH{background:rgba(255,255,255,0.07);color:var(--text-muted);}
-    .history-desc{font-size:13px;flex:1;}
-    .history-meta{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:3px;}
-
     @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     @keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
   </style>
@@ -151,6 +137,9 @@
       <a href="admin_properties.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Inmuebles</a>
       <a href="admin_agents.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M5.5 20a7 7 0 0 1 13 0"/></svg>Asesores</a>
       <a href="admin_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>Operaciones</a>
+      <a href="admin_reports.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/></svg>Reportes
+      </a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Monitoreo</div>
@@ -168,9 +157,9 @@
     <div class="topbar">
       <span class="page-title">Inmuebles</span>
       <div class="topbar-actions">
-        <button class="btn btn-ghost" onclick="openHistory()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-          Historial
+        <button class="btn btn-ghost" onclick="peekAndUndo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+          Deshacer último cambio
         </button>
         <button class="btn btn-primary" onclick="openModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
@@ -180,29 +169,28 @@
     </div>
 
     <div class="content">
+
+      <!-- Fila 1: búsqueda por código + filtros de servidor -->
       <div class="filters">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" id="search-input" placeholder="Buscar por dirección o código..." oninput="filterTable()">
+          <input type="text" id="search-code" placeholder="Buscar por dirección o código..." oninput="applyLocalSearch()">
         </div>
-        <select id="filter-status" onchange="filterTable()">
-          <option value="">Todos los estados</option>
-          <option value="ACTIVE">Activo</option>
-          <option value="NEW">Nuevo</option>
-          <option value="INACTIVE">Inactivo</option>
-          <option value="RESERVED">Reservado</option>
-          <option value="SOLD">Vendido</option>
-          <option value="RENTED">Arrendado</option>
+        <select id="filter-status" onchange="applyServerFilter()" title="Filtrar por estado"></select>
+        <select id="filter-type" onchange="applyServerFilter()" title="Filtrar por tipo"></select>
+        <select id="filter-city" onchange="applyServerFilter()" title="Filtrar por ciudad"></select>
+      </div>
+
+      <!-- Fila 2: ordenamiento + reset -->
+      <div class="filters-row2">
+        <span class="filter-label">Ordenar por:</span>
+        <select id="sort-select" onchange="applySort()">
+          <option value="">Sin ordenamiento</option>
+          <option value="price">Precio</option>
+          <option value="area">Área</option>
+          <option value="demand">Demanda</option>
         </select>
-        <select id="filter-type" onchange="filterTable()">
-          <option value="">Todos los tipos</option>
-          <option value="APARTMENT">Apartamento</option>
-          <option value="HOUSE">Casa</option>
-          <option value="RETAIL_SPACE">Local</option>
-          <option value="OFFICE">Oficina</option>
-          <option value="LOT">Lote</option>
-          <option value="WAREHOUSE">Bodega</option>
-        </select>
+        <button class="btn-reset" onclick="resetAll()">✕ Limpiar filtros</button>
       </div>
 
       <div class="table-wrap">
@@ -229,29 +217,17 @@
       <button onclick="closeModal()">×</button>
     </div>
     <div class="form-grid">
-
-      <!-- Campos comunes -->
       <div class="form-group full">
         <label>Dirección</label>
         <input type="text" id="f-address" placeholder="Ej: Calle 10 # 43-22">
       </div>
       <div class="form-group">
         <label>Tipo de inmueble</label>
-        <select class="form-select" id="f-type">
-          <option value="APARTMENT">Apartamento</option>
-          <option value="HOUSE">Casa</option>
-          <option value="RETAIL_SPACE">Local comercial</option>
-          <option value="OFFICE">Oficina</option>
-          <option value="LOT">Lote</option>
-          <option value="WAREHOUSE">Bodega</option>
-        </select>
+        <select class="form-select" id="f-type"></select>
       </div>
       <div class="form-group">
         <label>Propósito</label>
-        <select class="form-select" id="f-purpose">
-          <option value="SALE">Venta</option>
-          <option value="RENT">Arriendo</option>
-        </select>
+        <select class="form-select" id="f-purpose"></select>
       </div>
       <div class="form-group">
         <label>Precio</label>
@@ -279,22 +255,18 @@
       </div>
       <div class="form-group">
         <label>Ciudad</label>
-        <select class="form-select" id="f-city"></select>
+        <select class="form-select" id="f-city-form"></select>
       </div>
 
-      <!-- ── SECCIÓN SOLO CREAR ── -->
+      <!-- SECCIÓN SOLO CREAR -->
       <div id="create-only-section" class="form-group full" style="display:contents;">
         <div class="form-divider">Asesor y publicación</div>
-
-        <!-- Selector de asesor -->
         <div class="form-group full">
           <label>Asesor <span style="color:var(--text-muted);font-size:10px;text-transform:none;letter-spacing:0">(opcional — necesario para publicar)</span></label>
           <select class="form-select" id="f-agent">
             <option value="">— Sin asesor por ahora —</option>
           </select>
         </div>
-
-        <!-- Toggle publicar -->
         <div class="publish-toggle disabled-toggle" id="publish-toggle-row" onclick="togglePublish()">
           <div class="publish-toggle-text">
             <span>Publicar inmueble al guardar</span>
@@ -304,11 +276,9 @@
         </div>
       </div>
 
-      <!-- ── SECCIÓN SOLO EDITAR ── -->
-      <div id="edit-only-section" style="display:none;grid-column:1/-1;display:none;">
+      <!-- SECCIÓN SOLO EDITAR -->
+      <div id="edit-only-section" style="display:none;grid-column:1/-1;">
         <div class="form-divider" style="margin-bottom:12px;">Asesor y visibilidad</div>
-
-        <!-- Asesor actual + acciones -->
         <div class="edit-action-strip" id="edit-agent-strip">
           <div>
             <div class="edit-action-strip-label" id="edit-agent-label">—</div>
@@ -316,8 +286,6 @@
           </div>
           <div class="strip-actions" id="edit-agent-actions"></div>
         </div>
-
-        <!-- Estado publicación + acciones -->
         <div class="edit-action-strip" id="edit-pub-strip" style="margin-top:10px;">
           <div>
             <div class="edit-action-strip-label" id="edit-pub-label">—</div>
@@ -327,17 +295,19 @@
         </div>
       </div>
 
-    </div><!-- /form-grid -->
+      <!-- ADVERTENCIA CONFLICTO DE ZONA -->
+      <div class="conflict-warning" id="zone-conflict-warning"></div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-warning btn-sm" id="btn-confirm-update" style="display:none" onclick="confirmUpdate()">Confirmar igualmente</button>
       <button class="btn btn-primary" id="modal-save-btn" onclick="saveProperty()">Guardar sin publicar</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     MODAL ASIGNAR ASESOR (desde tabla, opcional)
-══════════════════════════════════════════════ -->
+<!-- MODAL ASIGNAR ASESOR -->
 <div class="modal-overlay" id="modal-assign">
   <div class="modal" style="width:400px;">
     <div class="modal-title">Asignar asesor<button onclick="closeAssign()">×</button></div>
@@ -362,25 +332,20 @@
   if (!user.role) window.location.href = 'proptech_login.html';
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-  let allProps  = [];
-  let allAgents = [];
+  // ── Estado global ────────────────────────────────────────────
+  let allProps        = [];   // todos los props cargados del servidor (base o filtrados)
+  let displayedProps  = [];   // lo que se muestra tras búsqueda local
+  let allAgents       = [];
   let publishOnSave   = false;
   let assignPropCode  = '';
-  let editingCode     = null; // null = crear, string = editar
+  let editingCode     = null;
+  let pendingUpdateBody = null;
 
-  // ── Normalización de enums del backend ──────────────────────
-  // El backend serializa enums en PascalCase ("Apartment", "Sale", "Center")
-  // pero los <option> y la lógica interna usan UPPER_SNAKE_CASE ("APARTMENT").
-  // toEnum convierte cualquier formato a UPPER_SNAKE_CASE.
+  // ── Normalización ────────────────────────────────────────────
   function toEnum(val) {
     if (!val) return '';
-    // PascalCase o camelCase a UPPER_SNAKE_CASE
-    // "RetailSpace" -> "RETAIL_SPACE", "Armenia" -> "ARMENIA", "CENTER" -> "CENTER"
-    return val
-            .replace(/([a-z])([A-Z])/g, '$1_$2')  // InsertUnderscoreBeforeUppercase
-            .toUpperCase();
+    return val.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
   }
-
   function normalizeProperty(p) {
     return {
       ...p,
@@ -395,14 +360,15 @@
     };
   }
 
-  // ── Inicializar selects de zona/ciudad ───────────────────────
-  function populateCitySelect() {
-    document.getElementById('f-city').innerHTML =
-            Object.entries(CITY).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
-  }
-  function populateZoneSelect() {
-    document.getElementById('f-zone').innerHTML =
-            Object.entries(ZONE).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+  // ── Poblar selects ───────────────────────────────────────────
+  function populateFormSelects() {
+    populateSelect('filter-status', PROPERTY_STATUS, 'Todos los estados');
+    populateSelect('filter-type', PROPERTY_TYPE, 'Todos los tipos');
+    populateSelect('filter-city', CITY, 'Todas las ciudades');
+    populateSelect('f-type', PROPERTY_TYPE);
+    populateSelect('f-purpose', PROPERTY_PURPOSE);
+    populateSelect('f-zone', ZONE);
+    populateSelect('f-city-form', CITY);
   }
 
   // ── Cargar asesores ──────────────────────────────────────────
@@ -410,26 +376,116 @@
     const res = await fetch(`${API}/agents`).catch(() => null);
     if (!res || !res.ok) return;
     allAgents = await res.json();
-
-    // Poblar select del modal crear
     const agentOpts = allAgents.map(a =>
             `<option value="${a.cedula}">${a.name} (${a.cedula})</option>`).join('');
     document.getElementById('f-agent').innerHTML =
             '<option value="">— Sin asesor por ahora —</option>' + agentOpts;
-
-    // Poblar select del modal asignar (tabla)
     document.getElementById('assign-agent-select').innerHTML =
             allAgents.map(a => `<option value="${a.cedula}">${a.name} (${a.cedula})</option>`).join('');
   }
 
-  // ── Cargar propiedades ───────────────────────────────────────
+  // ── Carga base (todos los props) ─────────────────────────────
   async function loadProps() {
     const res = await fetch(`${API}/properties`).catch(() => null);
     if (!res || !res.ok) return;
     allProps = await res.json();
-    renderTable(allProps);
+    applyLocalSearch();
   }
 
+  // ──────────────────────────────────────────────────────────────
+  // FILTROS Y ORDENAMIENTO
+  // ──────────────────────────────────────────────────────────────
+
+  // Filtros de servidor: ciudad, tipo, estado
+  // Si hay más de uno activo, hacemos intersección local porque el backend
+  // solo filtra de a uno. Si solo hay uno, llamamos directamente al endpoint.
+  async function applyServerFilter() {
+    const status = document.getElementById('filter-status').value;
+    const type   = document.getElementById('filter-type').value;
+    const city   = document.getElementById('filter-city').value;
+
+    // Marcar selects activos visualmente
+    ['filter-status','filter-type','filter-city'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.toggle('active-filter', !!el.value);
+    });
+
+    // Ningún filtro → cargar todo
+    if (!status && !type && !city) {
+      await loadProps();
+      return;
+    }
+
+    // Construir peticiones solo para los filtros activos
+    const fetches = [];
+    if (status) fetches.push(fetch(`${API}/properties/status/${status}`).then(r => r.ok ? r.json() : []));
+    if (type)   fetches.push(fetch(`${API}/properties/type/${type}`).then(r => r.ok ? r.json() : []));
+    if (city)   fetches.push(fetch(`${API}/properties/city/${city}`).then(r => r.ok ? r.json() : []));
+
+    const results = await Promise.all(fetches);
+
+    // Intersección por código si hay múltiples filtros
+    if (results.length === 1) {
+      allProps = results[0];
+    } else {
+      // Intersección: sólo props que aparecen en todos los resultados
+      const sets = results.map(arr => new Set(arr.map(p => p.code)));
+      allProps = results[0].filter(p => sets.every(s => s.has(p.code)));
+    }
+
+    applyLocalSearch();
+  }
+
+  // Ordenamiento: llama al endpoint y reemplaza allProps
+  async function applySort() {
+    const sort = document.getElementById('sort-select').value;
+    if (!sort) {
+      // Sin ordenamiento → recargar con filtros actuales
+      await applyServerFilter();
+      return;
+    }
+    const res = await fetch(`${API}/properties/ordered/${sort}`).catch(() => null);
+    if (!res || !res.ok) { showToast('error','Error al ordenar',''); return; }
+    const ordered = await res.json();
+
+    // Si hay filtros activos, filtrar localmente el resultado ordenado
+    const status = document.getElementById('filter-status').value;
+    const type   = document.getElementById('filter-type').value;
+    const city   = document.getElementById('filter-city').value;
+
+    allProps = ordered.map(normalizeProperty).filter(p =>
+            (!status || p.status       === status) &&
+            (!type   || p.propertyType === type)   &&
+            (!city   || p.neighborhood?.city === city)
+    );
+
+    applyLocalSearch();
+  }
+
+  // Búsqueda local por dirección o código sobre allProps
+  function applyLocalSearch() {
+    const q = document.getElementById('search-code').value.toLowerCase().trim();
+    displayedProps = allProps.map(normalizeProperty).filter(p =>
+            !q ||
+            (p.address || '').toLowerCase().includes(q) ||
+            (p.code    || '').toLowerCase().includes(q)
+    );
+    renderTable(displayedProps);
+  }
+
+  // Reset total
+  async function resetAll() {
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-type').value   = '';
+    document.getElementById('filter-city').value   = '';
+    document.getElementById('sort-select').value   = '';
+    document.getElementById('search-code').value   = '';
+    ['filter-status','filter-type','filter-city'].forEach(id =>
+            document.getElementById(id).classList.remove('active-filter'));
+    await loadProps();
+  }
+
+  // ── Render tabla ─────────────────────────────────────────────
   function renderTable(props) {
     const tbody = document.getElementById('props-tbody');
     if (!props.length) {
@@ -437,9 +493,8 @@
       return;
     }
     tbody.innerHTML = props.map(p => {
-      // Normalizar enums del backend (PascalCase -> UPPER_SNAKE_CASE)
       p = normalizeProperty(p);
-      const hasAgent   = !!p.agent;
+      const hasAgent    = !!p.agent;
       const isPublished = p.status === 'ACTIVE';
       const canPublish  = (p.status === 'NEW' || p.status === 'INACTIVE') && hasAgent;
       const n = p.neighborhood;
@@ -455,99 +510,89 @@
         <td><span class="badge-status s-${p.status}">${label(PROPERTY_STATUS, p.status)}</span></td>
         <td><div class="td-actions">
           <button class="btn btn-sm btn-ghost" onclick="openEdit('${p.code}')">Editar</button>
-          ${canPublish   ? `<button class="btn btn-sm btn-success" onclick="publishProp('${p.code}')">Publicar</button>` : ''}
-          ${isPublished  ? `<button class="btn btn-sm btn-ghost"   onclick="unpublishProp('${p.code}')">Despublicar</button>` : ''}
-          ${!hasAgent    ? `<button class="btn btn-sm btn-ghost"   onclick="openAssign('${p.code}','${(p.address||p.code).replace(/'/g,"\\'")}')">Asignar asesor</button>` : ''}
+          ${canPublish  ? `<button class="btn btn-sm btn-success" onclick="publishProp('${p.code}')">Publicar</button>` : ''}
+          ${isPublished ? `<button class="btn btn-sm btn-ghost"   onclick="unpublishProp('${p.code}')">Despublicar</button>` : ''}
+          ${!hasAgent   ? `<button class="btn btn-sm btn-ghost"   onclick="openAssign('${p.code}','${(p.address||p.code).replace(/'/g,"\\'")}')">Asignar asesor</button>` : ''}
           <button class="btn btn-sm btn-danger" onclick="deleteProp('${p.code}')">Eliminar</button>
         </div></td>
       </tr>`;
     }).join('');
   }
 
-  function filterTable() {
-    const q  = document.getElementById('search-input').value.toLowerCase();
-    const st = document.getElementById('filter-status').value;
-    const tp = document.getElementById('filter-type').value;
-    renderTable(allProps.map(normalizeProperty).filter(p =>
-            (!q  || (p.address || '').toLowerCase().includes(q) || (p.code || '').toLowerCase().includes(q)) &&
-            (!st || p.status === st) &&
-            (!tp || p.propertyType === tp)
-    ));
+  // ── Conflicto de zona ────────────────────────────────────────
+  function showZoneConflict(msg) {
+    const el = document.getElementById('zone-conflict-warning');
+    el.textContent = msg;
+    el.classList.add('visible');
+    document.getElementById('btn-confirm-update').style.display = 'inline-flex';
+  }
+  function hideZoneConflict() {
+    const el = document.getElementById('zone-conflict-warning');
+    el.textContent = '';
+    el.classList.remove('visible');
+    document.getElementById('btn-confirm-update').style.display = 'none';
+    pendingUpdateBody = null;
   }
 
   // ── Modal CREAR ──────────────────────────────────────────────
   function openModal() {
-    editingCode   = null;
-    publishOnSave = false;
-
+    editingCode = null; publishOnSave = false;
+    hideZoneConflict();
     document.getElementById('modal-title-text').textContent = 'Registrar inmueble';
     document.getElementById('modal-save-btn').textContent   = 'Guardar sin publicar';
     document.getElementById('pub-switch').classList.remove('on');
     document.getElementById('pub-sub').textContent = 'Selecciona un asesor para habilitar la publicación.';
     document.getElementById('publish-toggle-row').classList.add('disabled-toggle');
-
-    // Mostrar sección crear, ocultar editar
     document.getElementById('create-only-section').style.display = 'contents';
     document.getElementById('edit-only-section').style.display   = 'none';
-
-    // Reset campos
-    ['f-address','f-price','f-area','f-bedrooms','f-bathrooms','f-neighborhood'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
+    ['f-address','f-price','f-area','f-bedrooms','f-bathrooms','f-neighborhood'].forEach(id =>
+            document.getElementById(id).value = '');
     document.getElementById('f-type').value    = 'APARTMENT';
     document.getElementById('f-purpose').value = 'SALE';
     document.getElementById('f-agent').value   = '';
-
     document.getElementById('modal').classList.add('open');
   }
 
-  // Habilitar/deshabilitar toggle publicar según asesor seleccionado
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('f-agent').addEventListener('change', function() {
       const hasAgent = !!this.value;
-      const toggle   = document.getElementById('publish-toggle-row');
-      toggle.classList.toggle('disabled-toggle', !hasAgent);
+      document.getElementById('publish-toggle-row').classList.toggle('disabled-toggle', !hasAgent);
       if (!hasAgent && publishOnSave) {
         publishOnSave = false;
         document.getElementById('pub-switch').classList.remove('on');
         document.getElementById('modal-save-btn').textContent = 'Guardar sin publicar';
       }
       document.getElementById('pub-sub').textContent = hasAgent
-              ? (publishOnSave
-                      ? 'El inmueble se publicará de inmediato.'
-                      : 'El inmueble quedará sin publicar. Podrás publicarlo después.')
+              ? (publishOnSave ? 'El inmueble se publicará de inmediato.' : 'El inmueble quedará sin publicar. Podrás publicarlo después.')
               : 'Selecciona un asesor para habilitar la publicación.';
     });
   });
 
   function togglePublish() {
-    const hasAgent = !!document.getElementById('f-agent').value;
-    if (!hasAgent) return;
+    if (!document.getElementById('f-agent').value) return;
     publishOnSave = !publishOnSave;
     document.getElementById('pub-switch').classList.toggle('on', publishOnSave);
     document.getElementById('pub-sub').textContent = publishOnSave
             ? 'El inmueble se publicará de inmediato.'
             : 'El inmueble quedará sin publicar. Podrás publicarlo después.';
     document.getElementById('modal-save-btn').textContent = publishOnSave
-            ? 'Guardar y publicar'
-            : 'Guardar sin publicar';
+            ? 'Guardar y publicar' : 'Guardar sin publicar';
   }
 
   // ── Modal EDITAR ─────────────────────────────────────────────
   function openEdit(code) {
-    const raw = allProps.find(x => x.code === code);
+    // Buscar en allProps o en displayedProps
+    const raw = allProps.find(x => x.code === code) || displayedProps.find(x => x.code === code);
     if (!raw) return;
     const p = normalizeProperty(raw);
     editingCode = code;
+    hideZoneConflict();
 
     document.getElementById('modal-title-text').textContent = 'Editar inmueble';
     document.getElementById('modal-save-btn').textContent   = 'Guardar cambios';
-
-    // Ocultar sección crear, mostrar editar
     document.getElementById('create-only-section').style.display = 'none';
     document.getElementById('edit-only-section').style.display   = 'block';
 
-    // Campos de texto (inmediatos)
     document.getElementById('f-address').value      = p.address            || '';
     document.getElementById('f-price').value        = p.price              ?? '';
     document.getElementById('f-area').value         = p.area               ?? '';
@@ -555,23 +600,19 @@
     document.getElementById('f-bathrooms').value    = p.numBathrooms       ?? '';
     document.getElementById('f-neighborhood').value = p.neighborhood?.name || '';
 
-    // Selects: p ya está normalizado (UPPER_SNAKE_CASE), asignar directo
     setTimeout(() => {
-      document.getElementById('f-type').value    = p.propertyType       || 'APARTMENT';
-      document.getElementById('f-purpose').value = p.purpose            || 'SALE';
-      document.getElementById('f-zone').value    = p.neighborhood?.zone || '';
-      document.getElementById('f-city').value    = p.neighborhood?.city || '';
+      document.getElementById('f-type').value        = p.propertyType       || 'APARTMENT';
+      document.getElementById('f-purpose').value     = p.purpose            || 'SALE';
+      document.getElementById('f-zone').value        = p.neighborhood?.zone || '';
+      document.getElementById('f-city-form').value   = p.neighborhood?.city || '';
     }, 50);
 
-    // Panel asesor
     const hasAgent = !!p.agent;
     document.getElementById('edit-agent-label').textContent = hasAgent ? p.agent.name : 'Sin asesor asignado';
     const agentActions = document.getElementById('edit-agent-actions');
     if (hasAgent) {
-      agentActions.innerHTML = `
-        <button class="btn btn-sm btn-danger" onclick="unassignAgentFromEdit('${code}','${p.agent.cedula}')">Desasignar</button>`;
+      agentActions.innerHTML = `<button class="btn btn-sm btn-danger" onclick="unassignAgentFromEdit('${code}','${p.agent.cedula}')">Desasignar</button>`;
     } else {
-      // Inline mini-selector
       const opts = allAgents.map(a => `<option value="${a.cedula}">${a.name}</option>`).join('');
       agentActions.innerHTML = `
         <select class="form-select" id="edit-inline-agent" style="padding:5px 10px;font-size:12px;min-width:150px;">
@@ -580,7 +621,6 @@
         <button class="btn btn-sm btn-success" onclick="assignAgentFromEdit('${code}')">Asignar</button>`;
     }
 
-    // Panel publicación
     const isPublished = p.status === 'ACTIVE';
     const canPublish  = (p.status === 'NEW' || p.status === 'INACTIVE') && hasAgent;
     document.getElementById('edit-pub-label').textContent =
@@ -591,171 +631,153 @@
     } else if (canPublish) {
       pubActions.innerHTML = `<button class="btn btn-sm btn-success" onclick="publishFromEdit('${code}')">Publicar</button>`;
     } else {
-      pubActions.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">${hasAgent ? 'El estado actual no permite publicar (requiere Nuevo o Inactivo)' : 'Asigna un asesor primero para poder publicar'}</span>`;
+      pubActions.innerHTML = `<span style="font-size:11px;color:var(--text-muted);">${hasAgent ? 'Estado no permite publicar (requiere Nuevo o Inactivo)' : 'Asigna un asesor primero para publicar'}</span>`;
     }
 
     document.getElementById('modal').classList.add('open');
   }
 
-  // Publicar / despublicar desde el modal editar (sin cerrarlo)
   async function publishFromEdit(code) {
     const res = await fetch(`${API}/properties/${code}/publish`, { method: 'PATCH' });
     if (res.ok) { await loadProps(); openEdit(code); }
-    else { const e = await res.json(); showToast('error','Error al publicar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al publicar', e.message||''); }
   }
   async function unpublishFromEdit(code) {
     const res = await fetch(`${API}/properties/${code}/unpublish`, { method: 'PATCH' });
     if (res.ok) { await loadProps(); openEdit(code); }
-    else { const e = await res.json(); showToast('error','Error al despublicar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al despublicar', e.message||''); }
   }
-
-  // Asignar asesor desde el modal editar
   async function assignAgentFromEdit(code) {
     const sel = document.getElementById('edit-inline-agent');
-    if (!sel || !sel.value) { showToast('info','Selecciona un asesor','Elige un asesor de la lista antes de continuar.'); return; }
+    if (!sel?.value) { showToast('info','Selecciona un asesor',''); return; }
     const res = await fetch(`${API}/agents/${sel.value}/properties/${code}`, { method: 'POST' });
     if (res.ok) { await loadProps(); openEdit(code); }
-    else { const e = await res.json(); showToast('error','Error al asignar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al asignar', e.message||''); }
   }
-
-  // Desasignar asesor desde el modal editar
   async function unassignAgentFromEdit(code, cedula) {
     if (!confirm('¿Desasignar al asesor? El inmueble quedará sin asesor e inactivo.')) return;
     const res = await fetch(`${API}/agents/${cedula}/properties/${code}`, { method: 'DELETE' });
     if (res.ok) { await loadProps(); openEdit(code); }
-    else { const e = await res.json(); showToast('error','Error al desasignar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al desasignar', e.message||''); }
   }
 
-  function closeModal() { document.getElementById('modal').classList.remove('open'); }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    hideZoneConflict();
+  }
 
-  // ── Helpers para construir body limpio ───────────────────────
-  // Para PATCH: omite null/undefined/0/"" — manda solo lo que el usuario llenó
+  // ── Builders ─────────────────────────────────────────────────
   function buildPatchBody() {
-    const body = { code: editingCode }; // requerido por @NotBlank en PropertyDtoUpdate
+    const body = { code: editingCode };
     const address = document.getElementById('f-address').value.trim();
     if (address) body.address = address;
-
     const type = document.getElementById('f-type').value;
     if (type) body.propertyType = type;
-
     const purpose = document.getElementById('f-purpose').value;
     if (purpose) body.purpose = purpose;
-
     const price = Number(document.getElementById('f-price').value);
     if (price > 0) body.price = price;
-
     const area = Number(document.getElementById('f-area').value);
     if (area > 0) body.area = area;
-
     const bedrooms = document.getElementById('f-bedrooms').value;
     if (bedrooms !== '') body.numBedrooms = Number(bedrooms);
-
     const bathrooms = document.getElementById('f-bathrooms').value;
     if (bathrooms !== '') body.numBathrooms = Number(bathrooms);
 
-    // Neighborhood: mandar siempre si los 3 campos están completos.
-    // Si alguno falta, usar los valores actuales de la propiedad para no romper el backend.
     const neighName = document.getElementById('f-neighborhood').value.trim();
     const neighZone = document.getElementById('f-zone').value;
-    const neighCity = document.getElementById('f-city').value;
+    const neighCity = document.getElementById('f-city-form').value;
     if (neighName && neighZone && neighCity) {
       body.neighborhood = { name: neighName, zone: neighZone, city: neighCity };
     } else {
-      // Recuperar valores actuales de la propiedad para no mandar neighborhood=null
-      const currentProp = normalizeProperty(allProps.find(x => x.code === editingCode) || {});
-      const n = currentProp.neighborhood;
+      const cur = normalizeProperty(allProps.find(x => x.code === editingCode) || displayedProps.find(x => x.code === editingCode) || {});
+      const n = cur.neighborhood;
       if (n?.name && n?.zone && n?.city) {
-        body.neighborhood = {
-          name: neighName || n.name,
-          zone: neighZone || n.zone,
-          city: neighCity || n.city,
-        };
+        body.neighborhood = { name: neighName || n.name, zone: neighZone || n.zone, city: neighCity || n.city };
       }
     }
-
     return body;
   }
 
-  // Para POST: todos los campos obligatorios deben estar
   function buildCreateBody() {
-    const address  = document.getElementById('f-address').value.trim();
-    const type     = document.getElementById('f-type').value;
-    const purpose  = document.getElementById('f-purpose').value;
-    const price    = Number(document.getElementById('f-price').value);
-    const area     = Number(document.getElementById('f-area').value);
-    const bedrooms = Number(document.getElementById('f-bedrooms').value);
-    const bathrooms= Number(document.getElementById('f-bathrooms').value);
-    const neighName= document.getElementById('f-neighborhood').value.trim();
-    const neighZone= document.getElementById('f-zone').value;
-    const neighCity= document.getElementById('f-city').value;
-
-    if (!address)      { showToast('error','Campo requerido','La dirección es obligatoria.');       return null; }
-    if (!type)         { showToast('error','Campo requerido','El tipo de inmueble es obligatorio.'); return null; }
-    if (!purpose)      { showToast('error','Campo requerido','El propósito es obligatorio.');        return null; }
-    if (price <= 0)    { showToast('error','Campo requerido','El precio debe ser mayor a 0.');       return null; }
-    if (area  <= 0)    { showToast('error','Campo requerido','El área debe ser mayor a 0.');         return null; }
+    const address   = document.getElementById('f-address').value.trim();
+    const type      = document.getElementById('f-type').value;
+    const purpose   = document.getElementById('f-purpose').value;
+    const price     = Number(document.getElementById('f-price').value);
+    const area      = Number(document.getElementById('f-area').value);
+    const bedrooms  = Number(document.getElementById('f-bedrooms').value);
+    const bathrooms = Number(document.getElementById('f-bathrooms').value);
+    const neighName = document.getElementById('f-neighborhood').value.trim();
+    const neighZone = document.getElementById('f-zone').value;
+    const neighCity = document.getElementById('f-city-form').value;
+    if (!address)   { showToast('error','Campo requerido','La dirección es obligatoria.');        return null; }
+    if (price <= 0) { showToast('error','Campo requerido','El precio debe ser mayor a 0.');        return null; }
+    if (area  <= 0) { showToast('error','Campo requerido','El área debe ser mayor a 0.');          return null; }
     if (!neighName || !neighZone || !neighCity) {
-      showToast('error','Campos requeridos','El barrio, zona y ciudad son obligatorios.');
-      return null;
+      showToast('error','Campos requeridos','El barrio, zona y ciudad son obligatorios.'); return null;
     }
-
-    return {
-      address, propertyType: type, purpose, price, area,
+    return { address, propertyType: type, purpose, price, area,
       numBedrooms: bedrooms, numBathrooms: bathrooms,
-      neighborhood: { name: neighName, zone: neighZone, city: neighCity }
-    };
+      neighborhood: { name: neighName, zone: neighZone, city: neighCity } };
   }
 
-  // ── Guardar (crear o editar) ─────────────────────────────────
+  // ── Guardar ──────────────────────────────────────────────────
   async function saveProperty() {
-    let res;
     if (editingCode) {
-      const body = buildPatchBody();
-      res = await fetch(`${API}/properties/${editingCode}`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      });
-      if (res.ok) { closeModal(); loadProps(); }
-      else { const e = await res.json(); showToast('error','Error al guardar',e.message||''); }
+      await submitUpdate(buildPatchBody(), false);
     } else {
       const body = buildCreateBody();
       if (!body) return;
-
-      res = await fetch(`${API}/properties?confirm=true`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      const res = await fetch(`${API}/properties?confirm=true`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
       });
-      if (!res.ok) { const e = await res.json(); showToast('error','Error al guardar',e.message||''); return; }
+      if (!res.ok) { const e = await res.json(); showToast('error','Error al guardar', e.message||''); return; }
       const created = await res.json();
-
       const selectedAgent = document.getElementById('f-agent').value;
       if (selectedAgent) {
-        const assignRes = await fetch(`${API}/agents/${selectedAgent}/properties/${created.code}`, { method: 'POST' });
-        if (!assignRes.ok) {
-          showToast('error','Error al asignar','Inmueble creado pero no se pudo asignar el asesor.');
-          closeModal(); loadProps(); return;
-        }
+        const ar = await fetch(`${API}/agents/${selectedAgent}/properties/${created.code}`, { method: 'POST' });
+        if (!ar.ok) { showToast('error','Error al asignar','Inmueble creado pero no se pudo asignar el asesor.'); closeModal(); loadProps(); return; }
         if (publishOnSave) {
-          const pubRes = await fetch(`${API}/properties/${created.code}/publish`, { method: 'PATCH' });
-          if (!pubRes.ok) showToast('error','Error al publicar','Inmueble creado y asesor asignado, pero no se pudo publicar.');
+          const pr = await fetch(`${API}/properties/${created.code}/publish`, { method: 'PATCH' });
+          if (!pr.ok) showToast('error','Error al publicar','Inmueble creado y asesor asignado, pero no se pudo publicar.');
         }
       }
-
       closeModal(); loadProps();
     }
+  }
+
+  async function submitUpdate(body, confirm) {
+    const res = await fetch(`${API}/properties/${editingCode}?confirm=${confirm}`, {
+      method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    if (res.ok) { hideZoneConflict(); closeModal(); loadProps(); return; }
+    const e = await res.json();
+    const affected = e.details?.affectedProperties;
+    if (affected?.length > 0) {
+      pendingUpdateBody = body;
+      showZoneConflict(`El asesor asignado no cubre la nueva zona. Al confirmar quedará desasignado del inmueble: ${affected.map(p => p.address||p.code).join(', ')}`);
+    } else {
+      showToast('error','Error al guardar', e.message||'');
+    }
+  }
+
+  async function confirmUpdate() {
+    if (pendingUpdateBody) await submitUpdate(pendingUpdateBody, true);
   }
 
   // ── Publicar / despublicar desde tabla ──────────────────────
   async function publishProp(code) {
     const res = await fetch(`${API}/properties/${code}/publish`, { method: 'PATCH' });
     if (res.ok) loadProps();
-    else { const e = await res.json(); showToast('error','Error al publicar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al publicar', e.message||''); }
   }
   async function unpublishProp(code) {
     const res = await fetch(`${API}/properties/${code}/unpublish`, { method: 'PATCH' });
     if (res.ok) loadProps();
-    else { const e = await res.json(); showToast('error','Error al despublicar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al despublicar', e.message||''); }
   }
 
-  // ── Modal asignar asesor (desde tabla) ──────────────────────
+  // ── Modal asignar ────────────────────────────────────────────
   function openAssign(code, lbl) {
     assignPropCode = code;
     document.getElementById('assign-prop-label').value = lbl;
@@ -767,130 +789,55 @@
     if (!agentId) return;
     const res = await fetch(`${API}/agents/${agentId}/properties/${assignPropCode}`, { method: 'POST' });
     if (res.ok) { closeAssign(); loadProps(); }
-    else { const e = await res.json(); showToast('error','Error al asignar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al asignar', e.message||''); }
   }
 
   async function deleteProp(code) {
     if (!confirm('¿Eliminar este inmueble?')) return;
     const res = await fetch(`${API}/properties/${code}`, { method: 'DELETE' });
     if (res.ok) loadProps();
-    else { const e = await res.json(); showToast('error','Error al eliminar',e.message||''); }
+    else { const e = await res.json(); showToast('error','Error al eliminar', e.message||''); }
   }
 
   // ── Toast ────────────────────────────────────────────────────
   function showToast(type, title, msg) {
-    const icons = { error: '✕', success: '✓', info: 'ℹ' };
+    const icons = { error:'✕', success:'✓', info:'ℹ' };
     const el = document.createElement('div');
     el.className = `toast-item toast-${type}`;
     el.innerHTML = `<div class="toast-icon">${icons[type]||'ℹ'}</div>
       <div class="toast-body"><div class="toast-title">${title}</div>${msg ? `<div class="toast-msg">${msg}</div>` : ''}</div>`;
     document.getElementById('toast').appendChild(el);
-    setTimeout(() => {
-      el.style.animation = 'toastOut .3s ease forwards';
-      setTimeout(() => el.remove(), 300);
-    }, 4000);
+    setTimeout(() => { el.style.animation='toastOut .3s ease forwards'; setTimeout(()=>el.remove(),300); }, 4000);
   }
 
-
-  // ── Advertencia cambios irreversibles ───────────────────────
-  // Campos que si cambian no se pueden deshacer
-  let pendingIrrevBody = null;
-
-  function detectIrreversibleChanges(body, originalProp) {
-    const changes = [];
-    // Tipo de inmueble
-    if (body.propertyType && body.propertyType !== originalProp.propertyType) {
-      changes.push(`Tipo: ${label(PROPERTY_TYPE, originalProp.propertyType)} → ${label(PROPERTY_TYPE, body.propertyType)}`);
+  async function peekAndUndo() {
+    try {
+      const res = await fetch(`${API}/admin-actions/peek`);
+      if (!res.ok) {
+        showToast('info', 'Sin acciones', 'No hay acciones recientes para deshacer.');
+        return;
+      }
+      const action = await res.json();
+      if (confirm(`¿Estás seguro de deshacer esta acción?\n\nDetalle: ${action.description}`)) {
+        const undoRes = await fetch(`${API}/admin-actions/undo`, { method: 'POST' });
+        if (undoRes.ok) {
+          showToast('success', 'Deshecho', 'La acción fue deshecha correctamente.');
+          loadProps();
+        } else {
+          showToast('error', 'Error', 'Error al deshacer la acción.');
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('error', 'Error', 'Error al procesar la solicitud.');
     }
-    // Barrio/zona/ciudad
-    if (body.neighborhood) {
-      const n = originalProp.neighborhood || {};
-      if (body.neighborhood.name !== n.name)
-        changes.push(`Barrio: "${n.name || '—'}" → "${body.neighborhood.name}"`);
-      if (body.neighborhood.zone !== n.zone)
-        changes.push(`Zona: ${label(ZONE, n.zone) || '—'} → ${label(ZONE, body.neighborhood.zone)}`);
-      if (body.neighborhood.city !== n.city)
-        changes.push(`Ciudad: ${label(CITY, n.city) || '—'} → ${label(CITY, body.neighborhood.city)}`);
-    }
-    return changes;
   }
-
-  function closeIrrev() {
-    document.getElementById('modal-irrev').classList.remove('open');
-    pendingIrrevBody = null;
-  }
-
-  async function proceedWithIrrev() {
-    closeIrrev();
-    if (pendingIrrevBody) await submitUpdate(pendingIrrevBody, false);
-  }
-
-  // ── Historial ────────────────────────────────────────────────
-  async function openHistory() {
-    document.getElementById('modal-history').classList.add('open');
-    const res = await fetch(`${API}/admin-actions/history`).catch(() => null);
-    const container = document.getElementById('history-list');
-    if (!res?.ok) {
-      container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:24px;">Sin acciones registradas</div>';
-      return;
-    }
-    const actions = await res.json();
-    if (!actions.length) {
-      container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:24px;">Sin acciones registradas</div>';
-      return;
-    }
-    // Mostrar en orden más reciente primero
-    const sorted = [...actions].reverse();
-    const ACTION_LABELS = { CREATE:'Crear', UPDATE:'Actualizar', DELETE:'Eliminar', PUBLISH:'Publicar', UNPUBLISH:'Despublicar' };
-    const ENTITY_LABELS = { PROPERTY:'Inmueble', AGENT:'Asesor' };
-    container.innerHTML = sorted.map(a => {
-      const dt = a.timestamp
-              ? new Date(a.timestamp).toLocaleString('es-CO', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
-              : '—';
-      return `<div class="history-item">
-        <span class="history-badge h-${a.action}">${ACTION_LABELS[a.action] || a.action}</span>
-        <div>
-          <div class="history-desc">${a.description || '—'}</div>
-          <div class="history-meta">${ENTITY_LABELS[a.entity] || a.entity} · ${a.entityId || ''} · ${dt} · por ${a.performedBy || 'Admin'}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  function closeHistory() { document.getElementById('modal-history').classList.remove('open'); }
 
   // ── Init ─────────────────────────────────────────────────────
-  populateCitySelect();
-  populateZoneSelect();
+  populateFormSelects();
   loadProps();
   loadAgents();
 </script>
-
-<!-- Modal advertencia cambios irreversibles -->
-<div class="modal-overlay" id="modal-irrev">
-  <div class="irrev-modal">
-    <div class="irrev-icon">⚠️</div>
-    <div class="irrev-title">Cambios irreversibles detectados</div>
-    <div class="irrev-sub">Los siguientes cambios <strong>no se podrán deshacer</strong> una vez guardados, ya que modifican la estructura del inmueble sin registro de estado anterior.</div>
-    <div class="irrev-changes" id="irrev-changes-list"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="closeIrrev()">Cancelar</button>
-      <button class="btn btn-warning" onclick="proceedWithIrrev()">Entendido, guardar igual</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal historial de acciones -->
-<div class="modal-overlay" id="modal-history">
-  <div class="history-modal">
-    <div class="modal-title">
-      <span>Historial de acciones</span>
-      <button onclick="closeHistory()">×</button>
-    </div>
-    <div id="history-list">
-      <div style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</div>
-    </div>
-  </div>
-</div>
 
 <div id="toast"></div>
 </body>

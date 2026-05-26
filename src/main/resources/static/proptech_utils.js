@@ -13,8 +13,7 @@ const PROPERTY_STATUS = {
     INACTIVE: 'Inactivo',
     RESERVED: 'Reservado',
     SOLD: 'Vendido',
-    RENTED: 'Arrendado',
-    UNDER_NEGOTIATION: 'En negociación'
+    RENTED: 'Arrendado'
 };
 
 const PROPERTY_PURPOSE = {
@@ -35,12 +34,21 @@ const PROCESS_STATUS = {
     CANCELLED: 'Cancelado'
 };
 
-const ALERT_TYPE = {
+const ALERT_ABNORMAL_TYPE = {
     HIGH_VISITS_NO_CLOSING: 'Visitas sin cierre',
     CLIENT_MULTIPLE_VISITS_NO_CONTINUITY: 'Cliente sin continuidad',
     AGENT_EXCESSIVE_OVERLOAD: 'Sobrecarga de asesor',
     PROPERTY_PRICE_CHANGE: 'Cambio frecuente de precio',
     ZONE_INTEREST_CONCENTRATION: 'Concentración de interés por zona'
+};
+
+const ALERT_TYPE_BASIC = {
+    CONTRACT_EXPIRING: 'Contrato próximo a vencer',
+    PROPERTY_NO_VISITS: 'Inmueble sin visitas recientes',
+    HIGH_DEMAND: 'Alta demanda',
+    PENDING_VISIT_CONFIRMATION: 'Visita pendiente de confirmación',
+    RESERVE_NO_CLOSURE: 'Reserva sin cierre',
+    INACTIVE_CLIENT: 'Cliente inactivo'
 };
 
 const ATTENTION_LEVEL = {
@@ -90,8 +98,7 @@ const VISIT_STATUS = {
     COMPLETED: 'Completada',
     CANCELED: 'Cancelada',
     RESCHEDULED: 'Reagendada',
-    PENDINGRESCHEDULE: 'Pendiente de reagendar',
-    VIP: 'VIP'
+    PENDINGRESCHEDULE: 'Pendiente de reagendar'
 };
 
 const VISIT_TYPE = {
@@ -101,14 +108,16 @@ const VISIT_TYPE = {
 
 const CLIENT_TYPE = {
     BUYER: 'Comprador',
-    RENTER: 'Arrendatario',
+    TENANT: 'Arrendatario',
     INVESTOR: 'Inversionista'
 };
 
 const SEARCH_STATUS = {
     ACTIVE: 'Buscando activamente',
     PAUSED: 'En pausa',
-    CLOSED: 'Búsqueda cerrada'
+    NEGOTIATING: 'Negociando',
+    CLOSED: 'Búsqueda cerrada',
+    INACTIVE: 'Inactivo'
 };
 
 const INTERACTION_TYPE = {
@@ -122,12 +131,40 @@ const INTERACTION_TYPE = {
 };
 
 const ZONE = {
-    CENTER:'Centro',
+    CENTER: 'Centro',
     NORTH: 'Norte',
     SOUTH: 'Sur'
+};
+
+const SUPPORT_REQUEST_STATUS = {
+    PENDING: 'Pendiente',
+    ATTENDED: 'Atendida',
+    CANCELLED: 'Cancelada'
 };
 
 // Helper para traducir con fallback
 function label(map, key) {
     return map[key] || key || '—';
+}
+
+// Helper para llenar selects dinámicamente desde los enums
+function populateSelect(selectId, enumMap, placeholder) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    // Guardar el valor actual si lo hay, para restaurarlo después
+    const currentValue = select.value;
+    
+    select.innerHTML = '';
+    if (placeholder !== undefined && placeholder !== null) {
+        select.innerHTML += `<option value="">${placeholder}</option>`;
+    }
+    for (const [key, value] of Object.entries(enumMap)) {
+        select.innerHTML += `<option value="${key}">${value}</option>`;
+    }
+    
+    // Restaurar el valor si sigue siendo válido
+    if (currentValue && Object.keys(enumMap).includes(currentValue)) {
+        select.value = currentValue;
+    }
 }

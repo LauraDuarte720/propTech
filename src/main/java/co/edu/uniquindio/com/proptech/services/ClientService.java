@@ -1,7 +1,9 @@
 package co.edu.uniquindio.com.proptech.services;
 
+import co.edu.uniquindio.com.proptech.domain.dtos.GeographicZoneDtoCreate;
 import co.edu.uniquindio.com.proptech.domain.enums.InteractionType;
 import co.edu.uniquindio.com.proptech.domain.model.Client;
+import co.edu.uniquindio.com.proptech.domain.model.GeographicZone;
 import co.edu.uniquindio.com.proptech.domain.model.Property;
 import co.edu.uniquindio.com.proptech.domain.model.UserInteraction;
 import co.edu.uniquindio.com.proptech.exceptions.specificExceptions.ClientAlreadyExists;
@@ -22,15 +24,17 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final GraphSyncService graphSyncService;
+    private final GeographicZoneService geographicZoneService;
 
     /**
      * @Lazy en GraphSyncService rompe el ciclo:
      *   ClientService → GraphSyncService → OperationService → ClientService
      */
     public ClientService(ClientRepository clientRepository,
-                         @Lazy GraphSyncService graphSyncService) {
+                         @Lazy GraphSyncService graphSyncService, GeographicZoneService geographicZoneService) {
         this.clientRepository = clientRepository;
         this.graphSyncService = graphSyncService;
+        this.geographicZoneService = geographicZoneService;
     }
 
     public Client registerClient(Client client) {
@@ -133,5 +137,20 @@ public class ClientService {
         }
 
         return result;
+    }
+
+    public Client updateInterestZones(String cedula, ArrayList<GeographicZoneDtoCreate> zoneDtos) {
+        Client client = getClientByCedula(cedula);
+        ArrayList<GeographicZone> zones = new ArrayList<>();
+        for (GeographicZoneDtoCreate dto : zoneDtos) {
+            GeographicZone zone = GeographicZone.builder()
+                    .city(dto.getCity())
+                    .zone(dto.getZone())
+                    .nameNeighborhood(dto.getNameNeighborhood())
+                    .build();
+            zones.add(geographicZoneService.findOrCreate(zone));
+        }
+        client.setInterestZones(zones);
+        return clientRepository.save(client);
     }
 }

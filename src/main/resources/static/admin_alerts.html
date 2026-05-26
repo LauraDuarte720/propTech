@@ -116,20 +116,8 @@
             </div>
 
             <div class="filters">
-                <select id="f-level" onchange="filterAlerts()">
-                    <option value="">Todos los niveles</option>
-                    <option value="HIGH">Alto</option>
-                    <option value="MEDIUM">Medio</option>
-                    <option value="LOW">Bajo</option>
-                </select>
-                <select id="f-type" onchange="filterAlerts()">
-                    <option value="">Todos los tipos</option>
-                    <option value="HIGH_VISITS_NO_CLOSING">Visitas sin cierre</option>
-                    <option value="CLIENT_MULTIPLE_VISITS_NO_CONTINUITY">Cliente sin continuidad</option>
-                    <option value="AGENT_EXCESSIVE_OVERLOAD">Sobrecarga de asesor</option>
-                    <option value="PROPERTY_PRICE_CHANGE">Cambio de precio</option>
-                    <option value="ZONE_INTEREST_CONCENTRATION">Concentración por zona</option>
-                </select>
+                <select id="f-level" onchange="filterAlerts()"></select>
+                <select id="f-type" onchange="filterAlerts()"></select>
                 <select id="f-reviewed" onchange="applyReviewedFilter()">
                     <option value="">Todas</option>
                     <option value="false">Sin revisar</option>
@@ -235,7 +223,7 @@
                 ? `<button class="btn btn-ghost btn-sm" onclick="markReviewed('${a.id}')">Marcar revisada</button>`
                 : '<span class="reviewed-badge">✓ Revisada</span>'}
                 </div>
-                <div class="alert-type">${label(ALERT_TYPE, a.alertAbnormalType)}</div>
+                <div class="alert-type">${label(ALERT_ABNORMAL_TYPE, a.alertAbnormalType)}</div>
                 <div class="alert-subject">${subject}</div>
                 <div class="alert-meta">
                     <span>${ts}</span>
@@ -255,6 +243,8 @@
         loadAlerts();
     }
 
+    populateSelect('f-level', ATTENTION_LEVEL, 'Todos los niveles');
+    populateSelect('f-type', ALERT_ABNORMAL_TYPE, 'Todos los tipos');
     loadAlerts();
 </script>
 </body>

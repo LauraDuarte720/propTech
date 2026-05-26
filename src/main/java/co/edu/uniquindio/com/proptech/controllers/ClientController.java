@@ -7,6 +7,7 @@ import co.edu.uniquindio.com.proptech.mappers.MapperCreate;
 import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.services.ClientService;
+import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,15 @@ public class ClientController {
                         clientService.getClients(),
                         clientMapper::toDto
                 )
+        );
+    }
+
+    @PatchMapping("/{cedula}/interest-zones")
+    public ResponseEntity<ClientDtoReturn> updateInterestZones(
+            @PathVariable String cedula,
+            @RequestBody List<GeographicZoneDtoCreate> zoneDtos) {
+        return ResponseEntity.ok(
+                clientMapper.toDto(clientService.updateInterestZones(cedula, (ArrayList<GeographicZoneDtoCreate>) zoneDtos))
         );
     }
 

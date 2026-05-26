@@ -167,10 +167,7 @@
     </div>
     <div class="form-group">
       <label>Tipo</label>
-      <select id="v-type">
-        <option value="NORMAL">Normal</option>
-        <option value="VIP">VIP</option>
-      </select>
+      <select id="v-type"></select>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeNewVisit()">Cancelar</button>
@@ -235,12 +232,7 @@
   let currentTab = 'all';
   let peekId = null;
 
-  if (typeof VISIT_STATUS === 'undefined') {
-    window.VISIT_STATUS = { PENDING:'Pendiente', CONFIRMED:'Confirmada', COMPLETED:'Completada', CANCELED:'Cancelada', RESCHEDULED:'Reprogramada' };
-  }
-  if (typeof label === 'undefined') {
-    window.label = (map, key) => map[key] || key;
-  }
+
 
   async function loadVisits() {
     const res = await fetch(`${API}/visits/agent/${user.cedula}`).catch(()=>null);
@@ -447,6 +439,7 @@
   }
 
   // ── Arranque ─────────────────────────────────────────────────────
+  populateSelect('v-type', VISIT_TYPE);
   loadVisits();
   loadSelects();
 </script>

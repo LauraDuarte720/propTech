@@ -126,14 +126,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                     <input type="text" placeholder="Buscar por dirección..." oninput="filterProps(this.value)">
                 </div>
-                <select onchange="filterByStatus(this.value)">
-                    <option value="">Todos los estados</option>
-                    <option value="ACTIVE">Activo</option>
-                    <option value="NEW">Nuevo</option>
-                    <option value="RESERVED">Reservado</option>
-                    <option value="RENTED">Arrendado</option>
-                    <option value="SOLD">Vendido</option>
-                </select>
+                <select id="f-status" onchange="filterByStatus(this.value)"></select>
             </div>
         </div>
 
@@ -164,10 +157,7 @@
         </div>
         <div class="form-group">
             <label>Tipo</label>
-            <select id="v-type">
-                <option value="NORMAL">Normal</option>
-                <option value="VIP">VIP</option>
-            </select>
+            <select id="v-type"></select>
         </div>
         <div class="modal-actions">
             <button class="btn btn-ghost" onclick="closeVisit()">Cancelar</button>
@@ -237,11 +227,7 @@
     }
     function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-    // Fallbacks in case proptech_utils hasn't loaded yet
-    if (typeof label === 'undefined')            window.label = (map, key) => map[key] || key;
-    if (typeof PROPERTY_TYPE === 'undefined')    window.PROPERTY_TYPE    = {};
-    if (typeof PROPERTY_STATUS === 'undefined')  window.PROPERTY_STATUS  = { ACTIVE:'Activo', NEW:'Nuevo', RESERVED:'Reservado', SOLD:'Vendido', INACTIVE:'Inactivo', RENTED:'Arrendado' };
-    if (typeof PROPERTY_PURPOSE === 'undefined') window.PROPERTY_PURPOSE = { RENT:'Arriendo', SALE:'Venta' };
+
 
     let allProps   = [];
     let allClients = [];
@@ -400,6 +386,8 @@
         else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al crear la operación'); }
     }
 
+    populateSelect('f-status', PROPERTY_STATUS, 'Todos los estados');
+    populateSelect('v-type', VISIT_TYPE);
     load();
 </script>
 </body>
