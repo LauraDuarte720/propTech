@@ -88,12 +88,12 @@ public class PropertyController {
 
     @PatchMapping("/{code}/publish")
     public ResponseEntity<PropertyDtoReturn> publishProperty(@PathVariable String code) {
-        return ResponseEntity.ok(propertyMapper.toDto(propertyService.publishProperty(code)));
+        return ResponseEntity.ok(propertyMapper.toDto(propertyService.publishPropertyWithLog(code)));
     }
 
     @PatchMapping("/{code}/unpublish")
     public ResponseEntity<PropertyDtoReturn> unpublishProperty(@PathVariable String code) {
-        return ResponseEntity.ok(propertyMapper.toDto(propertyService.unpublishProperty(code)));
+        return ResponseEntity.ok(propertyMapper.toDto(propertyService.unpublishPropertyWithLog(code)));
     }
 
     // ══════════════════════════════════════════════
