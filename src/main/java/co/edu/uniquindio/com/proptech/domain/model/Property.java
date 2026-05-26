@@ -44,6 +44,7 @@ public class Property implements Comparable<Property> {
 
     public PropertySnapshot createSnapshot() {
         return PropertySnapshot.builder()
+                .agent(agent)
                 .address(address)
                 .neighborhood(neighborhood)
                 .propertyType(propertyType)
