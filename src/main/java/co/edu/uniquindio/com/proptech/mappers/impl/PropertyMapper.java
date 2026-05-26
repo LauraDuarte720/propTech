@@ -64,7 +64,7 @@ public class PropertyMapper implements MapperCrud<Property, PropertyDtoCreate, P
         return Property.builder()
                 .code(dto.getCode())
                 .address(dto.getAddress())
-                .neighborhood(neighborhoodMapper.toEntity(dto.getNeighborhood()))
+                .neighborhood(dto.getNeighborhood() == null ? null : neighborhoodMapper.toUpdate(dto.getNeighborhood()))
                 .propertyType(dto.getPropertyType())
                 .purpose(dto.getPurpose())
                 .price(dto.getPrice())

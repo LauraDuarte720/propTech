@@ -18,7 +18,7 @@ public class PropertyDtoUpdate {
 
     private String address;
 
-    private NeighborhoodDtoCreate neighborhood;
+    private NeighborhoodDtoUpdate neighborhood;
 
     private PropertyType propertyType;
 
