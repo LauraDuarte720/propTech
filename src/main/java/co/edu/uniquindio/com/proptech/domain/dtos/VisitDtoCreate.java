@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class VisitDtoCreate {
 
+    @NotBlank
     private String clientId;
 
     @NotBlank(message = "Property ID is required")
@@ -21,7 +22,6 @@ public class VisitDtoCreate {
     @NotNull(message = "Date is required")
     private LocalDateTime date;
 
-    @NotBlank(message = "Agent ID is required")
     private String agentId;
 
     @NotNull(message = "Visit type is required")

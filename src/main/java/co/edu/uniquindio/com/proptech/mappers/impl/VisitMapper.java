@@ -38,7 +38,7 @@ public class VisitMapper implements MapperCrud<Visit, VisitDtoCreate, VisitDtoUp
     @Override
     public Visit toEntity(VisitDtoCreate dto) {
 
-        Agent agent = agentService.getAgentByCedula(dto.getAgentId());
+        Agent agent = dto.getAgentId() == null? null: agentService.getAgentByCedula(dto.getAgentId());
 
         Client client = clientService.getClientByCedula(dto.getClientId());
 
