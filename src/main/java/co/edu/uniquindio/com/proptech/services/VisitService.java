@@ -33,8 +33,7 @@ public class VisitService {
         if (exists) {
             throw new VisitAlreadyExists("id", visit.getId());
         }
-        LocalDateTime date = visit.getDate();
-        validateNoSchedulingConflict(agent, visit, date);
+        validateSchedulingForAgent(agent, visit, visit.getDate());
         visit.setId(CodeGenerator.generateVisitCode());
         visit.setCreatedAt(LocalDateTime.now());
             visit.setStatus(VisitStatus.PENDING);
@@ -42,27 +41,32 @@ public class VisitService {
     }
 
 
-    private void validateNoSchedulingConflict(Agent agent, Visit visit, LocalDateTime newDate) {
+    private void validateSchedulingForAgent(Agent agent, Visit visit, LocalDateTime dateToCheck) {
         PriorityQueue<Visit> agentVisits = agent.getScheduledVisits();
+
         for (Visit v : agentVisits) {
+
             if (v.getStatus() == VisitStatus.CANCELED ||
-                    v.getStatus() == VisitStatus.COMPLETED || v.equals(visit)) continue;
-            long diff = Math.abs(Duration.between(v.getDate(), visit.getDate()).toMinutes());
+                    v.getStatus() == VisitStatus.COMPLETED || v.getStatus() == VisitStatus.EXPIRED) continue;
+
+            long diff = Math.abs(Duration.between(v.getDate(), dateToCheck).toMinutes());
+
             if (diff < 60) {
-                if (visit.getVisitType() == VisitType.VIP) {
+
+                if (visit.getVisitType() == VisitType.VIP && v.getVisitType() != VisitType.VIP) {
                     v.setStatus(VisitStatus.PENDINGRESCHEDULE);
-                    throw new VipVisitDisplacementException(
+                }
+
+                else{
+                    throw new VisitSchedulingConflictException(
                             visit.getAgent().getCedula(),
-                            v.getId()
+                            dateToCheck
                     );
                 }
-                throw new VisitSchedulingConflictException(
-                        visit.getAgent().getCedula(),
-                        visit.getDate()
-                );
             }
         }
     }
+
 
 
     public Visit updateVisit(Visit visit) {
@@ -107,15 +111,16 @@ public class VisitService {
         }).orElseThrow(() -> new VisitDoesNotExist("id", visit.getId()));
     }
 
+
     public Visit rescheduleVisit(Visit visit, LocalDateTime newDate) {
         Agent agent = visit.getAgent();
         validateTransition(visit.getStatus(), VisitStatus.RESCHEDULED);
         agent.removeVisitFromQueue(visit);
+        validateSchedulingForAgent(agent, visit, newDate);
         visit.setDate(newDate);
         visit.setStatus(VisitStatus.RESCHEDULED);
 
         agent.enqueueVisit(visit);
-
         return visit;
     }
 
