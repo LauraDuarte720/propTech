@@ -190,6 +190,31 @@ public class PriorityQueue<T> implements Iterable<T> {
         return sb.append("]").toString();
     }
 
+    public boolean remove(T data) {
+        // Buscar el elemento
+        int index = -1;
+        for (int i = 0; i < size; i++) {
+            if (heap[i].data.equals(data)) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) return false;
+
+        // Reemplazar con el último elemento y reajustar
+        heap[index] = heap[size - 1];
+        heap[size - 1] = null;
+        size--;
+
+        if (index < size) {
+            // Puede necesitar subir o bajar según el nuevo valor
+            bubbleUp(index);
+            bubbleDown(index);
+        }
+
+        return true;
+    }
+
     public List<T> toJavaList() {
 
         List<T> list = new java.util.ArrayList<>();

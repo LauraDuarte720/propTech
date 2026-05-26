@@ -43,6 +43,9 @@ public class Agent extends User implements Comparable<Agent> {
 
     }
 
+    public boolean removeVisitFromQueue(Visit visit) {
+        return scheduledVisits.remove(visit);
+    }
 
     public Property addProperty(Property property) {
         return assignedProperties.add(property);
