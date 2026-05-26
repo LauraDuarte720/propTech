@@ -12,11 +12,13 @@ import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.priorityQueue.PriorityQueue;
+import co.edu.uniquindio.com.proptech.structures.queue.Queue;
 import co.edu.uniquindio.com.proptech.utils.CodeGenerator;
 import co.edu.uniquindio.com.proptech.utils.ZoneMatcher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,26 +80,6 @@ public class AgentService {
                 .orElseThrow(() -> new AgentDoesNotExist("cedula", cedula));
     }
 
-    public Visit registerVisit(Visit visit) {
-        propertyService.assertPropertyVisitableAndRequestable(visit.getProperty().getCode());
-        Visit saved = visitService.registerVisit(visit);
-        Agent agent = saved.getAgent();
-        agent.enqueueVisit(saved);
-        return saved;
-    }
-
-    public Visit attendVisit(String agentId) {
-        Agent agent = getAgentByCedula(agentId);
-        Visit visit = agent.dequeueVisit();
-        while (visit != null && visit.getStatus() == VisitStatus.CANCELED) {
-            visit = agent.dequeueVisit();
-        }
-        if (visit != null) {
-            visit.setStatus(VisitStatus.COMPLETED);
-        }
-        agentRepository.save(agent);
-        return visit;
-    }
 
     public void deleteAgent(String cedula) {
         Agent agent = agentRepository.findByCedula(cedula)
@@ -120,6 +102,27 @@ public class AgentService {
 
         agentRepository.deleteByCedula(cedula);
     }
+
+    public Visit registerVisit(Agent agent, Visit visit) {
+        propertyService.assertPropertyVisitableAndRequestable(visit.getProperty().getCode());
+        visit.setAgent(agent);
+        Visit saved = visitService.registerVisit(agent, visit);
+        agent.enqueueVisit(saved);
+        return saved;
+    }
+    public Visit attendVisit(String agentId) {
+        Agent agent = getAgentByCedula(agentId);
+        Visit visit = agent.dequeueVisit();
+        while (visit != null && visit.getStatus() == VisitStatus.CANCELED) {
+            visit = agent.dequeueVisit();
+        }
+        if (visit != null) {
+            visit.setStatus(VisitStatus.COMPLETED);
+        }
+        agentRepository.save(agent);
+        return visit;
+    }
+
 
     public PriorityQueue<Visit> getVisitsAgent(String idAgent) {
         Agent agent = getAgentByCedula(idAgent);
