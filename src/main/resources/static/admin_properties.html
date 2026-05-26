@@ -338,13 +338,14 @@
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
   // ── Estado global ────────────────────────────────────────────
-  let allProps        = [];   // todos los props cargados del servidor (base o filtrados)
-  let displayedProps  = [];   // lo que se muestra tras búsqueda local
+  let allProps        = [];
+  let displayedProps  = [];
   let allAgents       = [];
   let publishOnSave   = false;
   let assignPropCode  = '';
   let editingCode     = null;
   let pendingUpdateBody = null;
+  let originalProperty = null;
 
   // ── Normalización ────────────────────────────────────────────
   function toEnum(val) {
@@ -591,6 +592,8 @@
     const raw = allProps.find(x => x.code === code) || displayedProps.find(x => x.code === code);
     if (!raw) return;
     const p = normalizeProperty(raw);
+
+    originalProperty = JSON.parse(JSON.stringify(p));
     editingCode = code;
     hideZoneConflict();
 
@@ -693,33 +696,60 @@
   // ── Builders ─────────────────────────────────────────────────
   function buildPatchBody() {
     const body = { code: editingCode };
+
     const address = document.getElementById('f-address').value.trim();
-    if (address) body.address = address;
+    if (address !== (originalProperty.address || '')) {
+      body.address = address;
+    }
+
     const type = document.getElementById('f-type').value;
-    if (type) body.propertyType = type;
+    if (type !== (originalProperty.propertyType || '')) {
+      body.propertyType = type;
+    }
+
     const purpose = document.getElementById('f-purpose').value;
-    if (purpose) body.purpose = purpose;
+    if (purpose !== (originalProperty.purpose || '')) {
+      body.purpose = purpose;
+    }
+
     const price = Number(document.getElementById('f-price').value);
-    if (price > 0) body.price = price;
+    if (price !== Number(originalProperty.price || 0)) {
+      body.price = price;
+    }
+
     const area = Number(document.getElementById('f-area').value);
-    if (area > 0) body.area = area;
-    const bedrooms = document.getElementById('f-bedrooms').value;
-    if (bedrooms !== '') body.numBedrooms = Number(bedrooms);
-    const bathrooms = document.getElementById('f-bathrooms').value;
-    if (bathrooms !== '') body.numBathrooms = Number(bathrooms);
+    if (area !== Number(originalProperty.area || 0)) {
+      body.area = area;
+    }
+
+    const bedrooms = Number(document.getElementById('f-bedrooms').value);
+    if (bedrooms !== Number(originalProperty.numBedrooms || 0)) {
+      body.numBedrooms = bedrooms;
+    }
+
+    const bathrooms = Number(document.getElementById('f-bathrooms').value);
+    if (bathrooms !== Number(originalProperty.numBathrooms || 0)) {
+      body.numBathrooms = bathrooms;
+    }
 
     const neighName = document.getElementById('f-neighborhood').value.trim();
     const neighZone = document.getElementById('f-zone').value;
     const neighCity = document.getElementById('f-city-form').value;
-    if (neighName && neighZone && neighCity) {
-      body.neighborhood = { name: neighName, zone: neighZone, city: neighCity };
-    } else {
-      const cur = normalizeProperty(allProps.find(x => x.code === editingCode) || displayedProps.find(x => x.code === editingCode) || {});
-      const n = cur.neighborhood;
-      if (n?.name && n?.zone && n?.city) {
-        body.neighborhood = { name: neighName || n.name, zone: neighZone || n.zone, city: neighCity || n.city };
-      }
+
+    const oldNeighborhood = originalProperty.neighborhood || {};
+
+    if (
+            neighName !== (oldNeighborhood.name || '') ||
+            neighZone !== (oldNeighborhood.zone || '') ||
+            neighCity !== (oldNeighborhood.city || '')
+    ) {
+      body.neighborhood = {
+        name: neighName,
+        zone: neighZone,
+        city: neighCity
+      };
     }
+
     return body;
   }
 
