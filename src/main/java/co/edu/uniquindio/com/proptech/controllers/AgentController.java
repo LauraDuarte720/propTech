@@ -4,6 +4,7 @@ import co.edu.uniquindio.com.proptech.domain.dtos.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.mappers.MapperCrud;
 import co.edu.uniquindio.com.proptech.mappers.MapperCreate;
+import co.edu.uniquindio.com.proptech.mappers.impl.ClientMapper;
 import co.edu.uniquindio.com.proptech.mappers.structuresMappers.StructuresMappers;
 import co.edu.uniquindio.com.proptech.services.AgentService;
 import co.edu.uniquindio.com.proptech.services.VisitService;
@@ -26,13 +27,14 @@ public class AgentController {
     private final MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper;
     private final MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper;
     private final VisitService  visitService;
+    private final ClientMapper clientMapper;
 
 
     public AgentController(AgentService agentService,
                            MapperCrud<Agent, AgentDtoCreate, AgentDtoUpdate, AgentDtoReturn> agentMapper,
                            MapperCrud<Visit, VisitDtoCreate, VisitDtoUpdate, VisitDtoReturn> visitMapper,
                            MapperCreate<SupportRequest, SupportRequestDtoCreate, SupportRequestDtoReturn> supportRequestMapper,
-                           StructuresMappers structuresMappers, MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper, VisitService visitService) {
+                           StructuresMappers structuresMappers, MapperCrud<GeographicZone, GeographicZoneDtoCreate, GeographicZoneDtoUpdate, GeographicZoneDtoReturn> geographicZoneMapper, MapperCrud<Property, PropertyDtoCreate, PropertyDtoUpdate, PropertyDtoReturn> propertyMapper, VisitService visitService, ClientMapper clientMapper) {
         this.agentService = agentService;
         this.agentMapper = agentMapper;
         this.visitMapper = visitMapper;
@@ -41,6 +43,7 @@ public class AgentController {
         this.geographicZoneMapper = geographicZoneMapper;
         this.propertyMapper = propertyMapper;
         this.visitService = visitService;
+        this.clientMapper = clientMapper;
     }
 
     // ══════════════════════════════════════════════
@@ -229,5 +232,16 @@ public class AgentController {
         GeographicZone zone = geographicZoneMapper.toEntity(dto);
         Agent updated = agentService.updateAgentZone(cedula, zone, confirm);
         return ResponseEntity.ok(agentMapper.toDto(updated));
+    }
+
+    @GetMapping("/{cedula}/potential-clients")
+    public ResponseEntity<List<ClientDtoReturn>> getPotentialClientsForAgent(
+            @PathVariable String cedula) {
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        agentService.getPotentialClientsForAgent(cedula),
+                        clientMapper::toDto
+                )
+        );
     }
 }

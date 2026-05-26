@@ -35,10 +35,11 @@ public class AgentService {
     GeographicZoneService geographicZoneService;
     PropertyService propertyService;
     private final ClientService clientService;
+    private final RecommendationService recommendationService;
 
     public AgentService(AgentRepository agentRepository, VisitService visitService, PropertyMapper propertyMapper,
                         PropertyAssignmentService propertyAssignmentService, ZoneMatcher zoneMatcher, StructuresMappers structuresMappers,
-                        AdminActionService adminActionService, GeographicZoneService geographicZoneService, @Lazy PropertyService propertyService, ClientService clientService) {
+                        AdminActionService adminActionService, GeographicZoneService geographicZoneService, @Lazy PropertyService propertyService, ClientService clientService, @Lazy RecommendationService recommendationService) {
         this.agentRepository = agentRepository;
         this.visitService = visitService;
         this.propertyMapper = propertyMapper;
@@ -49,6 +50,7 @@ public class AgentService {
         this.geographicZoneService = geographicZoneService;
         this.propertyService = propertyService;
         this.clientService = clientService;
+        this.recommendationService = recommendationService;
     }
 
     public Agent registerAgent(Agent agent) {
@@ -67,6 +69,15 @@ public class AgentService {
             Optional.ofNullable(agent.getClosedDeals()).ifPresent(existing::setClosedDeals);
             return agentRepository.save(existing);
         }).orElseThrow(() -> new AgentDoesNotExist("cedula", agent.getCedula()));
+    }
+
+    public ArrayList<Client> getPotentialClientsForAgent(String agentCedula) {
+        Agent agent = getAgentByCedula(agentCedula);
+        ArrayList<String> codes = new ArrayList<>();
+        for (int i = 0; i < agent.getAssignedProperties().size(); i++) {
+            codes.add(agent.getAssignedProperties().get(i).getCode());
+        }
+        return recommendationService.getPotentialClientsForProperties(codes);
     }
 
     public HashTable<String, Agent> getAgents() {
