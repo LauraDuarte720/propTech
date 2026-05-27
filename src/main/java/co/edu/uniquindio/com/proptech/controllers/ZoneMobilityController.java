@@ -82,4 +82,31 @@ public class ZoneMobilityController {
                 )
         );
     }
+
+    @GetMapping("/by-level")
+    public ResponseEntity<List<ZoneTransitionPatternDto>> getAllPatternsByLevel(
+            @RequestParam(defaultValue = "ZONE") String level) {
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        zoneMobilityService.getAllMobilityPatternsByLevel(level),
+                        patternMapper::toDto));
+    }
+
+    @GetMapping("/correlated/by-level")
+    public ResponseEntity<List<ZoneTransitionPatternDto>> getCorrelatedByLevel(
+            @RequestParam(defaultValue = "ZONE") String level) {
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        zoneMobilityService.getOperationCorrelatedPatternsByLevel(level),
+                        patternMapper::toDto));
+    }
+
+    @GetMapping("/top-destinations/by-level")
+    public ResponseEntity<List<ZoneTransitionPatternDto>> getTopDestinationsByLevel(
+            @RequestParam(defaultValue = "ZONE") String level) {
+        return ResponseEntity.ok(
+                structuresMappers.fromArrayList(
+                        zoneMobilityService.getTopDestinationZonesByLevel(level),
+                        patternMapper::toDto));
+    }
 }
