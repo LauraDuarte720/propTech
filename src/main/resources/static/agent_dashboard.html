@@ -881,7 +881,7 @@
     if (res.ok) { closeOpModal(); loadDashboard(); }
     else { const e = await res.json(); alert(e.message||'Error al crear operación'); }
   }
-
+  const PRIORITY_TYPE = 'CONTRACT_EXPIRING';
   // ── Arranque ─────────────────────────────────────────────────────
   populateSelect('v-type', VISIT_TYPE);
   populateSelect('op-type', OPERATION_TYPE);
