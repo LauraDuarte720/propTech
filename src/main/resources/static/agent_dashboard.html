@@ -11,15 +11,12 @@
     :root {
       --navy: #131936; --accent: #4A6FE3; --accent-light: #6B8AFF;
       --border: rgba(19,25,54,0.12); --text-muted: #8A90A0;
-      --sidebar-w: 220px; --white: #FFFFFF; --bg: #F5F6FA;
-      --surface: #FFFFFF; --text: #1a1d2e;
+      --sidebar-w: 220px; --bg: #F5F6FA; --surface: #FFFFFF; --text: #1a1d2e;
       --priority-color: #E24B4A; --priority-bg: rgba(226,75,74,0.1);
-      --pending-color: #4A6FE3;  --pending-bg: rgba(74,111,227,0.1);
+      --pending-color: #4A6FE3; --pending-bg: rgba(74,111,227,0.1);
     }
     html, body { height: 100%; font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); }
     .app { display: flex; height: 100vh; overflow: hidden; }
-
-    /* Sidebar */
     .sidebar { width: var(--sidebar-w); background: var(--navy); display: flex; flex-direction: column; flex-shrink: 0; }
     .sidebar-logo { padding: 24px 20px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -31,64 +28,43 @@
     .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
     .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
     .nav-item.active { background: rgba(74,111,227,0.25); color: white; font-weight: 500; }
-    .nav-item .badge { margin-left: auto; background: #E24B4A; color: white; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 99px; }
     .sidebar-footer { margin-top: auto; padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
     .user-card { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
     .user-card:hover { background: rgba(255,255,255,0.06); }
     .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; flex-shrink: 0; }
     .user-name { font-size: 13px; font-weight: 500; color: white; }
     .user-role { font-family: 'Jost', sans-serif; font-size: 11px; color: rgba(255,255,255,0.4); }
-
-    /* Main */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
     .topbar { padding: 16px 28px; border-bottom: 1px solid var(--border); background: white; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
     .page-title { font-size: 18px; font-weight: 500; color: var(--text); }
     .topbar-right { display: flex; align-items: center; gap: 12px; }
-
-    /* Alert buttons en topbar — dos separados */
     .alert-btn-group { display: flex; align-items: center; gap: 6px; }
-    .alert-btn {
-      position: relative; display: flex; align-items: center; gap: 6px;
-      padding: 6px 12px; border-radius: 8px; background: var(--bg);
-      border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
-      font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500;
-    }
+    .alert-btn { position: relative; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; }
     .alert-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .alert-btn .count {
-      min-width: 18px; height: 18px; border-radius: 99px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700; padding: 0 4px;
-    }
+    .alert-btn .count { min-width: 18px; height: 18px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; padding: 0 4px; }
     .alert-btn.priority-btn { color: var(--priority-color); border-color: rgba(226,75,74,0.25); }
     .alert-btn.priority-btn:hover { background: var(--priority-bg); }
     .alert-btn.priority-btn .count { background: var(--priority-color); color: white; }
     .alert-btn.pending-btn { color: var(--pending-color); border-color: rgba(74,111,227,0.25); }
     .alert-btn.pending-btn:hover { background: var(--pending-bg); }
     .alert-btn.pending-btn .count { background: var(--pending-color); color: white; }
-    .alert-btn.hidden-count .count { display: none; }
-
     .btn { padding: 8px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; display: flex; align-items: center; gap: 6px; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-primary:hover { background: var(--accent-light); }
+    .btn-ghost { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: #eef0f8; }
     .btn svg { width: 14px; height: 14px; }
-
     .content { flex: 1; overflow-y: auto; padding: 28px; }
-
-    /* Metrics */
     .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
     .metric-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
     .metric-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
     .metric-icon svg { width: 19px; height: 19px; }
     .metric-val { font-size: 24px; font-weight: 600; color: var(--text); }
     .metric-label { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
     .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 24px; }
-
     .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
     .card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
     .card-title a { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--accent); text-decoration: none; }
-
-    /* Property cards */
     .props-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 12px; }
     .prop-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.15s; }
     .prop-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(74,111,227,0.1); }
@@ -101,8 +77,6 @@
     .prop-btn-visit:hover { background: rgba(74,111,227,0.2); }
     .prop-btn-op { background: rgba(29,158,117,0.1); color: #1D9E75; }
     .prop-btn-op:hover { background: rgba(29,158,117,0.2); }
-
-    /* Visit list */
     .visit-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .visit-item:last-child { border-bottom: none; }
     .visit-type-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -114,115 +88,53 @@
     .visit-badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-family: 'Jost', sans-serif; font-weight: 500; }
     .vip-badge { background: rgba(239,159,39,0.15); color: #EF9F27; }
     .normal-badge { background: rgba(74,111,227,0.1); color: var(--accent); }
-
-    /* Commission card */
     .commission-big { font-size: 32px; font-weight: 600; color: var(--accent); letter-spacing: -1px; margin: 8px 0 4px; }
     .commission-sub { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); }
     .commission-breakdown { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
     .comm-row { display: flex; justify-content: space-between; align-items: center; }
     .comm-label { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--text-muted); }
     .comm-val { font-size: 13px; font-weight: 500; color: var(--text); }
-
-    /* ── Alert Panel ─────────────────────────────────────────────── */
-    .alerts-panel {
-      position: fixed; top: 0; right: 0; width: 380px; height: 100vh;
-      background: white; border-left: 1px solid var(--border); z-index: 200;
-      transform: translateX(100%); transition: transform 0.25s ease;
-      display: flex; flex-direction: column;
-    }
+    .alerts-panel { position: fixed; top: 0; right: 0; width: 380px; height: 100vh; background: white; border-left: 1px solid var(--border); z-index: 200; transform: translateX(100%); transition: transform 0.25s ease; display: flex; flex-direction: column; }
     .alerts-panel.open { transform: translateX(0); }
-
-    .alerts-panel-header {
-      padding: 18px 20px 0; flex-shrink: 0;
-    }
-    .alerts-panel-top {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-    }
+    .alerts-panel-header { padding: 18px 20px 0; flex-shrink: 0; }
+    .alerts-panel-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .alerts-panel-title { font-size: 15px; font-weight: 500; }
     .alerts-panel-close { background: none; border: none; cursor: pointer; font-size: 22px; color: var(--text-muted); line-height: 1; }
-
-    /* Tabs dentro del panel */
-    .alert-tabs {
-      display: flex; gap: 0; border-bottom: 1px solid var(--border);
-    }
-    .alert-tab {
-      flex: 1; padding: 9px 0; text-align: center; font-family: 'Jost', sans-serif;
-      font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none;
-      color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: all 0.15s;
-    }
-    .alert-tab .tab-count {
-      font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px;
-    }
+    .alert-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+    .alert-tab { flex: 1; padding: 9px 0; text-align: center; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; }
+    .alert-tab .tab-count { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px; }
     .alert-tab.priority-tab.active { color: var(--priority-color); border-bottom-color: var(--priority-color); }
     .alert-tab.priority-tab .tab-count { background: var(--priority-bg); color: var(--priority-color); }
     .alert-tab.pending-tab.active { color: var(--pending-color); border-bottom-color: var(--pending-color); }
     .alert-tab.pending-tab .tab-count { background: var(--pending-bg); color: var(--pending-color); }
     .alert-tab:not(.active):hover { color: var(--text); }
-
     .alerts-panel-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
-
-    /* Pane de cada cola */
     .alert-pane { display: none; }
     .alert-pane.active { display: block; }
-
-    /* Tarjeta de alerta individual */
-    .alert-card {
-      border-radius: 10px; padding: 13px 14px; margin-bottom: 8px;
-      border: 1px solid var(--border); background: var(--bg);
-      transition: opacity 0.3s, transform 0.3s;
-    }
+    .alert-card { border-radius: 10px; padding: 13px 14px; margin-bottom: 8px; border: 1px solid var(--border); background: var(--bg); transition: opacity 0.3s, transform 0.3s; }
     .alert-card.removing { opacity: 0; transform: translateX(20px); }
-
     .alert-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
-    .alert-icon-wrap {
-      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .alert-icon-wrap { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     .alert-icon-wrap svg { width: 15px; height: 15px; }
     .alert-icon-wrap.priority { background: var(--priority-bg); color: var(--priority-color); }
-    .alert-icon-wrap.pending  { background: var(--pending-bg);  color: var(--pending-color); }
-
+    .alert-icon-wrap.pending { background: var(--pending-bg); color: var(--pending-color); }
     .alert-card-info { flex: 1; }
     .alert-card-type { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
     .alert-card-meta { font-family: 'Jost', sans-serif; font-size: 11px; color: var(--text-muted); }
-
-    .alert-reviewed-tag {
-      font-family: 'Jost', sans-serif; font-size: 10px; color: #1D9E75;
-      background: rgba(29,158,117,0.1); padding: 2px 7px; border-radius: 99px;
-      white-space: nowrap;
-    }
+    .alert-reviewed-tag { font-family: 'Jost', sans-serif; font-size: 10px; color: #1D9E75; background: rgba(29,158,117,0.1); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
     .alert-card-action { margin-top: 10px; }
-    .btn-attend {
-      padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 500;
-      cursor: pointer; border: none; font-family: 'Outfit', sans-serif;
-      transition: all 0.15s;
-    }
+    .btn-attend { padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; font-family: 'Outfit', sans-serif; transition: all 0.15s; }
     .btn-attend.priority { background: var(--priority-color); color: white; }
     .btn-attend.priority:hover { background: #c93d3c; }
-    .btn-attend.pending  { background: var(--accent); color: white; }
-    .btn-attend.pending:hover  { background: var(--accent-light); }
-
-    /* Banner "cola vacía" */
-    .queue-empty {
-      text-align: center; padding: 32px 16px;
-      color: var(--text-muted); font-family: 'Jost', sans-serif; font-size: 13px;
-    }
+    .btn-attend.pending { background: var(--accent); color: white; }
+    .btn-attend.pending:hover { background: var(--accent-light); }
+    .queue-empty { text-align: center; padding: 32px 16px; color: var(--text-muted); font-family: 'Jost', sans-serif; font-size: 13px; }
     .queue-empty svg { width: 36px; height: 36px; margin-bottom: 10px; opacity: 0.35; display: block; margin-inline: auto; }
-
-    /* Banner de primera alerta activa (la siguiente en la cola) */
-    .next-badge {
-      font-family: 'Jost', sans-serif; font-size: 10px; padding: 2px 7px;
-      border-radius: 99px; font-weight: 600; white-space: nowrap;
-    }
+    .next-badge { font-family: 'Jost', sans-serif; font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 600; white-space: nowrap; }
     .next-badge.priority { background: var(--priority-color); color: white; }
-    .next-badge.pending  { background: var(--accent); color: white; }
-
+    .next-badge.pending { background: var(--accent); color: white; }
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 199; }
     .overlay.open { display: block; }
-
-    /* Modal */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 300; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
     .modal { background: white; border-radius: 16px; padding: 28px; width: 480px; max-height: 85vh; overflow-y: auto; animation: fadeUp 0.2s ease; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
@@ -234,20 +146,33 @@
     .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none; transition: border 0.15s; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-    .btn-ghost { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: #eef0f8; }
+
+    /* ── Picker ── */
+    .picker-wrap { position: relative; }
+    .picker-search { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; outline: none; }
+    .picker-search:focus { border-color: var(--accent); }
+    .picker-search::placeholder { color: var(--text-muted); }
+    .picker-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 10px; z-index: 400; max-height: 220px; overflow-y: auto; box-shadow: 0 8px 28px rgba(0,0,0,0.1); }
+    .picker-dropdown.open { display: block; }
+    .picker-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .picker-item:last-child { border-bottom: none; }
+    .picker-item:hover { background: rgba(74,111,227,0.05); }
+    .pi-main { font-size: 13px; font-weight: 500; color: var(--text); }
+    .pi-sub { font-family: 'Jost', sans-serif; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .selected-chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; background: rgba(74,111,227,0.08); border: 1px solid rgba(74,111,227,0.2); border-radius: 7px; font-size: 12px; margin-top: 6px; }
+    .selected-chip .sc-x { cursor: pointer; color: var(--text-muted); font-size: 15px; line-height: 1; }
+    .selected-chip .sc-x:hover { color: var(--text); }
   </style>
 </head>
 <body>
 <div class="app">
-  <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
       <span class="logo-name">PropTech</span>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-label">Mi gestión</div>
+      <div class="sidebar-label">Mi gestion</div>
       <a href="agent_dashboard.html" class="nav-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
@@ -261,12 +186,16 @@
         Mis visitas
       </a>
       <a href="agent_operations.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>
         Operaciones
       </a>
       <a href="agent_support.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Solicitudes
+      </a>
+      <a href="agent_potential_clients.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clientes potenciales
       </a>
     </div>
     <div class="sidebar-footer">
@@ -274,44 +203,28 @@
         <div class="avatar" id="av">AS</div>
         <div>
           <div class="user-name" id="uname">Asesor</div>
-          <div class="user-role">Asesor · Cerrar sesión</div>
+          <div class="user-role">Asesor · Cerrar sesion</div>
         </div>
       </div>
     </div>
   </nav>
 
-  <!-- Main -->
   <div class="main">
     <div class="topbar">
       <span class="page-title">Dashboard</span>
       <div class="topbar-right">
-
-        <!-- ── Botones de las dos colas ───────────────────── -->
         <div class="alert-btn-group">
-
-          <!-- Cola prioritaria (CONTRACT_EXPIRING) -->
-          <button class="alert-btn priority-btn" id="btn-priority"
-                  onclick="openAlertPanel('priority')" title="Alertas urgentes">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
+          <button class="alert-btn priority-btn" id="btn-priority" onclick="openAlertPanel('priority')" title="Alertas urgentes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             Urgentes
             <span class="count" id="count-priority">0</span>
           </button>
-
-          <!-- Cola pendiente (resto de tipos) -->
-          <button class="alert-btn pending-btn" id="btn-pending"
-                  onclick="openAlertPanel('pending')" title="Alertas pendientes">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
+          <button class="alert-btn pending-btn" id="btn-pending" onclick="openAlertPanel('pending')" title="Alertas pendientes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             Pendientes
             <span class="count" id="count-pending">0</span>
           </button>
         </div>
-
         <button class="btn btn-primary" onclick="window.location.href='agent_properties.html'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Nueva visita
@@ -320,86 +233,55 @@
     </div>
 
     <div class="content">
-      <!-- Metrics -->
       <div class="metrics">
         <div class="metric-card">
-          <div class="metric-icon" style="background:rgba(74,111,227,0.1);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4A6FE3" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
-          </div>
+          <div class="metric-icon" style="background:rgba(74,111,227,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#4A6FE3" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg></div>
           <div class="metric-val" id="m-props">—</div>
           <div class="metric-label">Inmuebles asignados</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon" style="background:rgba(29,158,117,0.1);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          </div>
+          <div class="metric-icon" style="background:rgba(29,158,117,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
           <div class="metric-val" id="m-visits">—</div>
           <div class="metric-label">Visitas agendadas</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon" style="background:rgba(239,159,39,0.1);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>
-          </div>
+          <div class="metric-icon" style="background:rgba(239,159,39,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#EF9F27" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg></div>
           <div class="metric-val" id="m-ops">—</div>
           <div class="metric-label">Operaciones activas</div>
         </div>
         <div class="metric-card">
-          <div class="metric-icon" style="background:rgba(74,111,227,0.1);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4A6FE3" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          </div>
+          <div class="metric-icon" style="background:rgba(74,111,227,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#4A6FE3" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
           <div class="metric-val" id="m-deals">—</div>
           <div class="metric-label">Cierres totales</div>
         </div>
       </div>
 
       <div class="grid-3">
-        <!-- Properties quick access -->
         <div class="card">
-          <div class="card-title">
-            Mis inmuebles
-            <a href="agent_properties.html">Ver todos →</a>
-          </div>
-          <div class="props-grid" id="props-grid">
-            <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-          </div>
+          <div class="card-title">Mis inmuebles <a href="agent_properties.html">Ver todos</a></div>
+          <div class="props-grid" id="props-grid"><div style="color:var(--text-muted);font-size:13px;">Cargando...</div></div>
         </div>
-
-        <!-- Commission -->
         <div class="card">
           <div class="card-title">Comisiones ganadas</div>
           <div class="commission-big" id="comm-total">$0</div>
           <div class="commission-sub">Solo operaciones cerradas</div>
           <div class="commission-breakdown">
-            <div class="comm-row">
-              <span class="comm-label">Cierres completados</span>
-              <span class="comm-val" id="comm-deals">0</span>
-            </div>
-            <div class="comm-row">
-              <span class="comm-label">Comisión promedio</span>
-              <span class="comm-val" id="comm-avg">$0</span>
-            </div>
+            <div class="comm-row"><span class="comm-label">Cierres completados</span><span class="comm-val" id="comm-deals">0</span></div>
+            <div class="comm-row"><span class="comm-label">Comision promedio</span><span class="comm-val" id="comm-avg">$0</span></div>
           </div>
         </div>
       </div>
 
-      <!-- Visits queue -->
       <div class="card">
-        <div class="card-title">
-          Cola de visitas (prioridad)
-          <a href="agent_visits.html">Ver todas →</a>
-        </div>
-        <div id="visits-list">
-          <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
-        </div>
+        <div class="card-title">Cola de visitas (prioridad) <a href="agent_visits.html">Ver todas</a></div>
+        <div id="visits-list"><div style="color:var(--text-muted);font-size:13px;">Cargando...</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Overlay -->
 <div class="overlay" id="overlay" onclick="closeAlertPanel()"></div>
 
-<!-- ── Panel de alertas con dos tabs ──────────────────────────── -->
 <div class="alerts-panel" id="alerts-panel">
   <div class="alerts-panel-header">
     <div class="alerts-panel-top">
@@ -408,51 +290,39 @@
     </div>
     <div class="alert-tabs">
       <button class="alert-tab priority-tab active" id="tab-priority" onclick="switchTab('priority')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        Urgentes
-        <span class="tab-count" id="tab-count-priority">0</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Urgentes <span class="tab-count" id="tab-count-priority">0</span>
       </button>
       <button class="alert-tab pending-tab" id="tab-pending" onclick="switchTab('pending')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
-        Pendientes
-        <span class="tab-count" id="tab-count-pending">0</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Pendientes <span class="tab-count" id="tab-count-pending">0</span>
       </button>
     </div>
   </div>
-
   <div class="alerts-panel-body">
-    <!-- Cola prioritaria -->
-    <div class="alert-pane active" id="pane-priority">
-      <div style="color:var(--text-muted);font-size:13px;padding:8px 0;">Cargando...</div>
-    </div>
-    <!-- Cola pendiente -->
-    <div class="alert-pane" id="pane-pending">
-      <div style="color:var(--text-muted);font-size:13px;padding:8px 0;">Cargando...</div>
-    </div>
+    <div class="alert-pane active" id="pane-priority"><div style="color:var(--text-muted);font-size:13px;padding:8px 0;">Cargando...</div></div>
+    <div class="alert-pane" id="pane-pending"><div style="color:var(--text-muted);font-size:13px;padding:8px 0;">Cargando...</div></div>
   </div>
 </div>
 
-<!-- Modal visita rápida -->
+<!-- Modal visita rapida -->
 <div class="modal-overlay" id="modal-visit">
   <div class="modal">
-    <div class="modal-title">
-      Nueva visita
-      <button onclick="closeVisitModal()">×</button>
-    </div>
+    <div class="modal-title">Nueva visita <button onclick="closeVisitModal()">×</button></div>
     <div class="form-group">
       <label>Inmueble</label>
       <input type="text" id="v-prop-label" disabled style="opacity:0.6;">
       <input type="hidden" id="v-prop-code">
     </div>
     <div class="form-group">
-      <label>Cliente (cédula)</label>
-      <select id="v-client"></select>
+      <label>Cliente</label>
+      <div class="picker-wrap">
+        <input class="picker-search" id="v-client-search" placeholder="Buscar por nombre o cedula..." autocomplete="off"
+               oninput="filterModalPicker('v-client')" onfocus="openModalPicker('v-client')" onblur="delayCloseModalPicker('v-client')">
+        <div class="picker-dropdown" id="v-client-dropdown"></div>
+      </div>
+      <div id="v-client-chip"></div>
+      <input type="hidden" id="v-client-val">
     </div>
     <div class="form-group">
       <label>Fecha y hora</label>
@@ -469,13 +339,10 @@
   </div>
 </div>
 
-<!-- Modal operación rápida -->
+<!-- Modal operacion rapida -->
 <div class="modal-overlay" id="modal-op">
   <div class="modal">
-    <div class="modal-title">
-      Nueva operación
-      <button onclick="closeOpModal()">×</button>
-    </div>
+    <div class="modal-title">Nueva operacion <button onclick="closeOpModal()">×</button></div>
     <div class="form-group">
       <label>Inmueble</label>
       <input type="text" id="op-prop-label" disabled style="opacity:0.6;">
@@ -483,10 +350,16 @@
     </div>
     <div class="form-group">
       <label>Cliente</label>
-      <select id="op-client"></select>
+      <div class="picker-wrap">
+        <input class="picker-search" id="op-client-search" placeholder="Buscar por nombre o cedula..." autocomplete="off"
+               oninput="filterModalPicker('op-client')" onfocus="openModalPicker('op-client')" onblur="delayCloseModalPicker('op-client')">
+        <div class="picker-dropdown" id="op-client-dropdown"></div>
+      </div>
+      <div id="op-client-chip"></div>
+      <input type="hidden" id="op-client-val">
     </div>
     <div class="form-group">
-      <label>Tipo de operación</label>
+      <label>Tipo de operacion</label>
       <select id="op-type"></select>
     </div>
     <div class="form-group">
@@ -499,7 +372,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeOpModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveOperation()">Crear operación</button>
+      <button class="btn btn-primary" onclick="saveOperation()">Crear operacion</button>
     </div>
   </div>
 </div>
@@ -510,39 +383,71 @@
   if (!user.role) window.location.href = 'proptech_login.html';
   if (user.name) {
     document.getElementById('uname').textContent = user.name;
-    const initials = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    document.getElementById('av').textContent = initials;
+    document.getElementById('av').textContent = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   }
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
   let agentProps = [];
   let allClients = [];
 
-  // ── Arranque ─────────────────────────────────────────────────────
+  // ── Mini picker para modales ──────────────────────────────────────
+  const modalPickers = {};
+  function registerModalPicker(id, items, renderFn) {
+    modalPickers[id] = { items, renderFn };
+    renderModalDropdown(id, items.slice(0, 40));
+  }
+  function renderModalDropdown(id, items) {
+    const dd = document.getElementById(id + '-dropdown');
+    if (!dd) return;
+    dd.innerHTML = items.slice(0, 50).map(item => modalPickers[id].renderFn(item)).join('');
+    dd.querySelectorAll('.picker-item').forEach(el => {
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        selectModalPicker(id, el.dataset.val, el.dataset.label);
+      });
+    });
+  }
+  function filterModalPicker(id) {
+    const q = document.getElementById(id + '-search').value.toLowerCase();
+    const pd = modalPickers[id];
+    if (!pd) return;
+    openModalPicker(id);
+    renderModalDropdown(id, pd.items.filter(i => JSON.stringify(i).toLowerCase().includes(q)).slice(0, 50));
+  }
+  function openModalPicker(id) { document.getElementById(id + '-dropdown')?.classList.add('open'); }
+  function delayCloseModalPicker(id) { setTimeout(() => document.getElementById(id + '-dropdown')?.classList.remove('open'), 180); }
+  function selectModalPicker(id, val, lbl) {
+    document.getElementById(id + '-val').value = val;
+    document.getElementById(id + '-search').value = lbl;
+    delayCloseModalPicker(id);
+    const chip = document.getElementById(id + '-chip');
+    if (chip) chip.innerHTML = `<div class="selected-chip"><span>${lbl}</span><span class="sc-x" onclick="clearModalPicker('${id}')">×</span></div>`;
+  }
+  function clearModalPicker(id) {
+    document.getElementById(id + '-val').value = '';
+    document.getElementById(id + '-search').value = '';
+    const chip = document.getElementById(id + '-chip');
+    if (chip) chip.innerHTML = '';
+  }
+  function clientRenderFn(c) {
+    return `<div class="picker-item" data-val="${c.cedula}" data-label="${c.name} (${c.cedula})">
+      <div class="pi-main">${c.name}</div>
+      <div class="pi-sub">${c.cedula} · ${label(CLIENT_TYPE, c.clientType)}</div>
+    </div>`;
+  }
 
-  // ── Dashboard principal ─────────────────────────────────────────
+  // ── Dashboard ─────────────────────────────────────────────────────
   async function loadDashboard() {
     const agentId = user.cedula;
+    fetch(`${API}/basic-alerts/generate`, { method: 'POST' }).catch(() => {});
 
-    // 1. Generar alertas en background — no bloquea el resto del dashboard
-    fetch(`${API}/basic-alerts/generate`, { method: 'POST' }).catch(()=>{});
+    const commRes = await fetch(`${API}/operations/agent/${agentId}/commission`).catch(() => null);
+    if (commRes?.ok) document.getElementById('comm-total').textContent = '$' + Number(await commRes.json()).toLocaleString();
 
-    // 2. Comisiones
-    const commRes = await fetch(`${API}/operations/agent/${agentId}/commission`).catch(()=>null);
-    if (commRes?.ok) {
-      const total = await commRes.json();
-      document.getElementById('comm-total').textContent = '$' + Number(total).toLocaleString();
-    }
+    const agentRes = await fetch(`${API}/agents/${agentId}`).catch(() => null);
+    if (agentRes?.ok) { const a = await agentRes.json(); document.getElementById('m-deals').textContent = a.closedDeals || 0; }
 
-    // 3. Agente info
-    const agentRes = await fetch(`${API}/agents/${agentId}`).catch(()=>null);
-    if (agentRes?.ok) {
-      const agent = await agentRes.json();
-      document.getElementById('m-deals').textContent = agent.closedDeals || 0;
-    }
-
-    // 4. Propiedades
-    const propsRes = await fetch(`${API}/properties`).catch(()=>null);
+    const propsRes = await fetch(`${API}/properties`).catch(() => null);
     if (propsRes?.ok) {
       const all = await propsRes.json();
       agentProps = all.filter(p => p.agent?.cedula === agentId);
@@ -550,110 +455,63 @@
       renderProps(agentProps.slice(0, 6));
     }
 
-    // 5. Visitas
-    const visitsRes = await fetch(`${API}/visits/agent/${agentId}`).catch(()=>null);
+    const visitsRes = await fetch(`${API}/visits/agent/${agentId}`).catch(() => null);
     if (visitsRes?.ok) {
       const visits = await visitsRes.json();
       const active = visits.filter(v => v.status === 'PENDING' || v.status === 'CONFIRMED');
       document.getElementById('m-visits').textContent = active.length;
-      const sorted = visits.sort((a,b) => {
-        const pa = a.visitType === 'VIP' ? 0 : 1;
-        const pb = b.visitType === 'VIP' ? 0 : 1;
-        if (pa !== pb) return pa - pb;
-        return new Date(a.date) - new Date(b.date);
-      });
-      renderVisits(sorted.slice(0, 5));
+      renderVisits(visits.sort((a,b) => {
+        const pa = a.visitType === 'VIP' ? 0 : 1, pb = b.visitType === 'VIP' ? 0 : 1;
+        return pa !== pb ? pa - pb : new Date(a.date) - new Date(b.date);
+      }).slice(0, 5));
     }
 
-    // 6. Operaciones
-    const opsRes = await fetch(`${API}/operations/agent/${agentId}`).catch(()=>null);
+    const opsRes = await fetch(`${API}/operations/agent/${agentId}`).catch(() => null);
     if (opsRes?.ok) {
       const ops = await opsRes.json();
-      document.getElementById('m-ops').textContent = ops.filter(o=>o.processStatus==='CREATED').length;
-      const closed = ops.filter(o=>o.processStatus==='CLOSED');
+      document.getElementById('m-ops').textContent = ops.filter(o => o.processStatus === 'CREATED').length;
+      const closed = ops.filter(o => o.processStatus === 'CLOSED');
       document.getElementById('comm-deals').textContent = closed.length;
-      const avg = closed.length ? (closed.reduce((s,o)=>s+(o.commission||0),0)/closed.length) : 0;
+      const avg = closed.length ? closed.reduce((s,o) => s + (o.commission||0), 0) / closed.length : 0;
       document.getElementById('comm-avg').textContent = '$' + Math.round(avg).toLocaleString();
     }
 
-    // 7. Clientes para modales
-    const clientsRes = await fetch(`${API}/clients`).catch(()=>null);
+    const clientsRes = await fetch(`${API}/clients`).catch(() => null);
     if (clientsRes?.ok) {
       allClients = await clientsRes.json();
-      const opts = allClients.map(c=>`<option value="${c.cedula}">${c.name} (${c.cedula})</option>`).join('');
-      document.getElementById('v-client').innerHTML = opts;
-      document.getElementById('op-client').innerHTML = opts;
+      registerModalPicker('v-client', allClients, clientRenderFn);
+      registerModalPicker('op-client', allClients, clientRenderFn);
     }
 
-    // 8. Alertas
     await loadAlerts();
   }
 
-  // ── Descripción enriquecida según tipo de alerta ────────────────
+  // ── Alerts ────────────────────────────────────────────────────────
   function alertSubject(a) {
     switch (a.alertType) {
-      case 'CONTRACT_EXPIRING': {
-        // Operación con fecha de vencimiento
-        const addr  = a.operation?.property?.address || '—';
-        const date  = a.operation?.dateFinal
-                ? new Date(a.operation.dateFinal).toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'})
-                : '—';
-        const client = a.operation?.client?.name || '—';
-        return `${addr} · Cliente: ${client} · Vence: ${date}`;
-      }
-      case 'RESERVE_NO_CLOSURE': {
-        // Operación abierta sin cerrar
-        const addr   = a.operation?.property?.address || '—';
-        const since  = a.operation?.dateInitial
-                ? new Date(a.operation.dateInitial).toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'})
-                : '—';
-        const client = a.operation?.client?.name || '—';
-        const val    = a.operation?.value ? '$' + Number(a.operation.value).toLocaleString() : '—';
-        return `${addr} · Cliente: ${client} · Iniciada: ${since} · Valor: ${val}`;
-      }
-      case 'PROPERTY_NO_VISITS':
-        return a.property?.address || '—';
-      case 'HIGH_DEMAND':
-        return a.property?.address || '—';
-      case 'PENDING_VISIT_CONFIRMATION': {
-        const addr  = a.visit?.property?.address || '—';
-        const date  = a.visit?.date
-                ? new Date(a.visit.date).toLocaleDateString('es-CO', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})
-                : '—';
-        const client = a.visit?.client?.name || '—';
-        return `${addr} · Cliente: ${client} · Fecha visita: ${date}`;
-      }
-      case 'INACTIVE_CLIENT':
-        return a.client?.name || '—';
-      default:
-        return a.property?.address || a.client?.name || '—';
+      case 'CONTRACT_EXPIRING': { const addr=a.operation?.property?.address||'—'; const date=a.operation?.dateFinal?new Date(a.operation.dateFinal).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}):'—'; return `${addr} · Cliente: ${a.operation?.client?.name||'—'} · Vence: ${date}`; }
+      case 'RESERVE_NO_CLOSURE': { const addr=a.operation?.property?.address||'—'; const since=a.operation?.dateInitial?new Date(a.operation.dateInitial).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}):'—'; return `${addr} · Cliente: ${a.operation?.client?.name||'—'} · Iniciada: ${since}`; }
+      case 'PROPERTY_NO_VISITS': return a.property?.address||'—';
+      case 'HIGH_DEMAND': return a.property?.address||'—';
+      case 'PENDING_VISIT_CONFIRMATION': { const addr=a.visit?.property?.address||'—'; const date=a.visit?.date?new Date(a.visit.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—'; return `${addr} · Cliente: ${a.visit?.client?.name||'—'} · ${date}`; }
+      case 'INACTIVE_CLIENT': return a.client?.name||'—';
+      default: return a.property?.address||a.client?.name||'—';
     }
   }
 
-  // ── Cargar y renderizar ambas colas ─────────────────────────────
   async function loadAlerts() {
-    const res = await fetch(`${API}/basic-alerts/all`).catch(()=>null);
+    const res = await fetch(`${API}/basic-alerts/all`).catch(() => null);
     if (!res?.ok) return;
-
     const allAlerts = await res.json();
-
-    // Filtrar: mostrar si el agente de la alerta es este asesor, O si no tiene agente asignado
-    const mine = allAlerts.filter(a =>
-            !a.agent || a.agent.cedula === user.cedula
-    );
-
-    // Separar por cola y estado
-    const priorityAlerts    = mine.filter(a => a.alertType === PRIORITY_TYPE && !a.reviewed);
-    const pendingAlerts     = mine.filter(a => a.alertType !== PRIORITY_TYPE && !a.reviewed);
-    const reviewedPriority  = mine.filter(a => a.alertType === PRIORITY_TYPE &&  a.reviewed);
-    const reviewedPending   = mine.filter(a => a.alertType !== PRIORITY_TYPE &&  a.reviewed);
-
-    // Contadores
-    document.getElementById('count-priority').textContent       = priorityAlerts.length;
-    document.getElementById('count-pending').textContent        = pendingAlerts.length;
-    document.getElementById('tab-count-priority').textContent   = priorityAlerts.length;
-    document.getElementById('tab-count-pending').textContent    = pendingAlerts.length;
-
+    const mine = allAlerts.filter(a => !a.agent || a.agent.cedula === user.cedula);
+    const priorityAlerts   = mine.filter(a => a.alertType === PRIORITY_TYPE && !a.reviewed);
+    const pendingAlerts    = mine.filter(a => a.alertType !== PRIORITY_TYPE && !a.reviewed);
+    const reviewedPriority = mine.filter(a => a.alertType === PRIORITY_TYPE && a.reviewed);
+    const reviewedPending  = mine.filter(a => a.alertType !== PRIORITY_TYPE && a.reviewed);
+    document.getElementById('count-priority').textContent     = priorityAlerts.length;
+    document.getElementById('count-pending').textContent      = pendingAlerts.length;
+    document.getElementById('tab-count-priority').textContent = priorityAlerts.length;
+    document.getElementById('tab-count-pending').textContent  = pendingAlerts.length;
     renderAlertsPane('pane-priority', priorityAlerts, reviewedPriority, 'priority');
     renderAlertsPane('pane-pending',  pendingAlerts,  reviewedPending,  'pending');
   }
@@ -661,174 +519,108 @@
   function renderAlertsPane(paneId, active, reviewed, kind) {
     const pane = document.getElementById(paneId);
     let html = '';
-
     if (!active.length && !reviewed.length) {
-      html = `<div class="queue-empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        Cola vacía — todo al día
-      </div>`;
+      html = `<div class="queue-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Cola vacia — todo al dia</div>`;
     } else {
-      // Activas: SOLO la primera (peek) puede desencolar
       active.forEach((a, i) => {
         const isNext = i === 0;
-        html += `
-        <div class="alert-card" id="alert-${a.id}" style="${!isNext ? 'opacity:0.6;' : ''}">
+        html += `<div class="alert-card" id="alert-${a.id}" style="${!isNext?'opacity:0.6;':''}">
           <div class="alert-card-header">
             <div class="alert-icon-wrap ${kind}">${alertIcon(a.alertType)}</div>
             <div class="alert-card-info">
               <div class="alert-card-type">${label(ALERT_TYPE_BASIC, a.alertType)}</div>
               <div class="alert-card-meta">${alertSubject(a)}</div>
             </div>
-            ${isNext
-                ? `<span class="next-badge ${kind}">Siguiente</span>`
-                : `<span style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text-muted);white-space:nowrap;">En cola</span>`
-        }
+            ${isNext?`<span class="next-badge ${kind}">Siguiente</span>`:`<span style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text-muted);">En cola</span>`}
           </div>
-          ${isNext ? `
-          <div class="alert-card-action">
-            <button class="btn-attend ${kind}" onclick="attendAlert('${kind}')">
-              Atender y desencolar
-            </button>
-          </div>` : ''}
+          ${isNext?`<div class="alert-card-action"><button class="btn-attend ${kind}" onclick="attendAlert('${kind}')">Atender y desencolar</button></div>`:''}
         </div>`;
       });
-
-      // Revisadas al final
       reviewed.forEach(a => {
-        html += `
-        <div class="alert-card" style="opacity:0.5;">
+        html += `<div class="alert-card" style="opacity:0.5;">
           <div class="alert-card-header">
             <div class="alert-icon-wrap ${kind}">${alertIcon(a.alertType)}</div>
             <div class="alert-card-info">
               <div class="alert-card-type">${label(ALERT_TYPE_BASIC, a.alertType)}</div>
               <div class="alert-card-meta">${alertSubject(a)}</div>
             </div>
-            <span class="alert-reviewed-tag">✓ Revisada</span>
+            <span class="alert-reviewed-tag">Revisada</span>
           </div>
         </div>`;
       });
     }
-
     pane.innerHTML = html;
   }
 
   function alertIcon(type) {
     switch(type) {
-      case 'CONTRACT_EXPIRING':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg>`;
-      case 'PROPERTY_NO_VISITS':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/><path d="M9 21V12h6v9"/></svg>`;
-      case 'HIGH_DEMAND':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`;
-      case 'PENDING_VISIT_CONFIRMATION':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-      case 'RESERVE_NO_CLOSURE':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/><line x1="9" y1="14" x2="15" y2="14"/></svg>`;
-      case 'INACTIVE_CLIENT':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-      default:
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+      case 'CONTRACT_EXPIRING': return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`;
+      case 'PROPERTY_NO_VISITS': return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>`;
+      case 'HIGH_DEMAND': return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>`;
+      case 'PENDING_VISIT_CONFIRMATION': return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      case 'RESERVE_NO_CLOSURE': return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>`;
+      case 'INACTIVE_CLIENT': return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      default: return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>`;
     }
   }
 
-  // ── Atender: desencola la cabeza de la cola correspondiente ─────
   let _attending = false;
-
   async function attendAlert(kind) {
-    if (_attending) return; // bloquear doble clic
+    if (_attending) return;
     _attending = true;
-
-    // Deshabilitar botón de inmediato
     const btn = document.querySelector(`#pane-${kind} .btn-attend`);
     if (btn) { btn.disabled = true; btn.textContent = 'Atendiendo...'; }
-
-    const endpoint = kind === 'priority'
-            ? `${API}/basic-alerts/priority/next`
-            : `${API}/basic-alerts/pending/next`;
-
-    // Animación de salida
     const nextCard = document.querySelector(`#pane-${kind} .alert-card`);
-    if (nextCard) {
-      nextCard.classList.add('removing');
-      await new Promise(r => setTimeout(r, 280));
-    }
-
-    const res = await fetch(endpoint, { method: 'POST' }).catch(()=>null);
-
+    if (nextCard) { nextCard.classList.add('removing'); await new Promise(r => setTimeout(r, 280)); }
+    const endpoint = kind === 'priority' ? `${API}/basic-alerts/priority/next` : `${API}/basic-alerts/pending/next`;
+    const res = await fetch(endpoint, { method: 'POST' }).catch(() => null);
     if (!res?.ok) {
-      alert('Error al atender la alerta');
+      ptToast('error', 'Error al atender', 'No se pudo atender la alerta');
       if (nextCard) nextCard.classList.remove('removing');
       if (btn) { btn.disabled = false; btn.textContent = 'Atender y desencolar'; }
-      _attending = false;
-      return;
+    } else {
+      await loadAlerts();
     }
-
-    await loadAlerts();
     _attending = false;
   }
 
-  // ── Panel y tabs ─────────────────────────────────────────────────
   let currentTab = 'priority';
-
-  function openAlertPanel(tab) {
-    switchTab(tab);
-    document.getElementById('alerts-panel').classList.add('open');
-    document.getElementById('overlay').classList.add('open');
-  }
-
-  function closeAlertPanel() {
-    document.getElementById('alerts-panel').classList.remove('open');
-    document.getElementById('overlay').classList.remove('open');
-  }
-
+  function openAlertPanel(tab) { switchTab(tab); document.getElementById('alerts-panel').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+  function closeAlertPanel() { document.getElementById('alerts-panel').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
   function switchTab(tab) {
     currentTab = tab;
-    // Tabs
     document.getElementById('tab-priority').classList.toggle('active', tab === 'priority');
     document.getElementById('tab-pending').classList.toggle('active', tab === 'pending');
-    // Panes
     document.getElementById('pane-priority').classList.toggle('active', tab === 'priority');
     document.getElementById('pane-pending').classList.toggle('active', tab === 'pending');
   }
 
-  // ── Renderizado de tarjetas de inmuebles ─────────────────────────
+  // ── Render ────────────────────────────────────────────────────────
   function renderProps(props) {
     const grid = document.getElementById('props-grid');
-    if (!props.length) {
-      grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin inmuebles asignados</div>';
-      return;
-    }
+    if (!props.length) { grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin inmuebles asignados</div>'; return; }
     grid.innerHTML = props.map(p => `
       <div class="prop-card">
         <div class="prop-type">${label(PROPERTY_TYPE, p.propertyType)}</div>
         <div class="prop-addr" title="${p.address}">${p.address || p.code}</div>
         <div class="prop-price">$${Number(p.price||0).toLocaleString()}</div>
         <div class="prop-actions">
-          <button class="prop-btn prop-btn-visit" onclick="openVisitModal('${p.code}','${p.address||p.code}')">+ Visita</button>
-          <button class="prop-btn prop-btn-op"    onclick="openOpModal('${p.code}','${p.address||p.code}')">+ Operación</button>
+          <button class="prop-btn prop-btn-visit" onclick="openVisitModal('${p.code}','${(p.address||p.code).replace(/'/g,"\\'")}')">+ Visita</button>
+          <button class="prop-btn prop-btn-op" onclick="openOpModal('${p.code}','${(p.address||p.code).replace(/'/g,"\\'")}')">+ Operacion</button>
         </div>
       </div>`).join('');
   }
 
-  // ── Renderizado de visitas ───────────────────────────────────────
   function renderVisits(visits) {
     const list = document.getElementById('visits-list');
-    if (!visits.length) {
-      list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin visitas agendadas</div>';
-      return;
-    }
+    if (!visits.length) { list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Sin visitas agendadas</div>'; return; }
     list.innerHTML = visits.map(v => {
       const isVip = v.visitType === 'VIP';
-      const dt = v.date
-              ? new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
-              : '—';
+      const dt = v.date ? new Date(v.date).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
       return `<div class="visit-item">
         <div class="visit-type-dot ${isVip?'vip-dot':'normal-dot'}"></div>
         <div class="visit-info">
-          <div class="visit-prop">${v.property?.address || v.property?.code || '—'}</div>
+          <div class="visit-prop">${v.property?.address||v.property?.code||'—'}</div>
           <div class="visit-meta">${v.client?.name||'—'} · ${dt} · ${label(VISIT_STATUS, v.status)}</div>
         </div>
         <span class="visit-badge ${isVip?'vip-badge':'normal-badge'}">${isVip?'VIP':'Normal'}</span>
@@ -836,56 +628,56 @@
     }).join('');
   }
 
-  // ── Modales ──────────────────────────────────────────────────────
+  // ── Modales ───────────────────────────────────────────────────────
   function openVisitModal(code, lbl) {
     document.getElementById('v-prop-code').value = code;
     document.getElementById('v-prop-label').value = lbl;
+    clearModalPicker('v-client');
     document.getElementById('modal-visit').classList.add('open');
   }
   function closeVisitModal() { document.getElementById('modal-visit').classList.remove('open'); }
 
   async function saveVisit() {
-    const body = {
-      propertyId: document.getElementById('v-prop-code').value,
-      clientId:   document.getElementById('v-client').value,
-      agentId:    user.cedula,
-      date:       document.getElementById('v-date').value,
-      visitType:  document.getElementById('v-type').value
-    };
+    const propId   = document.getElementById('v-prop-code').value;
+    const clientId = document.getElementById('v-client-val').value;
+    const date     = document.getElementById('v-date').value;
+    if (!clientId) { ptToast('warning', 'Campo requerido', 'Selecciona un cliente'); return; }
+    if (!date)     { ptToast('warning', 'Campo requerido', 'Ingresa la fecha y hora'); return; }
     const res = await fetch(`${API}/visits`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ propertyId: propId, clientId, agentId: user.cedula, date, visitType: document.getElementById('v-type').value })
     });
-    if (res.ok) { closeVisitModal(); loadDashboard(); }
-    else { const e = await res.json(); alert(e.message||'Error al agendar visita'); }
+    if (res.ok) { ptToast('success', 'Visita agendada', 'Se añadio a la cola de prioridad'); closeVisitModal(); loadDashboard(); }
+    else { const e = await res.json().catch(()=>({})); ptToast('error', 'Error al agendar', e.message || 'No se pudo agendar la visita'); }
   }
 
   function openOpModal(code, lbl) {
     document.getElementById('op-prop-code').value = code;
     document.getElementById('op-prop-label').value = lbl;
+    clearModalPicker('op-client');
     document.getElementById('modal-op').classList.add('open');
   }
   function closeOpModal() { document.getElementById('modal-op').classList.remove('open'); }
 
   async function saveOperation() {
-    const body = {
-      propertyId:    document.getElementById('op-prop-code').value,
-      clientId:      document.getElementById('op-client').value,
-      agentId:       user.cedula,
-      operationType: document.getElementById('op-type').value,
-      dateInitial:   document.getElementById('op-date-init').value,
-      dateFinal:     document.getElementById('op-date-end').value
-    };
+    const propId   = document.getElementById('op-prop-code').value;
+    const clientId = document.getElementById('op-client-val').value;
+    const type     = document.getElementById('op-type').value;
+    const dateInit = document.getElementById('op-date-init').value;
+    const dateEnd  = document.getElementById('op-date-end').value;
+    if (!clientId) { ptToast('warning', 'Campo requerido', 'Selecciona un cliente'); return; }
+    if (!dateInit) { ptToast('warning', 'Campo requerido', 'Ingresa la fecha de inicio'); return; }
     const res = await fetch(`${API}/operations`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ propertyId: propId, clientId, agentId: user.cedula, operationType: type, dateInitial: dateInit, dateFinal: dateEnd || null })
     });
-    if (res.ok) { closeOpModal(); loadDashboard(); }
-    else { const e = await res.json(); alert(e.message||'Error al crear operación'); }
+    if (res.ok) { ptToast('success', 'Operacion creada', 'La operacion fue registrada correctamente'); closeOpModal(); loadDashboard(); }
+    else { const e = await res.json().catch(()=>({})); ptToast('error', 'Error al crear', e.message || 'No se pudo crear la operacion'); }
   }
+
   const PRIORITY_TYPE = 'CONTRACT_EXPIRING';
-  // ── Arranque ─────────────────────────────────────────────────────
   populateSelect('v-type', VISIT_TYPE);
   populateSelect('op-type', OPERATION_TYPE);
-
   loadDashboard();
 </script>
 </body>

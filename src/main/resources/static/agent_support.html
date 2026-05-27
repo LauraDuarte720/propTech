@@ -43,16 +43,12 @@
     .btn-danger:hover{background:rgba(226,75,74,0.2);}
     .btn svg{width:14px;height:14px;}
     .content{flex:1;overflow-y:auto;padding:28px;}
-
-    /* Queue banner */
     .queue-banner{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
     .queue-left{display:flex;align-items:center;gap:14px;}
     .queue-icon{width:40px;height:40px;border-radius:10px;background:rgba(74,111,227,0.1);display:flex;align-items:center;justify-content:center;}
     .queue-icon svg{width:20px;height:20px;color:var(--accent);}
     .queue-title{font-size:14px;font-weight:500;}
     .queue-sub{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);margin-top:2px;}
-
-    /* Next card */
     .next-card{background:rgba(74,111,227,0.04);border:1px solid rgba(74,111,227,0.2);border-radius:12px;padding:18px 20px;margin-bottom:20px;display:none;}
     .next-card.visible{display:block;}
     .next-card-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
@@ -63,8 +59,6 @@
     .next-meta-item a{color:var(--accent);text-decoration:none;}
     .next-meta-item a:hover{text-decoration:underline;}
     .next-card-actions{display:flex;gap:8px;}
-
-    /* Cards grid */
     .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
     .req-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.15s;}
     .req-card:hover{box-shadow:0 2px 12px rgba(74,111,227,0.08);}
@@ -79,8 +73,6 @@
     .req-msg{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:10px;padding:10px;background:var(--bg);border-radius:8px;}
     .req-date{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
     .req-actions{display:flex;gap:6px;}
-
-    /* Empty */
     .empty{text-align:center;padding:60px;color:var(--text-muted);}
     .empty-icon{font-size:40px;margin-bottom:10px;}
     .empty-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px;}
@@ -94,17 +86,18 @@
       <span class="logo-name">PropTech</span>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-label">Mi gestión</div>
+      <div class="sidebar-label">Mi gestion</div>
       <a href="agent_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
       <a href="agent_properties.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>Mis inmuebles</a>
       <a href="agent_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas</a>
       <a href="agent_operations.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
       <a href="agent_support.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes</a>
+      <a href="agent_potential_clients.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clientes potenciales</a>
     </div>
     <div class="sidebar-footer">
       <div class="user-card" onclick="logout()">
         <div class="avatar" id="av">AS</div>
-        <div><div class="user-name" id="uname">Asesor</div><div class="user-role">Asesor · Cerrar sesión</div></div>
+        <div><div class="user-name" id="uname">Asesor</div><div class="user-role">Asesor · Cerrar sesion</div></div>
       </div>
     </div>
   </nav>
@@ -119,13 +112,9 @@
     </div>
 
     <div class="content">
-
-      <!-- Queue status -->
       <div class="queue-banner">
         <div class="queue-left">
-          <div class="queue-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </div>
+          <div class="queue-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
           <div>
             <div class="queue-title">Cola de solicitudes pendientes</div>
             <div class="queue-sub">Se atienden en orden de llegada</div>
@@ -137,9 +126,8 @@
         </div>
       </div>
 
-      <!-- Siguiente en cola (peek) -->
       <div class="next-card" id="next-card">
-        <div class="next-card-label">⏭ Siguiente en cola</div>
+        <div class="next-card-label">Siguiente en cola</div>
         <div class="next-card-msg" id="next-msg">—</div>
         <div class="next-card-meta">
           <span class="next-meta-item">
@@ -147,8 +135,8 @@
             <span id="next-client">—</span>
           </span>
           <span class="next-meta-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.61 4.93 2 2 0 0 1 3.6 2.69h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <a id="next-phone" href="#"></a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5"/></svg>
+            <a id="next-phone" href="#">—</a>
           </span>
           <span class="next-meta-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z"/></svg>
@@ -160,19 +148,15 @@
           </span>
         </div>
         <div class="next-card-actions">
-          <button class="btn btn-success btn-sm" onclick="attendNext()">✓ Atender</button>
+          <button class="btn btn-success btn-sm" onclick="attendNext()">Atender</button>
         </div>
       </div>
 
-      <!-- Historial — sin filtros, solo todos -->
-      <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:16px;">
-        Historial de solicitudes
-      </div>
+      <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:16px;">Historial de solicitudes</div>
 
       <div class="cards-grid" id="reqs-grid">
         <div style="color:var(--text-muted);font-size:13px;">Cargando...</div>
       </div>
-
     </div>
   </div>
 </div>
@@ -187,8 +171,6 @@
   }
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-  if (typeof label === 'undefined') window.label = (map, key) => map[key] || key || '—';
-
   const STATUS_LABEL = { PENDING:'Pendiente', ATTENDED:'Atendida', CANCELLED:'Cancelada' };
 
   function fmtDate(d) {
@@ -197,16 +179,10 @@
   }
 
   async function load() {
-    // Contar pendientes
-    const countRes = await fetch(`${API}/agents/${user.cedula}/support-requests/count`).catch(()=>null);
-    if (countRes?.ok) {
-      document.getElementById('q-count').textContent = await countRes.json();
-    } else {
-      document.getElementById('q-count').textContent = '0';
-    }
+    const countRes = await fetch(`${API}/agents/${user.cedula}/support-requests/count`).catch(() => null);
+    document.getElementById('q-count').textContent = countRes?.ok ? await countRes.json() : '0';
 
-    // Peek — siguiente en cola
-    const nextRes = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(()=>null);
+    const nextRes = await fetch(`${API}/agents/${user.cedula}/support-requests/next`).catch(() => null);
     const nextCard = document.getElementById('next-card');
     if (nextRes?.ok) {
       const next = await nextRes.json();
@@ -215,17 +191,10 @@
         document.getElementById('next-client').textContent = next.client?.name || '—';
         document.getElementById('next-prop').textContent   = next.property?.address || '—';
         document.getElementById('next-date').textContent   = fmtDate(next.date);
-
         const phone = next.client?.phone;
         const phoneEl = document.getElementById('next-phone');
-        if (phone) {
-          phoneEl.textContent = phone;
-          phoneEl.href = `tel:${phone}`;
-        } else {
-          phoneEl.textContent = '—';
-          phoneEl.removeAttribute('href');
-        }
-
+        if (phone) { phoneEl.textContent = phone; phoneEl.href = `tel:${phone}`; }
+        else { phoneEl.textContent = '—'; phoneEl.removeAttribute('href'); }
         nextCard.classList.add('visible');
       } else {
         nextCard.classList.remove('visible');
@@ -234,27 +203,20 @@
       nextCard.classList.remove('visible');
     }
 
-    // Historial completo
-    const histRes = await fetch(`${API}/agents/${user.cedula}/support-requests/history`).catch(()=>null);
-    if (histRes?.ok) {
-      const reqs = await histRes.json();
-      renderReqs(reqs);
-    }
+    const histRes = await fetch(`${API}/agents/${user.cedula}/support-requests/history`).catch(() => null);
+    if (histRes?.ok) renderReqs(await histRes.json());
   }
 
   function renderReqs(reqs) {
     const grid = document.getElementById('reqs-grid');
     if (!reqs.length) {
-      grid.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><div class="empty-title">Sin solicitudes en el historial</div></div>`;
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">&#128172;</div><div class="empty-title">Sin solicitudes en el historial</div></div>`;
       return;
     }
     grid.innerHTML = reqs.map(r => {
       const phone = r.client?.phone;
-      const phoneHtml = phone
-              ? `<a href="tel:${phone}" style="color:var(--accent);text-decoration:none;">${phone}</a>`
-              : '—';
+      const phoneHtml = phone ? `<a href="tel:${phone}" style="color:var(--accent);text-decoration:none;">${phone}</a>` : '—';
       const canAct = r.status === 'PENDING';
-
       return `<div class="req-card">
         <div class="req-card-header">
           <div>
@@ -270,7 +232,7 @@
           ${fmtDate(r.date)}
         </div>
         ${canAct ? `<div class="req-actions">
-          <button class="btn btn-sm btn-success" onclick="attendNext()">✓ Atender siguiente</button>
+          <button class="btn btn-sm btn-success" onclick="attendNext()">Atender siguiente</button>
           <button class="btn btn-sm btn-danger" onclick="cancelReq('${r.id}')">Cancelar</button>
         </div>` : ''}
       </div>`;
@@ -284,24 +246,37 @@
     const btn = document.querySelector('.btn-primary');
     if (btn) { btn.disabled = true; btn.textContent = 'Atendiendo...'; }
 
-    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/attend`, { method: 'POST' }).catch(()=>null);
+    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/attend`, { method: 'POST' }).catch(() => null);
 
-    if (btn) { btn.disabled = false; btn.textContent = 'Atender siguiente'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M5 13l4 4L19 7"/></svg> Atender siguiente'; }
     _attending = false;
 
     if (res?.ok) {
+      ptToast('success', 'Solicitud atendida', 'Se proceso correctamente y paso al historial');
       load();
     } else {
-      const e = await res?.json().catch(()=>({}));
-      alert(e?.message || 'No hay solicitudes pendientes');
+      const e = await res?.json().catch(() => ({}));
+      ptToast('warning', 'Sin solicitudes pendientes', e?.message || 'No hay solicitudes en la cola');
     }
   }
 
   async function cancelReq(id) {
-    if (!confirm('¿Cancelar esta solicitud?')) return;
-    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/${id}/cancel`, { method: 'PATCH' }).catch(()=>null);
-    if (res?.ok) load();
-    else { const e = await res?.json().catch(()=>({})); alert(e?.message || 'Error al cancelar'); }
+    const ok = await ptConfirm({
+      title: 'Cancelar solicitud',
+      message: '¿Confirmas la cancelacion de esta solicitud de soporte?',
+      tone: 'danger',
+      confirmText: 'Si, cancelar',
+      cancelText: 'No'
+    });
+    if (!ok) return;
+    const res = await fetch(`${API}/agents/${user.cedula}/support-requests/${id}/cancel`, { method: 'PATCH' }).catch(() => null);
+    if (res?.ok) {
+      ptToast('success', 'Solicitud cancelada', 'Se cancelo correctamente');
+      load();
+    } else {
+      const e = await res?.json().catch(() => ({}));
+      ptToast('error', 'Error al cancelar', e?.message || 'No se pudo cancelar la solicitud');
+    }
   }
 
   load();

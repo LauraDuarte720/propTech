@@ -75,6 +75,7 @@
     .comm-highlight-label{font-family:'Jost',sans-serif;font-size:12px;color:var(--text-muted);}
     .comm-highlight-val{font-size:14px;font-weight:600;color:var(--accent);}
     .form-hint{font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .form-hint.optional{color:#1D9E75;}
   </style>
 </head>
 <body>
@@ -91,6 +92,10 @@
       <a href="agent_visits.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Mis visitas</a>
       <a href="agent_operations.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg>Operaciones</a>
       <a href="agent_support.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Solicitudes</a>
+      <a href="agent_potential_clients.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clientes potenciales
+      </a>
     </div>
     <div class="sidebar-footer">
       <div class="user-card" onclick="logout()">
@@ -131,15 +136,8 @@
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Inmueble</th>
-            <th>Cliente</th>
-            <th>Tipo</th>
-            <th>Valor</th>
-            <th>Comisión</th>
-            <th>Fecha inicio</th>
-            <th>Fecha fin</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Inmueble</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Comisión</th>
+            <th>Fecha inicio</th><th>Fecha fin</th><th>Estado</th><th>Acciones</th>
           </tr></thead>
           <tbody id="ops-tbody">
           <tr><td colspan="9" style="color:var(--text-muted);text-align:center;padding:32px;">Cargando...</td></tr>
@@ -154,13 +152,16 @@
 <div class="modal-overlay" id="modal-new-op">
   <div class="modal">
     <div class="modal-title">Nueva operación <button onclick="closeNewOperation()">×</button></div>
+
+    <div class="form-group">
+      <label>Inmueble</label>
+      <select id="op-prop" onchange="onPropChange(this.value)">
+        <option value="">Cargando inmuebles...</option>
+      </select>
+    </div>
     <div class="form-group">
       <label>Tipo de operación</label>
       <select id="op-type" onchange="onTypeChange(this.value)"></select>
-    </div>
-    <div class="form-group">
-      <label>Inmueble</label>
-      <select id="op-prop"></select>
     </div>
     <div class="form-group">
       <label>Cliente</label>
@@ -170,11 +171,14 @@
       <label>Fecha inicio</label>
       <input type="date" id="op-date-start">
     </div>
+
+    <!-- Fecha fin: visible para RENT (opcional) y CONTRACT_RENEWAL (obligatorio) -->
     <div class="form-group" id="op-date-end-group" style="display:none;">
-      <label>Fecha fin <span style="color:#E24B4A;">*</span></label>
+      <label id="op-date-end-label">Fecha fin</label>
       <input type="date" id="op-date-end">
-      <span class="form-hint">Obligatorio para renovaciones de contrato</span>
+      <span class="form-hint" id="op-date-end-hint"></span>
     </div>
+
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeNewOperation()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveNewOperation()">Registrar</button>
@@ -183,13 +187,6 @@
 </div>
 
 <!-- Modal cambiar estado -->
-<!--
-  The PATCH /{id} endpoint calls operationMapper.toUpdate(dto) which tries to resolve
-  propertyId/clientId/agentId even when null, causing "key cannot be null".
-  Fix: send the existing property/client/agent IDs alongside the new status so the
-  mapper can resolve them without blowing up.
-  We cache the full operation object when opening this modal.
--->
 <div class="modal-overlay" id="modal-status">
   <div class="modal">
     <div class="modal-title">Actualizar operación <button onclick="closeStatus()">×</button></div>
@@ -229,14 +226,24 @@
   }
   function logout() { sessionStorage.clear(); window.location.href = 'proptech_login.html'; }
 
-
+  // Reglas de negocio — espejo del back
+  // ACTIVE + purpose=SALE  → solo SALE
+  // ACTIVE + purpose=RENT  → solo RENT
+  // RENTED                 → CONTRACT_RENEWAL, DEAL_CANCELLATION
+  // RESERVED               → DEAL_CANCELLATION
+  const OPS_BY_STATUS_SALE = [{ v:'SALE', l:'Venta' }];
+  const OPS_BY_STATUS_RENT = [{ v:'RENT', l:'Arriendo' }];
+  const OPS_BY_STATUS = {
+    RENTED:   [{ v:'CONTRACT_RENEWAL', l:'Renovación de contrato' }, { v:'DEAL_CANCELLATION', l:'Cancelación de negocio' }],
+    RESERVED: [{ v:'DEAL_CANCELLATION', l:'Cancelación de negocio' }]
+  };
 
   let allOps = [];
   let agentProperties = [];
 
   function fmtDate(d) {
     if (!d) return '<span class="date-end-missing">—</span>';
-    return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    return new Date(d).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric' });
   }
 
   async function load() {
@@ -284,7 +291,7 @@
     renderOps(s ? allOps.filter(o => o.processStatus === s) : allOps);
   }
 
-  // ── Modal nueva operación ────────────────────────────────────────
+  // ── Modal nueva operación ─────────────────────────────────────────
   async function openNewOperation() {
     if (agentProperties.length === 0) {
       const res = await fetch(`${API}/agents/${user.cedula}/properties`).catch(()=>null);
@@ -297,32 +304,79 @@
               `<option value="${c.cedula}">${c.name} (${c.cedula})</option>`
       ).join('');
     }
-    document.getElementById('op-type').value    = 'SALE';
+
+    // Poblar inmuebles operables (ACTIVE + RENTED + RESERVED)
+    const operable = agentProperties.filter(p => ['ACTIVE','RENTED','RESERVED'].includes(p.status));
+    const propSel = document.getElementById('op-prop');
+    propSel.innerHTML = operable.length
+            ? operable.map(p => `<option value="${p.code}" data-status="${p.status}" data-purpose="${p.purpose}">${p.address || p.code} (${p.status})</option>`).join('')
+            : `<option value="" disabled>Sin inmuebles disponibles</option>`;
+
     document.getElementById('op-date-start').value = '';
     document.getElementById('op-date-end').value   = '';
-    onTypeChange('SALE');
+
+    const today = new Date().toISOString().split('T')[0];
+
+    document.getElementById('op-date-start').min = today;
+    document.getElementById('op-date-end').min   = today;
+
+    // Disparar onPropChange con el primer inmueble
+    if (operable.length) onPropChange(operable[0].code);
+
     document.getElementById('modal-new-op').classList.add('open');
   }
 
   function closeNewOperation() { document.getElementById('modal-new-op').classList.remove('open'); }
 
-  function onTypeChange(type) {
-    const needsEndDate = type === 'CONTRACT_RENEWAL';
-    document.getElementById('op-date-end-group').style.display = needsEndDate ? 'flex' : 'none';
-
-    // assertPropertyOperatable rules:
-    // SALE / RENT               → ACTIVE only
-    // CONTRACT_RENEWAL          → RENTED only
-    // DEAL_CANCELLATION         → RENTED only
-    const allowedStatuses = (type === 'CONTRACT_RENEWAL' || type === 'DEAL_CANCELLATION')
-            ? ['RENTED']
-            : ['ACTIVE'];
-
-    const eligible = agentProperties.filter(p => allowedStatuses.includes(p.status));
+  // Cuando cambia el inmueble: recalcular tipos disponibles
+  function onPropChange(code) {
     const sel = document.getElementById('op-prop');
-    sel.innerHTML = eligible.length
-            ? eligible.map(p => `<option value="${p.code}">${p.address || p.code} (${p.status})</option>`).join('')
-            : `<option value="" disabled selected>Sin inmuebles disponibles para este tipo</option>`;
+    const opt = [...sel.options].find(o => o.value === code);
+    if (!opt) return;
+
+    const status  = opt.dataset.status;
+    const purpose = opt.dataset.purpose; // SALE o RENT (el back serializa en mayúscula gracias a @JsonValue)
+
+    let types = [];
+    if (status === 'ACTIVE') {
+      // Solo la operación que corresponde al propósito del inmueble
+      if (purpose === 'SALE' || purpose === 'Sale') types = [{ v:'SALE', l:'Venta' }];
+      else                                           types = [{ v:'RENT', l:'Arriendo' }];
+    } else {
+      types = OPS_BY_STATUS[status] || [];
+    }
+
+    const typeSel = document.getElementById('op-type');
+    typeSel.innerHTML = types.length
+            ? types.map(t => `<option value="${t.v}">${t.l}</option>`).join('')
+            : `<option value="" disabled>Sin operaciones disponibles</option>`;
+
+    onTypeChange(types[0]?.v || '');
+  }
+
+  // Cuando cambia el tipo: mostrar/ocultar y configurar fecha fin
+  function onTypeChange(type) {
+    const endGroup = document.getElementById('op-date-end-group');
+    const endLabel = document.getElementById('op-date-end-label');
+    const endHint  = document.getElementById('op-date-end-hint');
+
+    if (type === 'CONTRACT_RENEWAL') {
+      // Obligatoria
+      endGroup.style.display = 'flex';
+      endLabel.innerHTML = 'Fecha fin <span style="color:#E24B4A;">*</span>';
+      endHint.textContent = 'Obligatoria para renovaciones de contrato.';
+      endHint.className   = 'form-hint';
+    } else if (type === 'RENT') {
+      // Opcional — contrato indefinido si no se pone
+      endGroup.style.display = 'flex';
+      endLabel.innerHTML = 'Fecha fin';
+      endHint.textContent = 'Opcional — si no se especifica se considera contrato indefinido.';
+      endHint.className   = 'form-hint optional';
+    } else {
+      // SALE, DEAL_CANCELLATION — no aplica fecha fin
+      endGroup.style.display = 'none';
+      document.getElementById('op-date-end').value = '';
+    }
   }
 
   async function saveNewOperation() {
@@ -332,41 +386,81 @@
     const dateStart = document.getElementById('op-date-start').value;
     const dateEnd   = document.getElementById('op-date-end').value;
 
-    if (!propCode)  { alert('Selecciona un inmueble'); return; }
-    if (!clientId)  { alert('Selecciona un cliente');  return; }
-    if (!dateStart) { alert('Ingresa la fecha de inicio'); return; }
+    if (dateEnd && dateEnd < dateStart) {
+      ptToast(
+              'warning',
+              'Rango de fechas inválido',
+              'La fecha final no puede ser anterior a la fecha inicial'
+      );
+      return;
+    }
+
+    if (!propCode)  {
+      ptToast('warning', 'Campo obligatorio', 'Selecciona un inmueble');
+      return;
+    }
+
+    if (!clientId)  {
+      ptToast('warning', 'Campo obligatorio', 'Selecciona un cliente');
+      return;
+    }
+
+    if (!dateStart) {
+      ptToast('warning', 'Campo obligatorio', 'Ingresa la fecha de inicio');
+      return;
+    }
+
     if (type === 'CONTRACT_RENEWAL' && !dateEnd) {
-      alert('La fecha fin es obligatoria para renovaciones de contrato');
+      ptToast(
+              'warning',
+              'Información incompleta',
+              'La fecha fin es obligatoria para renovaciones de contrato'
+      );
       return;
     }
 
     const res = await fetch(`${API}/operations`, {
       method:  'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         propertyId:    propCode,
-        clientId:      clientId,
+        clientId,
         agentId:       user.cedula,
         operationType: type,
         dateInitial:   dateStart,
         dateFinal:     dateEnd || null
       })
     });
-    if (res.ok) { closeNewOperation(); load(); }
-    else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al registrar la operación'); }
+    if (res.ok) {
+      closeNewOperation();
+      load();
+
+      ptToast(
+              'success',
+              'Operación registrada',
+              'La operación fue registrada correctamente'
+      );
+    }
+    else {
+      const e = await res.json().catch(()=>({}));
+
+      ptToast(
+              'error',
+              'Error al registrar la operación',
+              e.message || 'No fue posible registrar la operación'
+      );
+    }
   }
 
-  // ── Modal cambiar estado ─────────────────────────────────────────
-  // Opens with the full cached operation so we can send all required IDs
-  // (OperationMapper.toUpdate resolves property/client/agent by ID — they can't be null)
+  // ── Modal cambiar estado ──────────────────────────────────────────
   function openStatus(id) {
     const op = allOps.find(o => o.id === id);
     if (!op) return;
-    document.getElementById('op-id').value              = op.id;
-    document.getElementById('op-prop-id-cached').value  = op.property?.code  || '';
-    document.getElementById('op-client-id-cached').value= op.client?.cedula  || '';
-    document.getElementById('op-agent-id-cached').value = op.agent?.cedula   || '';
-    document.getElementById('op-label').value           = op.property?.address || op.property?.code || '—';
+    document.getElementById('op-id').value               = op.id;
+    document.getElementById('op-prop-id-cached').value   = op.property?.code  || '';
+    document.getElementById('op-client-id-cached').value = op.client?.cedula  || '';
+    document.getElementById('op-agent-id-cached').value  = op.agent?.cedula   || '';
+    document.getElementById('op-label').value            = op.property?.address || op.property?.code || '—';
     document.getElementById('op-comm-preview').textContent = '$' + Number(op.commission || 0).toLocaleString();
     document.getElementById('new-status').value = 'CLOSED';
     document.getElementById('modal-status').classList.add('open');
@@ -380,24 +474,33 @@
     const clientId = document.getElementById('op-client-id-cached').value;
     const agentId  = document.getElementById('op-agent-id-cached').value;
 
-    // Send all required IDs so OperationMapper.toUpdate() can resolve entities without NPE
     const res = await fetch(`${API}/operations/${id}`, {
       method:  'PATCH',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        id,
-        propertyId:    propId,
-        clientId:      clientId,
-        agentId:       agentId,
-        processStatus: status
-      })
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id, propertyId: propId, clientId, agentId, processStatus: status })
     });
-    if (res.ok) { closeStatus(); load(); }
-    else { const e = await res.json().catch(()=>({})); alert(e.message || 'Error al actualizar la operación'); }
+    if (res.ok) {
+      closeStatus();
+      load();
+
+      ptToast(
+              'success',
+              'Operación actualizada',
+              'El estado de la operación fue actualizado correctamente'
+      );
+    }
+    else {
+      const e = await res.json().catch(()=>({}));
+
+      ptToast(
+              'error',
+              'Error al actualizar la operación',
+              e.message || 'No fue posible actualizar la operación'
+      );
+    }
   }
 
   populateSelect('f-status', PROCESS_STATUS, 'Todos los estados');
-  populateSelect('op-type', OPERATION_TYPE);
   load();
 </script>
 </body>
