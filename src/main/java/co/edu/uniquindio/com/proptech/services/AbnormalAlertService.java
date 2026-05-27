@@ -308,9 +308,7 @@ public class AbnormalAlertService {
     }
 
     public ArrayList<AbnormalAlert> getAllAlerts() {
-        ArrayList<AbnormalAlert> alerts = abnormalAlertRepository.getAll();
-        if (alerts.isEmpty()) throw new RuntimeException("No abnormal alerts registered.");
-        return alerts;
+        return abnormalAlertRepository.getAll();
     }
 
     public ArrayList<AbnormalAlert> getAlertsByType(String type) {
