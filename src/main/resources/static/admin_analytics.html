@@ -8,6 +8,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="/proptech_utils.js"></script>
   <style>
+    select.zone-input {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A90A0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+      cursor: pointer;
+    }
+    select.zone-input option {
+      background: #1a2145;
+      color: #fff;
+    }
+    select.zone-input option {
+      background: #1a2145;
+      color: #fff;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{
       --navy:#131936;--accent:#4A6FE3;--accent-light:#6B8AFF;
@@ -500,8 +517,13 @@
             <div class="card-header">
               <div>
                 <div class="card-title">Todos los patrones de movilidad comercial</div>
-                <div class="card-desc">Cada patron representa un flujo de clientes que pasaron de interactuar con inmuebles en una zona a interactuar con inmuebles en otra. El peso indica la intensidad del flujo. Se generan automaticamente cuando el sistema detecta zona dominante de un cliente y registra una interaccion en una zona diferente.</div>
+                <div class="card-desc">Flujos de clientes entre zonas. Se generan automaticamente cuando el sistema detecta zona dominante y registra una interaccion en zona diferente.</div>
               </div>
+            </div>
+            <div id="toggle-all" style="display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px;">
+              <button class="stab active" onclick="setAllPatternsLevel('all',this)">Todos</button>
+              <button class="stab" onclick="setAllPatternsLevel('ZONE',this)">Zona → Zona</button>
+              <button class="stab" onclick="setAllPatternsLevel('CITY',this)">Ciudad → Ciudad</button>
             </div>
             <div id="all-patterns-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
           </div>
@@ -513,8 +535,12 @@
             <div class="card-header">
               <div>
                 <div class="card-title">Zonas destino con mayor flujo entrante</div>
-                <div class="card-desc">Las zonas que mas clientes atraen desde otras zonas. El peso es la suma de todas las conexiones entrantes. Util para identificar zonas en auge o con mayor demanda comercial real.</div>
+                <div class="card-desc">Las zonas que mas clientes atraen desde otras zonas. Util para identificar zonas en auge o con mayor demanda comercial real.</div>
               </div>
+            </div>
+            <div id="toggle-top" style="display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px;">
+              <button class="stab active" onclick="setTopDestLevel('ZONE',this)">Zona → Zona</button>
+              <button class="stab" onclick="setTopDestLevel('CITY',this)">Ciudad → Ciudad</button>
             </div>
             <div class="grid-2">
               <div id="top-destinations-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
@@ -529,8 +555,13 @@
             <div class="card-header">
               <div>
                 <div class="card-title">Patrones correlacionados con operaciones cerradas</div>
-                <div class="card-desc">Solo muestra los patrones de movilidad donde la zona destino tiene al menos una operacion (venta o arriendo) efectivamente cerrada. Indica que el desplazamiento de clientes hacia esa zona se ha materializado en negocios reales.</div>
+                <div class="card-desc">Solo patrones donde la zona destino tiene al menos una operacion efectivamente cerrada.</div>
               </div>
+            </div>
+            <div id="toggle-corr" style="display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px;">
+              <button class="stab active" onclick="setCorrLevel('all',this)">Todos</button>
+              <button class="stab" onclick="setCorrLevel('ZONE',this)">Zona → Zona</button>
+              <button class="stab" onclick="setCorrLevel('CITY',this)">Ciudad → Ciudad</button>
             </div>
             <div id="correlated-patterns-list"><div style="color:var(--text-muted);font-size:13px;padding:40px 0;text-align:center;">Cargando...</div></div>
           </div>
@@ -540,13 +571,54 @@
         <div class="subsection" id="sub-mobility-from">
           <div class="card">
             <div class="card-title">Patrones salientes desde una zona</div>
-            <div class="card-desc">Muestra hacia donde se mueven los clientes que estaban concentrados en una zona especifica. Usa el formato de clave de zona: <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-size:11px;">ZONE|CIUDAD|ZONA</code> (ej: <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-size:11px;">ZONE|ARMENIA|NORTH</code>)</div>
+            <div class="card-desc">Muestra hacia donde se mueven los clientes desde una ciudad o zona específica.</div>
+
+            <div style="display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px;">
+              <button class="stab active" id="from-mode-zone" onclick="setFromMode('zone',this)">Por ciudad / zona</button>
+              <button class="stab" id="from-mode-city" onclick="setFromMode('city',this)">Solo ciudad</button>
+            </div>
+
             <div class="search-row">
-              <input class="zone-input" id="from-zone-key" placeholder="Ej: ZONE|ARMENIA|NORTH" style="max-width:340px;">
-              <button class="btn btn-accent" onclick="loadPatternsFrom()">Buscar</button>
+              <div>
+                <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Ciudad <span style="color:var(--red)">*</span></div>
+                <select class="zone-input" id="from-city" style="width:200px;">
+                  <option value="" disabled selected>Selecciona ciudad</option>
+                  <option value="ARAUCA">Arauca</option>
+                  <option value="ARMENIA">Armenia</option>
+                  <option value="BARRANQUILLA">Barranquilla</option>
+                  <option value="BOGOTA">Bogotá</option>
+                  <option value="BUCARAMANGA">Bucaramanga</option>
+                  <option value="CALI">Cali</option>
+                  <option value="CARTAGENA">Cartagena</option>
+                  <option value="CUCUTA">Cúcuta</option>
+                  <option value="FLORENCIA">Florencia</option>
+                  <option value="IBAGUE">Ibagué</option>
+                  <option value="MANIZALES">Manizales</option>
+                  <option value="MEDELLIN">Medellín</option>
+                  <option value="MONTERIA">Montería</option>
+                  <option value="NEIVA">Neiva</option>
+                  <option value="PASTO">Pasto</option>
+                  <option value="PEREIRA">Pereira</option>
+                  <option value="POPAYAN">Popayán</option>
+                  <option value="SANTA_MARTA">Santa Marta</option>
+                  <option value="TUNJA">Tunja</option>
+                  <option value="VALLEDUPAR">Valledupar</option>
+                  <option value="VILLAVICENCIO">Villavicencio</option>
+                </select>
+              </div>
+              <div id="from-zone-wrap">
+                <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Zona <span style="font-size:10px;opacity:0.5;">(requerida en este modo)</span></div>
+                <select class="zone-input" id="from-zone" style="width:180px;">
+                  <option value="" disabled selected>Selecciona zona</option>
+                  <option value="CENTER">Center</option>
+                  <option value="NORTH">North</option>
+                  <option value="SOUTH">South</option>
+                </select>
+              </div>
+              <button class="btn btn-accent" onclick="loadPatternsFrom()" style="align-self:flex-end;">Buscar</button>
             </div>
             <div id="from-patterns-list">
-              <div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Ingresa una clave de zona para ver los patrones salientes</div></div>
+              <div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Selecciona una ciudad para ver los patrones salientes</div></div>
             </div>
           </div>
         </div>
@@ -555,13 +627,54 @@
         <div class="subsection" id="sub-mobility-to">
           <div class="card">
             <div class="card-title">Patrones entrantes hacia una zona</div>
-            <div class="card-desc">Muestra desde que zonas llegan clientes hacia una zona destino especifica. Usa el mismo formato de clave.</div>
+            <div class="card-desc">Muestra desde qué zonas llegan clientes hacia una ciudad o zona destino.</div>
+
+            <div style="display:flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px;">
+              <button class="stab active" id="to-mode-zone" onclick="setToMode('zone',this)">Por ciudad / zona</button>
+              <button class="stab" id="to-mode-city" onclick="setToMode('city',this)">Solo ciudad</button>
+            </div>
+
             <div class="search-row">
-              <input class="zone-input" id="to-zone-key" placeholder="Ej: ZONE|ARMENIA|NORTH" style="max-width:340px;">
-              <button class="btn btn-accent" onclick="loadPatternsTo()">Buscar</button>
+              <div>
+                <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Ciudad <span style="color:var(--red)">*</span></div>
+                <select class="zone-input" id="to-city" style="width:200px;">
+                  <option value="" disabled selected>Selecciona ciudad</option>
+                  <option value="ARAUCA">Arauca</option>
+                  <option value="ARMENIA">Armenia</option>
+                  <option value="BARRANQUILLA">Barranquilla</option>
+                  <option value="BOGOTA">Bogotá</option>
+                  <option value="BUCARAMANGA">Bucaramanga</option>
+                  <option value="CALI">Cali</option>
+                  <option value="CARTAGENA">Cartagena</option>
+                  <option value="CUCUTA">Cúcuta</option>
+                  <option value="FLORENCIA">Florencia</option>
+                  <option value="IBAGUE">Ibagué</option>
+                  <option value="MANIZALES">Manizales</option>
+                  <option value="MEDELLIN">Medellín</option>
+                  <option value="MONTERIA">Montería</option>
+                  <option value="NEIVA">Neiva</option>
+                  <option value="PASTO">Pasto</option>
+                  <option value="PEREIRA">Pereira</option>
+                  <option value="POPAYAN">Popayán</option>
+                  <option value="SANTA_MARTA">Santa Marta</option>
+                  <option value="TUNJA">Tunja</option>
+                  <option value="VALLEDUPAR">Valledupar</option>
+                  <option value="VILLAVICENCIO">Villavicencio</option>
+                </select>
+              </div>
+              <div id="to-zone-wrap">
+                <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text-muted);margin-bottom:6px;">Zona <span style="font-size:10px;opacity:0.5;">(requerida en este modo)</span></div>
+                <select class="zone-input" id="to-zone" style="width:180px;">
+                  <option value="" disabled selected>Selecciona zona</option>
+                  <option value="CENTER">Center</option>
+                  <option value="NORTH">North</option>
+                  <option value="SOUTH">South</option>
+                </select>
+              </div>
+              <button class="btn btn-accent" onclick="loadPatternsTo()" style="align-self:flex-end;">Buscar</button>
             </div>
             <div id="to-patterns-list">
-              <div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Ingresa una clave de zona para ver los patrones entrantes</div></div>
+              <div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Selecciona una ciudad para ver los patrones entrantes</div></div>
             </div>
           </div>
         </div>
@@ -1128,11 +1241,11 @@
   }
 
   async function loadMobility() {
-    const [allRes, topRes, corrRes] = await Promise.all([
-      fetch(`${API}/zone-mobility`).catch(() => null),
-      fetch(`${API}/zone-mobility/top-destinations`).catch(() => null),
-      fetch(`${API}/zone-mobility/correlated`).catch(() => null)
-    ]);
+    async function loadMobility() {
+      loadAllPatterns();
+      loadTopDestinations();
+      loadCorrPatterns();
+    }
 
     if (allRes?.ok) {
       const all = await allRes.json();
@@ -1169,8 +1282,10 @@
   }
 
   async function loadPatternsFrom() {
-    const key = document.getElementById('from-zone-key').value.trim();
-    if (!key) return;
+    const city = document.getElementById('from-city').value.trim();
+    const zone = document.getElementById('from-zone').value.trim();
+    if (!city) return;
+    const key = zone ? `ZONE|${city}|${zone}` : `CITY|${city}`;
     const res = await fetch(`${API}/zone-mobility/from/${encodeURIComponent(key)}`).catch(() => null);
     const list = document.getElementById('from-patterns-list');
     if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">Zona no encontrada o sin patrones</div></div>'; return; }
@@ -1179,8 +1294,10 @@
   }
 
   async function loadPatternsTo() {
-    const key = document.getElementById('to-zone-key').value.trim();
-    if (!key) return;
+    const city = document.getElementById('to-city').value.trim();   // ← estaba 'from-city'
+    const zone = document.getElementById('to-zone').value.trim();   // ← estaba 'from-zone'
+    if (!city) return;
+    const key = zone ? `ZONE|${city}|${zone}` : `CITY|${city}`;
     const res = await fetch(`${API}/zone-mobility/to/${encodeURIComponent(key)}`).catch(() => null);
     const list = document.getElementById('to-patterns-list');
     if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">Zona no encontrada o sin patrones</div></div>'; return; }
@@ -1221,6 +1338,153 @@
     loadAgentLoad();
     loadAgentPerformance();
     loadMobility();
+  }
+
+  let fromMode = 'zone'; // 'zone' o 'city'
+  let toMode   = 'zone';
+
+  function setFromMode(mode, el) {
+    fromMode = mode;
+    document.getElementById('from-mode-zone').classList.toggle('active', mode === 'zone');
+    document.getElementById('from-mode-city').classList.toggle('active', mode === 'city');
+    document.getElementById('from-zone-wrap').style.display = mode === 'zone' ? '' : 'none';
+    document.getElementById('from-patterns-list').innerHTML =
+            '<div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Selecciona una ciudad para ver los patrones salientes</div></div>';
+  }
+
+  function setToMode(mode, el) {
+    toMode = mode;
+    document.getElementById('to-mode-zone').classList.toggle('active', mode === 'zone');
+    document.getElementById('to-mode-city').classList.toggle('active', mode === 'city');
+    document.getElementById('to-zone-wrap').style.display = mode === 'zone' ? '' : 'none';
+    document.getElementById('to-patterns-list').innerHTML =
+            '<div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Selecciona una ciudad para ver los patrones entrantes</div></div>';
+  }
+
+  async function loadPatternsFrom() {
+    const city = document.getElementById('from-city').value.trim();
+    if (!city) return;
+    let key;
+    if (fromMode === 'zone') {
+      const zone = document.getElementById('from-zone').value.trim();
+      if (!zone) return;
+      key = `ZONE|${city}|${zone}`;
+    } else {
+      key = `CITY|${city}`;
+    }
+    const res = await fetch(`${API}/zone-mobility/from/${encodeURIComponent(key)}`).catch(() => null);
+    const list = document.getElementById('from-patterns-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">Zona no encontrada o sin patrones</div></div>'; return; }
+    const patterns = await res.json();
+    list.innerHTML = patterns.length ? patterns.map(patternCard).join('') : '<div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Sin patrones salientes para esta zona</div></div>';
+  }
+
+  async function loadPatternsTo() {
+    const city = document.getElementById('to-city').value.trim();
+    if (!city) return;
+    let key;
+    if (toMode === 'zone') {
+      const zone = document.getElementById('to-zone').value.trim();
+      if (!zone) return;
+      key = `ZONE|${city}|${zone}`;
+    } else {
+      key = `CITY|${city}`;
+    }
+    const res = await fetch(`${API}/zone-mobility/to/${encodeURIComponent(key)}`).catch(() => null);
+    const list = document.getElementById('to-patterns-list');
+    if (!res?.ok) { list.innerHTML = '<div class="empty"><div class="empty-ico">&#10060;</div><div style="font-size:13px;">Zona no encontrada o sin patrones</div></div>'; return; }
+    const patterns = await res.json();
+    list.innerHTML = patterns.length ? patterns.map(patternCard).join('') : '<div class="empty"><div class="empty-ico">&#128205;</div><div style="font-size:13px;">Sin patrones entrantes para esta zona</div></div>';
+  }
+
+  let allPatternsLevel  = 'all';
+  let corrPatternsLevel = 'all';
+  let topDestLevel      = 'ZONE';
+
+  function setAllPatternsLevel(level, el) {
+    allPatternsLevel = level;
+    document.querySelectorAll('#toggle-all .stab').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    loadAllPatterns();
+  }
+
+  function setCorrLevel(level, el) {
+    corrPatternsLevel = level;
+    document.querySelectorAll('#toggle-corr .stab').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    loadCorrPatterns();
+  }
+
+  function setTopDestLevel(level, el) {
+    topDestLevel = level;
+    document.querySelectorAll('#toggle-top .stab').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    loadTopDestinations();
+  }
+
+  async function loadAllPatterns() {
+    const list = document.getElementById('all-patterns-list');
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:20px 0;text-align:center;">Cargando...</div>';
+    let patterns = [];
+
+    if (allPatternsLevel === 'all') {
+      const res = await fetch(`${API}/zone-mobility`).catch(() => null);
+      if (res?.ok) patterns = await res.json();
+    } else {
+      const res = await fetch(`${API}/zone-mobility/by-level?level=${allPatternsLevel}`).catch(() => null);
+      if (res?.ok) patterns = await res.json();
+    }
+
+    list.innerHTML = patterns.length
+            ? patterns.map(patternCard).join('')
+            : '<div class="empty"><div class="empty-ico">&#128506;</div><div style="font-size:13px;">Sin patrones para este filtro.</div></div>';
+  }
+
+  async function loadCorrPatterns() {
+    const list = document.getElementById('correlated-patterns-list');
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:20px 0;text-align:center;">Cargando...</div>';
+    let patterns = [];
+
+    if (corrPatternsLevel === 'all') {
+      const res = await fetch(`${API}/zone-mobility/correlated`).catch(() => null);
+      if (res?.ok) patterns = await res.json();
+    } else {
+      const res = await fetch(`${API}/zone-mobility/correlated/by-level?level=${corrPatternsLevel}`).catch(() => null);
+      if (res?.ok) patterns = await res.json();
+    }
+
+    list.innerHTML = patterns.length
+            ? patterns.map(patternCard).join('')
+            : '<div class="empty"><div style="font-size:13px;">Sin correlaciones para este filtro.</div></div>';
+  }
+
+  async function loadTopDestinations() {
+    const tlist = document.getElementById('top-destinations-list');
+    tlist.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:20px 0;text-align:center;">Cargando...</div>';
+    let top = [];
+
+    const res = await fetch(`${API}/zone-mobility/top-destinations/by-level?level=${topDestLevel}`).catch(() => null);
+    if (res?.ok) top = await res.json();
+
+    if (!top.length) {
+      tlist.innerHTML = '<div class="empty"><div style="font-size:13px;">Sin datos para este filtro.</div></div>';
+      destroyChart('chart-top-destinations');
+      return;
+    }
+
+    tlist.innerHTML = top.slice(0, 8).map((p, i) => `
+    <div class="list-row">
+      <div class="list-sq" style="background:${BG[ci(i)]};color:${TC[ci(i)]}">${i + 1}</div>
+      <div class="list-info">
+        <div class="list-name">${formatZoneNode(p.to) || '—'}</div>
+        <div class="list-meta">${p.weight} conexiones entrantes · ${p.operationCount} op${p.operationCount !== 1 ? 's' : ''} cerrada${p.operationCount !== 1 ? 's' : ''}</div>
+      </div>
+    </div>`).join('');
+
+    makeBarChart('chart-top-destinations',
+            top.slice(0, 8).map(p => formatZoneNode(p.to)?.slice(0, 14) || '—'),
+            top.slice(0, 8).map(p => p.weight)
+    );
   }
 
   loadAll();

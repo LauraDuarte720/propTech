@@ -11,7 +11,6 @@ import co.edu.uniquindio.com.proptech.structures.graph.GraphNode;
 import co.edu.uniquindio.com.proptech.structures.hashTable.HashTable;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import org.springframework.stereotype.Service;
-
 @Service
 public class ZoneMobilityService {
 
@@ -28,19 +27,85 @@ public class ZoneMobilityService {
     // CONSULTAS PÚBLICAS
     // ══════════════════════════════════════════════
 
-    public ArrayList<ZoneTransitionPattern> getMobilityPatternsFrom(String zoneKey) {
+    public ArrayList<ZoneTransitionPattern> getAllMobilityPatterns() {
         Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
-        ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(zoneKey);
         ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
-        if (edges == null) return result;
-
-        GraphNode<GeographicZone> fromNode = g.getNode(zoneKey);
-        if (fromNode == null) return result;
-
         HashTable<String, Integer> opCounts = buildOperationCountByZone();
 
-        for (int i = 0; i < edges.size(); i++) {
-            result.add(buildPattern(fromNode, edges.get(i), opCounts));
+        for (GraphNode<GeographicZone> node : g.getNodes().values()) {
+            ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(node.getId());
+            if (edges == null) continue;
+            for (int i = 0; i < edges.size(); i++) {
+                result.add(buildPattern(node, edges.get(i), opCounts));
+            }
+        }
+
+        sortByWeightDesc(result);
+        return result;
+    }
+
+    public ArrayList<ZoneTransitionPattern> getAllMobilityPatternsByLevel(String level) {
+        Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
+        ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
+        HashTable<String, Integer> opCounts = buildOperationCountByZone();
+        String prefix = level + "|";
+
+        for (GraphNode<GeographicZone> node : g.getNodes().values()) {
+            if (!node.getId().startsWith(prefix)) continue;
+            ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(node.getId());
+            if (edges == null) continue;
+            for (int i = 0; i < edges.size(); i++) {
+                if (!edges.get(i).getTarget().getId().startsWith(prefix)) continue;
+                result.add(buildPattern(node, edges.get(i), opCounts));
+            }
+        }
+
+        sortByWeightDesc(result);
+        return result;
+    }
+
+    public ArrayList<ZoneTransitionPattern> getOperationCorrelatedPatterns() {
+        return filterCorrelated(getAllMobilityPatterns());
+    }
+
+    public ArrayList<ZoneTransitionPattern> getOperationCorrelatedPatternsByLevel(String level) {
+        return filterCorrelated(getAllMobilityPatternsByLevel(level));
+    }
+
+    public ArrayList<ZoneTransitionPattern> getTopDestinationZones() {
+        return buildTopDestinations(null);
+    }
+
+    public ArrayList<ZoneTransitionPattern> getTopDestinationZonesByLevel(String level) {
+        return buildTopDestinations(level);
+    }
+
+    public ArrayList<ZoneTransitionPattern> getMobilityPatternsFrom(String zoneKey) {
+        Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
+        ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
+        HashTable<String, Integer> opCounts = buildOperationCountByZone();
+
+        if (zoneKey.startsWith("CITY|")) {
+            String cityName = zoneKey.substring(5);
+            for (GraphNode<GeographicZone> node : g.getNodes().values()) {
+                if (!node.getId().startsWith("CITY|")) continue;
+                GeographicZone gz = node.getData();
+                if (gz.getCity() == null) continue;
+                if (!gz.getCity().name().equalsIgnoreCase(cityName)) continue;
+                ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(node.getId());
+                if (edges == null) continue;
+                for (int i = 0; i < edges.size(); i++) {
+                    result.add(buildPattern(node, edges.get(i), opCounts));
+                }
+            }
+        } else {
+            GraphNode<GeographicZone> fromNode = g.getNode(zoneKey);
+            if (fromNode == null) return result;
+            ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(zoneKey);
+            if (edges == null) return result;
+            for (int i = 0; i < edges.size(); i++) {
+                result.add(buildPattern(fromNode, edges.get(i), opCounts));
+            }
         }
 
         sortByWeightDesc(result);
@@ -49,39 +114,71 @@ public class ZoneMobilityService {
 
     public ArrayList<ZoneTransitionPattern> getMobilityPatternsTo(String zoneKey) {
         Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
-        ArrayList<GraphEdge<GeographicZone>> incoming = g.getIncomingEdges(zoneKey);
         ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
-        if (incoming.isEmpty()) return result;
-
-        GraphNode<GeographicZone> toNode = g.getNode(zoneKey);
-        if (toNode == null) return result;
-
         HashTable<String, Integer> opCounts = buildOperationCountByZone();
-        ZoneNode to = toZoneNode(toNode.getData());
 
-        for (int i = 0; i < incoming.size(); i++) {
-            result.add(buildIncomingPattern(incoming.get(i), to, opCounts));
+        if (zoneKey.startsWith("CITY|")) {
+            String cityName = zoneKey.substring(5);
+            for (GraphNode<GeographicZone> node : g.getNodes().values()) {
+                if (!node.getId().startsWith("CITY|")) continue;
+                GeographicZone gz = node.getData();
+                if (gz.getCity() == null) continue;
+                if (!gz.getCity().name().equalsIgnoreCase(cityName)) continue;
+                ArrayList<GraphEdge<GeographicZone>> incoming = g.getIncomingEdges(node.getId());
+                if (incoming == null || incoming.isEmpty()) continue;
+                ZoneNode to = toZoneNodeFromId(node.getId(), gz);
+                for (int i = 0; i < incoming.size(); i++) {
+                    result.add(buildIncomingPattern(incoming.get(i), to, opCounts));
+                }
+            }
+        } else {
+            GraphNode<GeographicZone> toNode = g.getNode(zoneKey);
+            if (toNode == null) return result;
+            ArrayList<GraphEdge<GeographicZone>> incoming = g.getIncomingEdges(zoneKey);
+            if (incoming == null || incoming.isEmpty()) return result;
+            ZoneNode to = toZoneNodeFromId(toNode.getId(), toNode.getData());
+            for (int i = 0; i < incoming.size(); i++) {
+                result.add(buildIncomingPattern(incoming.get(i), to, opCounts));
+            }
         }
 
         sortByWeightDesc(result);
         return result;
     }
 
-    public ArrayList<ZoneTransitionPattern> getTopDestinationZones() {
+    // ══════════════════════════════════════════════
+    // HELPERS PRIVADOS
+    // ══════════════════════════════════════════════
+
+    private ArrayList<ZoneTransitionPattern> filterCorrelated(ArrayList<ZoneTransitionPattern> source) {
+        ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
+        for (int i = 0; i < source.size(); i++) {
+            if (source.get(i).getOperationCount() > 0) result.add(source.get(i));
+        }
+        sortByOperationCountDesc(result);
+        return result;
+    }
+
+    // level == null → todos los nodos sin filtrar por prefijo
+    private ArrayList<ZoneTransitionPattern> buildTopDestinations(String level) {
         Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
         ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
         HashTable<String, Integer> opCounts = buildOperationCountByZone();
+        String prefix = level != null ? level + "|" : null;
 
         for (GraphNode<GeographicZone> node : g.getNodes().values()) {
+            if (prefix != null && !node.getId().startsWith(prefix)) continue;
             ArrayList<GraphEdge<GeographicZone>> incoming = g.getIncomingEdges(node.getId());
-            if (incoming.isEmpty()) continue;
+            if (incoming == null || incoming.isEmpty()) continue;
 
             double total = 0;
             for (int i = 0; i < incoming.size(); i++) {
+                if (prefix != null && !incoming.get(i).getTarget().getId().startsWith(prefix)) continue;
                 total += incoming.get(i).getWeight();
             }
+            if (total == 0) continue;
 
-            ZoneNode to = toZoneNode(node.getData());
+            ZoneNode to = toZoneNodeFromId(node.getId(), node.getData());
             result.add(ZoneTransitionPattern.builder()
                     .from(null)
                     .to(to)
@@ -93,43 +190,6 @@ public class ZoneMobilityService {
         sortByWeightDesc(result);
         return result;
     }
-
-    public ArrayList<ZoneTransitionPattern> getAllMobilityPatterns() {
-        Graph<GeographicZone> g = algorithmRepository.getZoneGraph();
-        ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
-        HashTable<String, Integer> opCounts = buildOperationCountByZone();
-
-        for (GraphNode<GeographicZone> node : g.getNodes().values()) {
-            ArrayList<GraphEdge<GeographicZone>> edges = g.getNeighbors(node.getId());
-            if (edges == null) continue;
-
-            GraphNode<GeographicZone> fromNode = g.getNode(node.getId());
-            for (int i = 0; i < edges.size(); i++) {
-                result.add(buildPattern(fromNode, edges.get(i), opCounts));
-            }
-        }
-
-        sortByWeightDesc(result);
-        return result;
-    }
-
-    public ArrayList<ZoneTransitionPattern> getOperationCorrelatedPatterns() {
-        ArrayList<ZoneTransitionPattern> result = new ArrayList<>();
-        ArrayList<ZoneTransitionPattern> allPatterns = getAllMobilityPatterns();
-
-        for (int i = 0; i < allPatterns.size(); i++) {
-            ZoneTransitionPattern pattern = allPatterns.get(i);
-            if (pattern.getOperationCount() == 0) continue;
-            result.add(pattern);
-        }
-
-        sortByOperationCountDesc(result);
-        return result;
-    }
-
-    // ══════════════════════════════════════════════
-    // HELPERS PRIVADOS
-    // ══════════════════════════════════════════════
 
     private HashTable<String, Integer> buildOperationCountByZone() {
         LinkedList<Operation> operations = operationService.getAllOperations();
@@ -157,35 +217,13 @@ public class ZoneMobilityService {
         return count == null ? 0 : count;
     }
 
-    private ZoneNode toZoneNode(GeographicZone gz) {
-        if (gz == null) return null;
-        if (gz.getNameNeighborhood() != null) {
-            return ZoneNode.builder()
-                    .level(ZoneNode.Level.NEIGHBORHOOD)
-                    .city(gz.getCity())
-                    .zone(gz.getZone())
-                    .neighborhoodName(gz.getNameNeighborhood())
-                    .build();
-        }
-        if (gz.getZone() != null) {
-            return ZoneNode.builder()
-                    .level(ZoneNode.Level.ZONE)
-                    .city(gz.getCity())
-                    .zone(gz.getZone())
-                    .build();
-        }
-        return ZoneNode.builder()
-                .level(ZoneNode.Level.CITY)
-                .city(gz.getCity())
-                .build();
-    }
-
     private ZoneTransitionPattern buildPattern(GraphNode<GeographicZone> fromNode,
                                                GraphEdge<GeographicZone> edge,
                                                HashTable<String, Integer> opCounts) {
-        ZoneNode to = toZoneNode(edge.getTarget().getData());
+        ZoneNode from = toZoneNodeFromId(fromNode.getId(), fromNode.getData());
+        ZoneNode to   = toZoneNodeFromId(edge.getTarget().getId(), edge.getTarget().getData());
         return ZoneTransitionPattern.builder()
-                .from(toZoneNode(fromNode.getData()))
+                .from(from)
                 .to(to)
                 .weight(edge.getWeight())
                 .operationCount(getOperationCount(opCounts, to))
@@ -195,11 +233,27 @@ public class ZoneMobilityService {
     private ZoneTransitionPattern buildIncomingPattern(GraphEdge<GeographicZone> edge,
                                                        ZoneNode to,
                                                        HashTable<String, Integer> opCounts) {
+        ZoneNode from = toZoneNodeFromId(edge.getTarget().getId(), edge.getTarget().getData());
         return ZoneTransitionPattern.builder()
-                .from(toZoneNode(edge.getTarget().getData()))
+                .from(from)
                 .to(to)
                 .weight(edge.getWeight())
-                .operationCount(getOperationCount(opCounts, to))
+                .operationCount(getOperationCount(opCounts, from))
+                .build();
+    }
+
+    private ZoneNode toZoneNodeFromId(String nodeId, GeographicZone gz) {
+        if (gz == null) return null;
+        if (nodeId.startsWith("CITY|")) {
+            return ZoneNode.builder()
+                    .level(ZoneNode.Level.CITY)
+                    .city(gz.getCity())
+                    .build();
+        }
+        return ZoneNode.builder()
+                .level(ZoneNode.Level.ZONE)
+                .city(gz.getCity())
+                .zone(gz.getZone())
                 .build();
     }
 
