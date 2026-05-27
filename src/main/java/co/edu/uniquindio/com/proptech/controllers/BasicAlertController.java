@@ -34,16 +34,16 @@ public class BasicAlertController {
 
     // Obtener y marcar como revisada la siguiente alerta urgente (CONTRACT_EXPIRING)
     @PostMapping("/priority/next")
-    public ResponseEntity<BasicAlertDto> getNextPriorityAlert() {
+    public ResponseEntity<BasicAlertDto> getNextPriorityAlert(@RequestParam String agentCedula) {
         return ResponseEntity.ok(
-                basicAlertMapper.toDto(basicAlertService.getNextPriorityAlert())
+                basicAlertMapper.toDto(basicAlertService.getNextPriorityAlert(agentCedula))
         );
     }
 
     // Obtener y marcar como revisada la siguiente alerta pendiente
     @PostMapping("/pending/next")
-    public ResponseEntity<BasicAlertDto> getNextPendingAlert() {
-        BasicAlert alert = (BasicAlert) basicAlertService.getNextPendingAlert();
+    public ResponseEntity<BasicAlertDto> getNextPendingAlert(@RequestParam String agentCedula) {
+        BasicAlert alert =  basicAlertService.getNextPendingAlert(agentCedula);
         return ResponseEntity.ok(basicAlertMapper.toDto(alert));
     }
 
@@ -97,9 +97,9 @@ public class BasicAlertController {
 
     // Ver la siguiente urgente sin sacarla de la cola
     @GetMapping("/priority/peek")
-    public ResponseEntity<BasicAlertDto> peekPriorityAlert() {
+    public ResponseEntity<BasicAlertDto> peekPriorityAlert(@RequestParam String agentCedula) {
         return ResponseEntity.ok(
-                basicAlertMapper.toDto(basicAlertService.getNextPriorityAlert())
+                basicAlertMapper.toDto(basicAlertService.peekPriorityAlert(agentCedula))
         );
     }
 }

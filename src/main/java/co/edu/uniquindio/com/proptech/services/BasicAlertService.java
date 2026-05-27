@@ -3,6 +3,7 @@ package co.edu.uniquindio.com.proptech.services;
 import co.edu.uniquindio.com.proptech.domain.enums.*;
 import co.edu.uniquindio.com.proptech.domain.model.*;
 import co.edu.uniquindio.com.proptech.repositories.BasicAlertRepository;
+import co.edu.uniquindio.com.proptech.repositories.AgentRepository;
 import co.edu.uniquindio.com.proptech.structures.arrayList.ArrayList;
 import co.edu.uniquindio.com.proptech.structures.linkedList.LinkedList;
 import co.edu.uniquindio.com.proptech.structures.queue.Queue;
@@ -19,25 +20,20 @@ import java.util.Comparator;
 public class BasicAlertService {
 
     private final BasicAlertRepository basicAlertRepository;
+    private final AgentRepository agentRepository;
     private final OperationService operationService;
     private final PropertyService propertyService;
     private final VisitService visitService;
     private final ClientService clientService;
 
-    // Cola normal: todas las alertas pendientes de revisión
-    private final Queue<BasicAlert> pendingAlerts = new Queue<>();
-
-    // Cola de prioridad: alertas urgentes ordenadas por timestamp (más reciente primero)
-    private final PriorityQueue<BasicAlert> priorityAlerts = new PriorityQueue<>(
-            Comparator.comparing(alert -> alert.getOperation().getDateFinal())
-    );
-
     public BasicAlertService(BasicAlertRepository basicAlertRepository,
+                        AgentRepository agentRepository,
                         OperationService operationService,
                         PropertyService propertyService,
                         VisitService visitService,
                         ClientService clientService) {
         this.basicAlertRepository = basicAlertRepository;
+        this.agentRepository = agentRepository;
         this.operationService = operationService;
         this.propertyService = propertyService;
         this.visitService = visitService;
@@ -59,12 +55,22 @@ public class BasicAlertService {
         return basicAlertRepository.getAll();
     }
 
-    public boolean hasPendingAlerts() {
-        return !pendingAlerts.isEmpty();
+    public boolean hasPendingAlerts(String agentCedula) {
+        Agent agent = agentRepository.findByCedula(agentCedula)
+                .orElseThrow(() -> new RuntimeException("Agente no encontrado con cedula: " + agentCedula));
+        for (BasicAlert a : agent.getBasicAlertQueue()) {
+            if (!a.isReviewed()) return true;
+        }
+        return false;
     }
 
-    public boolean hasPriorityAlerts() {
-        return !priorityAlerts.isEmpty();
+    public boolean hasPriorityAlerts(String agentCedula) {
+        Agent agent = agentRepository.findByCedula(agentCedula)
+                .orElseThrow(() -> new RuntimeException("Agente no encontrado con cedula: " + agentCedula));
+        for (BasicAlert a : agent.getPriorityAlertQueue()) {
+            if (!a.isReviewed()) return true;
+        }
+        return false;
     }
 
     // ─── Helper para crear y enrutar la alerta ───────────────────────
@@ -85,10 +91,18 @@ public class BasicAlertService {
 
         basicAlertRepository.save(alert);
 
-        if (type == AlertType.CONTRACT_EXPIRING) {
-            priorityAlerts.add(alert);
-        } else {
-            pendingAlerts.enqueue(alert);
+        // Enrutar al agente correspondiente
+        if (agent != null) {
+            if (type == AlertType.CONTRACT_EXPIRING) {
+                agent.addPriorityAlert(alert);
+            } else {
+                agent.enqueueBasicAlert(alert);
+            }
+        } else if (type == AlertType.INACTIVE_CLIENT) {
+            // Enrutar a todos los asesores
+            for (Agent a : agentRepository.getAgents().values()) {
+                a.enqueueBasicAlert(alert);
+            }
         }
 
         return alert;
@@ -110,10 +124,11 @@ public class BasicAlertService {
 
             long days = ChronoUnit.DAYS.between(LocalDate.now(), op.getDateFinal());
             if (days >= 0 && days <= 30) {
-                if (!alertaYaExiste(AlertType.CONTRACT_EXPIRING, op.getId())) {
-                    buildAndRoute(AlertType.CONTRACT_EXPIRING, op, op.getProperty(), null, null, op.getAgent());
+                if (op.getAgent() != null) {
+                    if (!alertaYaExiste(AlertType.CONTRACT_EXPIRING, op.getId())) {
+                        buildAndRoute(AlertType.CONTRACT_EXPIRING, op, op.getProperty(), null, null, op.getAgent());
+                    }
                 }
-
             }
         }
     }
@@ -139,8 +154,10 @@ public class BasicAlertService {
             }
 
             if (!hasRecentVisit) {
-                if (!alertaYaExiste(AlertType.PROPERTY_NO_VISITS, property.getCode())) {
-                    buildAndRoute(AlertType.PROPERTY_NO_VISITS, null, property, null, null, property.getAgent());
+                if (property.getAgent() != null) {
+                    if (!alertaYaExiste(AlertType.PROPERTY_NO_VISITS, property.getCode())) {
+                        buildAndRoute(AlertType.PROPERTY_NO_VISITS, null, property, null, null, property.getAgent());
+                    }
                 }
             }
         }
@@ -164,8 +181,10 @@ public class BasicAlertService {
             }
 
             if (count > 5) {
-                if (!alertaYaExiste(AlertType.HIGH_DEMAND, property.getCode())) {
-                    buildAndRoute(AlertType.HIGH_DEMAND, null, property, null, null, property.getAgent());
+                if (property.getAgent() != null) {
+                    if (!alertaYaExiste(AlertType.HIGH_DEMAND, property.getCode())) {
+                        buildAndRoute(AlertType.HIGH_DEMAND, null, property, null, null, property.getAgent());
+                    }
                 }
             }
         }
@@ -182,8 +201,10 @@ public class BasicAlertService {
                 long hours = ChronoUnit.HOURS.between(
                         visit.getCreatedAt(), LocalDateTime.now());
                 if (hours >= 24) {
-                    if (!alertaYaExiste(AlertType.PENDING_VISIT_CONFIRMATION, visit.getId())) {
-                        buildAndRoute(AlertType.PENDING_VISIT_CONFIRMATION, null, null, visit, null, visit.getAgent());
+                    if (visit.getAgent() != null) {
+                        if (!alertaYaExiste(AlertType.PENDING_VISIT_CONFIRMATION, visit.getId())) {
+                            buildAndRoute(AlertType.PENDING_VISIT_CONFIRMATION, null, null, visit, null, visit.getAgent());
+                        }
                     }
                 }
             }
@@ -201,8 +222,10 @@ public class BasicAlertService {
                 long days = ChronoUnit.DAYS.between(
                         op.getDateInitial(), LocalDate.now());
                 if (days > 30) {
-                    if (!alertaYaExiste(AlertType.RESERVE_NO_CLOSURE, op.getId())) {
-                        buildAndRoute(AlertType.RESERVE_NO_CLOSURE, op, null, null, null, op.getAgent());
+                    if (op.getAgent() != null) {
+                        if (!alertaYaExiste(AlertType.RESERVE_NO_CLOSURE, op.getId())) {
+                            buildAndRoute(AlertType.RESERVE_NO_CLOSURE, op, null, null, null, op.getAgent());
+                        }
                     }
                 }
             }
@@ -243,24 +266,46 @@ public class BasicAlertService {
 
     // ─── Consultar colas ─────────────────────────────────────────────
 
-    public BasicAlert getNextPriorityAlert() {
-        if (priorityAlerts.isEmpty()) {
-            throw new RuntimeException("No hay alertas urgentes pendientes");
+    public BasicAlert getNextPriorityAlert(String agentCedula) {
+        Agent agent = agentRepository.findByCedula(agentCedula)
+                .orElseThrow(() -> new RuntimeException("Agente no encontrado con cedula: " + agentCedula));
+        while (agent.hasPriorityAlerts()) {
+            BasicAlert alert = agent.pollPriorityAlert();
+            if (!alert.isReviewed()) {
+                alert.setReviewed(true);
+                basicAlertRepository.update(alert);
+                return alert;
+            }
         }
-        BasicAlert alert = priorityAlerts.poll();
-        alert.setReviewed(true);
-        basicAlertRepository.update(alert);
-        return alert;
+        throw new RuntimeException("No hay alertas urgentes pendientes para este agente");
     }
 
-    public BasicAlert getNextPendingAlert() {
-        if (pendingAlerts.isEmpty()) {
-            throw new RuntimeException("No hay alertas pendientes");
+    public BasicAlert getNextPendingAlert(String agentCedula) {
+        Agent agent = agentRepository.findByCedula(agentCedula)
+                .orElseThrow(() -> new RuntimeException("Agente no encontrado con cedula: " + agentCedula));
+        while (agent.hasBasicAlerts()) {
+            BasicAlert alert = agent.dequeueBasicAlert();
+            if (!alert.isReviewed()) {
+                alert.setReviewed(true);
+                basicAlertRepository.update(alert);
+                return alert;
+            }
         }
-        BasicAlert alert = pendingAlerts.dequeue();
-        alert.setReviewed(true);
-        basicAlertRepository.update(alert);
-        return alert;
+        throw new RuntimeException("No hay alertas pendientes para este agente");
+    }
+
+    public BasicAlert peekPriorityAlert(String agentCedula) {
+        Agent agent = agentRepository.findByCedula(agentCedula)
+                .orElseThrow(() -> new RuntimeException("Agente no encontrado con cedula: " + agentCedula));
+        while (agent.hasPriorityAlerts()) {
+            BasicAlert alert = agent.peekPriorityAlert();
+            if (!alert.isReviewed()) {
+                return alert;
+            }
+            // Si ya está revisada por otro agente, la removemos de nuestra cola
+            agent.pollPriorityAlert();
+        }
+        throw new RuntimeException("No hay alertas urgentes pendientes para este agente");
     }
 
     // ─── Helper para evitar duplicados ──────────────────────────────

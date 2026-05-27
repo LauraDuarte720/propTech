@@ -439,7 +439,6 @@
   // ── Dashboard ─────────────────────────────────────────────────────
   async function loadDashboard() {
     const agentId = user.cedula;
-    fetch(`${API}/basic-alerts/generate`, { method: 'POST' }).catch(() => {});
 
     const commRes = await fetch(`${API}/operations/agent/${agentId}/commission`).catch(() => null);
     if (commRes?.ok) document.getElementById('comm-total').textContent = '$' + Number(await commRes.json()).toLocaleString();
@@ -572,7 +571,9 @@
     if (btn) { btn.disabled = true; btn.textContent = 'Atendiendo...'; }
     const nextCard = document.querySelector(`#pane-${kind} .alert-card`);
     if (nextCard) { nextCard.classList.add('removing'); await new Promise(r => setTimeout(r, 280)); }
-    const endpoint = kind === 'priority' ? `${API}/basic-alerts/priority/next` : `${API}/basic-alerts/pending/next`;
+    const endpoint = kind === 'priority' 
+      ? `${API}/basic-alerts/priority/next?agentCedula=${user.cedula}` 
+      : `${API}/basic-alerts/pending/next?agentCedula=${user.cedula}`;
     const res = await fetch(endpoint, { method: 'POST' }).catch(() => null);
     if (!res?.ok) {
       ptToast('error', 'Error al atender', 'No se pudo atender la alerta');

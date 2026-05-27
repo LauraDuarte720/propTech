@@ -35,6 +35,36 @@ public class Agent extends User implements Comparable<Agent> {
     @Builder.Default
     private Integer closedDeals = 0;
 
+    // ── Colas de alertas básicas por agente ──────────────────────────
+    @Builder.Default
+    private Queue<BasicAlert> basicAlertQueue = new Queue<>();
+
+    @Builder.Default
+    private PriorityQueue<BasicAlert> priorityAlertQueue = new PriorityQueue<>(
+            Comparator.comparing(alert -> alert.getOperation().getDateFinal())
+    );
+
+    // ── BasicAlert queues ────────────────────────────────
+    public void enqueueBasicAlert(BasicAlert alert) { basicAlertQueue.enqueue(alert); }
+    public BasicAlert dequeueBasicAlert() { return basicAlertQueue.dequeue(); }
+    public boolean hasBasicAlerts() { return !basicAlertQueue.isEmpty(); }
+    public void addPriorityAlert(BasicAlert alert) { priorityAlertQueue.add(alert); }
+    public BasicAlert pollPriorityAlert() { return priorityAlertQueue.poll(); }
+    public BasicAlert peekPriorityAlert() { return priorityAlertQueue.peek(); }
+    public boolean hasPriorityAlerts() { return !priorityAlertQueue.isEmpty(); }
+    public boolean hasAnyPendingAlerts() { return hasBasicAlerts() || hasPriorityAlerts(); }
+    public boolean hasAlertsForProperty(String propertyCode) {
+        for (BasicAlert a : basicAlertQueue) {
+            if (!a.isReviewed() && a.getProperty() != null 
+                && a.getProperty().getCode().equals(propertyCode)) return true;
+        }
+        for (BasicAlert a : priorityAlertQueue) {
+            if (!a.isReviewed() && a.getProperty() != null 
+                && a.getProperty().getCode().equals(propertyCode)) return true;
+        }
+        return false;
+    }
+
     public Agent(String cedula, String name,  String username, String password, String contact, GeographicZone assignedZone, Integer closedDeals) {
         super(cedula, name, username, password);
         this.contact = contact;
